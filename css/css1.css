@@ -1,0 +1,144 @@
+body{
+  min-width: 670px;
+}
+.page{
+  background: red;
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+  padding: 20% 9% 0% 9%;
+}
+.header_profile{
+	width: 100%;
+}
+.header_profile img{
+  width: 100%;
+  position: relative;
+  display: inline-block;
+}
+.about_me{
+  background: #265ad1;
+}
+.about_me .title{
+  margin: 0px 0px 0px 204px;
+  padding-top: 10px;
+  color: white;
+  font-family: 'Titillium Web', sans-serif;
+  font-weight: bold;
+  font-size: 17pt;
+}
+.about_me p{
+  text-align: justify;
+  margin: 1px 11px 0px 202px;
+  font-size: 8.1pt;
+  font-family: 'Titillium Web', sans-serif;
+  color: white;
+}
+.body_profile{
+	background: white;
+  text-align: justify;
+  padding: 30px;
+}
+
+.profile_name{
+  padding-left: 30%;
+  position: absolute;
+  top: 254px;
+  color: white;
+  font-size: 45pt;
+  font-family: 'Great Vibes', cursive;
+}
+.profile_profession{
+  padding-left: 50%;
+  position: absolute;
+  top: 315px;
+  color: white;
+  font-style: italic;
+  font-size: 13pt;
+  font-family: 'Titillium Web', sans-serif;
+}
+
+.photo{
+  float: left;
+  top: -100px;
+}
+
+.photo_profile{
+  display: inline-block;
+  position: relative;
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 50%;
+  border: solid blue;
+}
+.photo_profile img{
+    width: auto;
+    height: 100%;
+}
+/*photo landscape*/
+.photo_profile_landscape{
+  display: inline-block;
+  position: relative;
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+.photo_profile_landscape img{
+  width: auto;
+  height: 100%;
+  margin-left: -50px;
+}
+/*photo portrait*/
+.photo_profile_portrait{
+  position: relative;
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+.photo_profile_portrait img{
+  width: 100%;
+  height: auto;
+}
+
+/*flag*/
+.flag {
+  width: 110px;
+  height: 156px;
+  margin: 0 auto;
+  padding-top: 15px;
+  position: relative; 
+  background: hotpink;
+  color: white;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.flag:after {
+  content: ' ';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-bottom: 13px solid white;
+  border-left: 55px solid transparent;
+  border-right: 55px solid transparent;
+}
+
+/*responsive 640*/
+@media screen and (max-width:640px) {
+  .profile_name{
+      width: 546px;
+      padding-left: 200px;
+      top: 230px;
+  }
+  .profile_profession{
+      width: 546px;
+      padding-left: 200px;
+      top: 295px;
+  }
+}

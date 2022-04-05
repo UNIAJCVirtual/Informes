@@ -1,0 +1,16 @@
+aulasvirtuales40@gmail.com
+
+ssl
+smtp.gmail.com
+465
+aulasvirtuales40@gmail.com
+
+
+// IMPORTANTE  Estructura del archivo
+cada linea corresponde a su valir correspondiente segun lo mostrado
+1.Email
+2.password
+3.SMTPSecure
+4.Host
+5.Port
+6.setFrom
