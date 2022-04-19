@@ -82,11 +82,6 @@ function quitar_tildes($cadena)
 function enlistmentReport($category, $program, $semester)
 {
 	include("../database/reportRequest.php");
-	include_once("../class/itemsAlistamiento.php");
-
-	$vector_cursos = [];
-	
-
 
 	$categoriesResult = Categories(implode(",", $program));
 	echo "<table border='1' cellspacing='0' cellpadding='0'>

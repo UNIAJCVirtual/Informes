@@ -33,7 +33,7 @@
 			case '1':
 				
 				echo "<div><h1>Alistamiento</h1></div><br>";
-				require_once("alistamiento.php");
+				require_once("alistamiento_new.php");
 				enlistmentReport($_POST["category"], $_POST["program"], "");
 				break;
 			

@@ -1,5 +1,7 @@
 
 <?php
+include_once("../class/curso.php");
+
 function rellenar($n)
 {
 	$c = "";
@@ -8,6 +10,7 @@ function rellenar($n)
 	}
 	return $c;
 }
+
 function headerDetail($items)
 {
 	$result = "<table border='1' cellspacing='1' cellpadding='0'>
@@ -79,16 +82,14 @@ function quitar_tildes($cadena)
 	return $texto;
 }
 
+
 function enlistmentReport($category, $program, $semester)
 {
 	include("../database/reportRequest.php");
-	include_once("../class/itemsAlistamiento.php");
-
+	$cant=0;
 	$vector_curso = [];
-    $vector_cursos = [];
+	$curso = new curso(); 
 	
-
-
 	$categoriesResult = Categories(implode(",", $program));
 	echo "<table border='1' cellspacing='0' cellpadding='0'>
 			<tr class='tr'>
@@ -122,17 +123,14 @@ function enlistmentReport($category, $program, $semester)
 		  	</tr>";
 	foreach ($categoriesResult as $val) {
 
-	
-		$vector_curso = new vectorCurso();
-        $curso = new curso();
-
-        $curso->setPrograma(NameCategory($val['id']));
-
+		$result = NameCategory($val['id']);
 		$semester = $result["name"];
 		$program = Program($result['parent']);
 		$result = StatisticsInformation($val['id']);
 		$color_rows = 1;
+
 		while ($columna = $result->fetch_assoc()) {
+
 			// var_dump($columna);
 			if ($color_rows == 0) {
 				$class_row = "td1";
@@ -141,12 +139,23 @@ function enlistmentReport($category, $program, $semester)
 				$class_row = "td2";
 				$color_rows = 0;
 			}
+
 			$email = trim(strtolower($columna['email']));
 			$resultContenido = content($columna['course_id']);
 			$cadena = "";
+
+			$curso->setIdUser($columna['user_id']);
+			$curso->setNombre(ucwords(strtolower($columna['firstname'])) . " " . ucwords(strtolower($columna['lastname'])));
+			$curso->setCorreo($columna['email']);
+			$curso->setPrograma($program);
+			$curso->setSemestre($semester);
+			$curso->setIdCurso($columna['course_id']);
+			$curso->setNombreCurso($columna['course_fullname']);
+
+			//------PARA BORRAR
 			$fila = "
 					<tr class='" . $class_row . "'>
-						<td>" . $vector_curso->setIdUser($columna['user_id']) . "</td>
+						<td>" . $columna['user_id'] . "</td>
 						<td>" . ucwords(strtolower($columna['firstname'])) . " " . ucwords(strtolower($columna['lastname'])) . "</td>
 						<td>" . $columna['email'] . "</td>
 						<td>$program</td>
@@ -156,7 +165,10 @@ function enlistmentReport($category, $program, $semester)
 			$contador = 8;
 			$noCumple = 0;
 			$cumple = 0;
+
+			//--------------------------
 			while ($resultInformacion = $resultContenido->fetch_assoc()) {
+
 				$namesection = $resultInformacion['name'];
 				$contenidoName = strtolower($resultInformacion['page_name']);
 				$contenido = strtolower(quitar_tildes($resultInformacion['page_content']));
@@ -174,11 +186,13 @@ function enlistmentReport($category, $program, $semester)
 								if ($valor != null) {
 									if ((strpos($contenidoName, $valor)) !== false) {
 										$sw = true;
+										$curso->setNombreProfesor("CUMPLE");
 										$fila .= "<td>CUMPLE</td>";
 										$cumple++;
 										break;
 									} else if ((strpos($contenido, $valor)) !== false) {
 										$sw = true;
+										$curso->setNombreProfesor("CUMPLE");
 										$fila .= "<td>CUMPLE</td>";
 										$cumple++;
 										break;
@@ -186,25 +200,30 @@ function enlistmentReport($category, $program, $semester)
 								}
 							}
 							if ($sw == false) {
+								$curso->setNombreProfesor("NO CUMPLE");
 								$fila .= "<td>NO CUMPLE</td>";
 								$noCumple++;
 							}
 							// Req. 2 - Información de contacto (email)
 							$validar = strpos($contenido, $email);
 							if ($validar !== false) {
+								$curso->setCorreoProfesor("CUMPLE");
 								$fila .= "<td>CUMPLE</td>";
 								$cumple++;
 							} else {
 								if (validarEmail($contenido, $email, $columna['course_fullname'])) {
+									$curso->setCorreoProfesor("CUMPLE");
 									$fila .= "<td>CUMPLE</td>";
 									$cumple++;
 								} else {
+									$curso->setCorreoProfesor("NO CUMPLE");
 									$fila .= "<td>NO CUMPLE</td>";
 									$noCumple++;
 								}
 							}
 							//Req. 3 - Horario de atención
 							if ((strpos($contenido, 'indicar las horas de atencion que tendra para sus estudiantes') !== false)) {
+								$curso->setHorarioAtencion("NO CUMPLE");
 								$fila .= "<td>NO CUMPLE</td>";
 								$noCumple++;
 							} else  if (
@@ -216,29 +235,21 @@ function enlistmentReport($category, $program, $semester)
 								(strpos($contenido, 'sabado') !== false) ||
 								(strpos($contenido, 'domingo') !== false)
 							) {
+								$curso->setHorarioAtencion("CUMPLE");
 								$fila .= "<td>CUMPLE</td>";
 								$cumple++;
 							} else {
+								$curso->setHorarioAtencion("NO CUMPLE");
 								$fila .= "<td>NO CUMPLE</td>";
 								$cumple++;
 							}
 							//Req. 4 - Fotografia del Profesor
 							if ((strpos($contenido, 'insertar foto de tamaño 200')) !== false) {
+								$curso->setFotografia("NO CUMPLE");
 								$fila .= "<td>NO CUMPLE</td>";
 								$noCumple++;
 							} else {
-								$fila .= "<td>CUMPLE</td>";
-								$cumple++;
-							}
-
-
-
-							//Req. 5 - La información del Profesor es Visible
-							if ($resultInformacion['visible'] === "0") {
-								$fila .= "<td>NO CUMPLE</td>";
-								$noCumple++;
-							} else {
-								//echo $resultInformacion['visible'];
+								$curso->setFotografia("CUMPLE");
 								$fila .= "<td>CUMPLE</td>";
 								$cumple++;
 							}
@@ -251,13 +262,16 @@ function enlistmentReport($category, $program, $semester)
 								$discussions = forumDiscussions($resultFC["id"]);
 								$discussions = mysqli_fetch_array($discussions);
 								if ($discussions["dis"] > 0) {
+									$curso->setForoConsulta("CUMPLE");
 									$fila .= "<td>CUMPLE</td>";
 									$cumple++;
 								} else {
+									$curso->setForoConsulta("NO CUMPLE");
 									$fila .= "<td>NO CUMPLE</td>";
 									$noCumple++;
 								}
 							} else {
+								$curso->setForoConsulta("NO CUMPLE");
 								$fila .= "<td>NO CUMPLE</td>";
 								$noCumple++;
 							}
@@ -268,23 +282,59 @@ function enlistmentReport($category, $program, $semester)
 							$resultValidacion = summary($idsection, $columna['course_id']);
 
 							if ($resultValidacion->num_rows > 0) {
+
 								$contador--;
 								$columnaval = mysqli_fetch_array($resultValidacion);
 								$contadorval = $columnaval['contador'];
 								$contadorval = (int) $contadorval;
 								$section = $columnaval['section'];
+								$unidad = $section - 1;
 							if ($sectionvisible === "0") {
-
 								$fila .= "<td>NO APLICA</td>";
 							} else {
 								if ((strpos($sumarycon, 'DD/MM/AAAA')) !== false) {
+									if($unidad==8){
+										$curso->setFechasUnidad8("NO CUMPLE");
+									} elseif ($unidad==7){
+										$curso->setFechasUnidad7("NO CUMPLE");
+									} elseif ($unidad==6){
+										$curso->setFechasUnidad6("NO CUMPLE");
+									} elseif ($unidad==5){
+										$curso->setFechasUnidad5("NO CUMPLE");
+									} elseif ($unidad==4){
+										$curso->setFechasUnidad4("NO CUMPLE");
+									} elseif ($unidad==3){
+										$curso->setFechasUnidad3("NO CUMPLE");
+									} elseif ($unidad==2){
+										$curso->setFechasUnidad2("NO CUMPLE");
+									} elseif($unidad==1){
+										$curso->setFechasUnidad1("NO CUMPLE");
+									}					
 									$fila .= "<td>NO CUMPLE</td>";
 									$noCumple++;
 								} else {
+									if($unidad==8){
+										$curso->setFechasUnidad8("CUMPLE");
+									} elseif ($unidad==7){
+										$curso->setFechasUnidad7("CUMPLE");
+									} elseif ($unidad==6){
+										$curso->setFechasUnidad6("CUMPLE");
+									} elseif ($unidad==5){
+										$curso->setFechasUnidad5("CUMPLE");
+									} elseif ($unidad==4){
+										$curso->setFechasUnidad4("CUMPLE");
+									} elseif ($unidad==3){
+										$curso->setFechasUnidad3("CUMPLE");
+									} elseif ($unidad==2){
+										$curso->setFechasUnidad2("CUMPLE");
+									} elseif ($unidad==1){
+										$curso->setFechasUnidad1("CUMPLE");
+									}
 									$fila .= "<td>CUMPLE</td>";
 									$cumple++;
 								}
 							}
+							
 						}
 						}
 					}
@@ -307,24 +357,30 @@ function enlistmentReport($category, $program, $semester)
 
 			if ($rowsAvanceFormativo1 > 0) {
 
+				$curso->setAF01Actividades("CUMPLE");
 				$rowsGrade .= "<td>CUMPLE</td>";
 				$gc = mysqli_fetch_array($avanceFormativo1);
 				$weighingGrade = weighing($columna['course_id'], $gc["idc"]);
 				$weighing = mysqli_fetch_array($weighingGrade);
 
 				if ($weighing["gradeSum"] > 100 || $weighing["gradeSum"] == 0) {
+					$curso->setAF01Ponderaciones("NO CUMPLE");
 					$rowsGrade .= "<td>NO CUMPLE</td>";
 					$noCumple++;
 				} else {
 					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 30 || $weighing["gradeSum"] == 0.30) {
+						$curso->setAF01Ponderaciones("CUMPLE");
 						$rowsGrade .= "<td>CUMPLE</td>";
 						$cumple++;
 					} else {
+						$curso->setAF01Ponderaciones("NO CUMPLE");
 						$rowsGrade .= "<td>NO CUMPLE</td>";
 						$noCumple++;
 					}
 				}
 			} else {
+				$curso->setAF01Actividades("NO CUMPLE");
+				$curso->setAF01Ponderaciones("NO CUMPLE");
 				$rowsGrade .= "<td>NO CUMPLE</td>";
 				$rowsGrade .= "<td>NO CUMPLE</td>";
 				$noCumple+=2;
@@ -333,25 +389,30 @@ function enlistmentReport($category, $program, $semester)
 			//Revisar libro de calificaciones categoría Avance formativo 2------------------------	
 
 			if ($rowsAvanceFormativo2 > 0) {
-
+				$curso->setAF02Actividades("CUMPLE");
 				$rowsGrade .= "<td>CUMPLE</td>";
 				$gc = mysqli_fetch_array($avanceFormativo2);
 				$weighingGrade = weighing($columna['course_id'], $gc["idc"]);
 				$weighing = mysqli_fetch_array($weighingGrade);
 
 				if ($weighing["gradeSum"] > 100 || $weighing["gradeSum"] == 0) {
+					$curso->setAF02Ponderaciones("NO CUMPLE");
 					$rowsGrade .= "<td>NO CUMPLE</td>";
 					$noCumple++;
 				} else {
 					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 30 || $weighing["gradeSum"] == 0.30) {
+						$curso->setAF02Ponderaciones("CUMPLE");
 						$rowsGrade .= "<td>CUMPLE</td>";
 						$cumple++;
 					} else {
+						$curso->setAF02Ponderaciones("NO CUMPLE");
 						$rowsGrade .= "<td>NO CUMPLE</td>";
 						$noCumple++;
 					}
 				}
 			}else {
+				$curso->setAF02Actividades("NO CUMPLE");
+				$curso->setAF02Ponderaciones("NO CUMPLE");
 				$rowsGrade .= "<td>NO CUMPLE</td>";
 				$rowsGrade .= "<td>NO CUMPLE</td>";
 				$noCumple+=2;
@@ -360,33 +421,41 @@ function enlistmentReport($category, $program, $semester)
 			//Revisar libro de calificaciones categoría Avance formativo 3------------------------	
 
 			if ($rowsAvanceFormativo3 > 0) {
-
+				$curso->setAF03Actividades("CUMPLE");
 				$rowsGrade .= "<td>CUMPLE</td>";
 				$gc = mysqli_fetch_array($avanceFormativo3);
 				$weighingGrade = weighing($columna['course_id'], $gc["idc"]);
 				$weighing = mysqli_fetch_array($weighingGrade);
 
 				if ($weighing["gradeSum"] > 100 || $weighing["gradeSum"] == 0) {
+					$curso->setAF03Ponderaciones("NO CUMPLE");
 					$rowsGrade .= "<td>NO CUMPLE</td>";
 					$noCumple++;
 				} else {
 					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 40 || $weighing["gradeSum"] == 0.40) {
+						$curso->setAF03Ponderaciones("CUMPLE");
 						$rowsGrade .= "<td>CUMPLE</td>";
 						$cumple++;
 					} else {
+						$curso->setAF03Ponderaciones("NO CUMPLE");
 						$rowsGrade .= "<td>NO CUMPLE</td>";
 						$noCumple++;
 					}
 				}
 			} else {
+				$curso->setAF03Actividades("NO CUMPLE");
+				$curso->setAF03Ponderaciones("NO CUMPLE");
 				$rowsGrade .= "<td>NO CUMPLE</td>";
 				$rowsGrade .= "<td>NO CUMPLE</td>";
 				$noCumple+=2;
 			}
+			//-----------------------------------------------------------------------------
+
 			
 			$total = $noCumple+$cumple;
 			if ($total > 0) {
 				$porcentaje = str_replace(".", ",", (round(((100 / $total) * $cumple), 2)));
+				$curso->setPorcentaje($porcentaje);
 				if($porcentaje >= 80 && $porcentaje <= 100){
 					echo $fila . "" . rellenar($contador) . " " . $rowsGrade . " <td>" . $porcentaje . "%</td></tr>";
 					?>
@@ -419,9 +488,26 @@ function enlistmentReport($category, $program, $semester)
 			} else {
 				echo $fila . "" . rellenar($contador) . "<td>0%</td></tr>";
 			}
+			
+		
+			$vector_curso[$cant] = $curso;
+			$cant++;
+		
 		}
+		
+		
 	}
+	
 	echo "</table>";
 	
+    print_r($vector_curso);
 }
 ?>
+<script>
+		
+		$vector_curso.sort((a, b) => {
+			return a - b;
+		});
+
+
+</script>
