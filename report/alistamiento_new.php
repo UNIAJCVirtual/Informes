@@ -293,7 +293,7 @@ function enlistmentReport($category, $program, $semester)
 					$curso->setAF01Ponderaciones("NO CUMPLE");
 					$noCumple++;
 				} else {
-					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 30 || $weighing["gradeSum"] == 0.30) {
+					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 30 || $weighing["gradeSum"] == 0.30 || $weighing["gradeSum"] == 1) {
 						$curso->setAF01Ponderaciones("CUMPLE");
 						$cumple++;
 					} else {
@@ -319,7 +319,7 @@ function enlistmentReport($category, $program, $semester)
 					$curso->setAF02Ponderaciones("NO CUMPLE");
 					$noCumple++;
 				} else {
-					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 30 || $weighing["gradeSum"] == 0.30) {
+					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 30 || $weighing["gradeSum"] == 0.30 || $weighing["gradeSum"] == 1) {
 						$curso->setAF02Ponderaciones("CUMPLE");
 						$cumple++;
 					} else {
@@ -345,7 +345,7 @@ function enlistmentReport($category, $program, $semester)
 					$curso->setAF03Ponderaciones("NO CUMPLE");
 					$noCumple++;
 				} else {
-					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 40 || $weighing["gradeSum"] == 0.40) {
+					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 40 || $weighing["gradeSum"] == 0.40 || $weighing["gradeSum"] == 1) {
 						$curso->setAF03Ponderaciones("CUMPLE");
 						$cumple++;
 					} else {
@@ -404,10 +404,11 @@ function enlistmentReport($category, $program, $semester)
 		</thead>";
 		
 		foreach($vector_curso as $curse){
+			//porcentaje verde
 			if($curse->getPorcentaje() >= 80 && $curse->getPorcentaje() <= 100){
 		
 			echo"
-				<tr class='tr1'>
+				<tr class='td-simple-color'>
 				<td>".$curse->getIdUser()."</td>
 				<td>".$curse->getNombre()."</td>
 				<td>".$curse->getCorreo()."</td>
@@ -439,6 +440,7 @@ function enlistmentReport($category, $program, $semester)
 			
 		
 			}else if ($curse->getPorcentaje() >= 51 && $curse->getPorcentaje() <= 79){
+				//porcentaje amarillo
 				echo"
 				<tr class='table-warning'>
 				<td>".$curse->getIdUser()."</td>
@@ -472,7 +474,7 @@ function enlistmentReport($category, $program, $semester)
 
 	
 			}else if ($curse->getPorcentaje() >= 0 && $curse->getPorcentaje() <= 50){
-
+			//porcentaje rojo
 				print("
 				<tr class='table-danger' >
 				<td>".$curse->getIdUser()."</td>
