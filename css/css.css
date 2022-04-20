@@ -1,5 +1,5 @@
-.body{
-	background: #00a0e5;
+.body1{
+	background: #009fe5;
 }
 h2{
 	color: white;
@@ -63,10 +63,13 @@ input{
 	padding: 3px 3px 2px 2px;
 }
 .td1{
-	background: #f1f1f1;
+	background: #19a720;
 }
 .td2{
-	background: #e0f4f7;
+	background: #c9c927;
+}
+.td3{
+	background: #c53421;
 }
 .tdX{
 	background: #f13131;

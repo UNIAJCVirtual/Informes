@@ -1,31 +1,19 @@
-
 <?php
 include_once("../class/curso.php");
 
-function rellenar($n)
+//Ordenar array con el método sort
+
+function ordenar($ar1, $ar2)
 {
-	$c = "";
-	for ($i = 0; $i < $n; $i++) {
-		$c .= "<td>NO APLICA</td>";
-	}
-	return $c;
+   if ($ar1->{'porcentaje'} > $ar2->{'porcentaje'}){
+	return -1;
+   }      
+   else if ($ar1->{'porcentaje'}<$ar2->{'porcentaje'}){
+	return 1;
+   }
+   return 0;
 }
-
-function headerDetail($items)
-{
-	$result = "<table border='1' cellspacing='1' cellpadding='0'>
-				<tr  class='tr'>";
-
-
-	if ($items->num_rows > 0) {
-		foreach ($items as $recordItems) {
-			$result .= "<td>" . $recordItems["name"] . "</td>";
-		}
-	} else {
-		$result .= "<td>SIN DATOS</td>";
-	}
-	return $result . "</tr>";
-}
+//----------------------------------------------
 
 function validarEmail($cont, $e, $c)
 {
@@ -73,6 +61,8 @@ function validarEmail($cont, $e, $c)
 		return false;
 	}
 }
+
+
 function quitar_tildes($cadena)
 {
 	//$cade = utf8_decode($cadena);
@@ -86,60 +76,20 @@ function quitar_tildes($cadena)
 function enlistmentReport($category, $program, $semester)
 {
 	include("../database/reportRequest.php");
-	$cant=0;
-	$vector_curso = [];
-	$curso = new curso(); 
 	
+	$vector_curso = [];
 	$categoriesResult = Categories(implode(",", $program));
-	echo "<table border='1' cellspacing='0' cellpadding='0'>
-			<tr class='tr'>
-				<td>ID user</td>
-				<td>Nombre</td>
-				<td>Correo</td>
-				<td>Programa</td>
-				<td>Semestre</td>
-				<td>Curso</td>
-				<td>Nombre del curso</td>
-				<td>Nombre</td>
-				<td>Correo</td>
-				<td>Horario de atención</td>
-				<td>Fotografía</td>
-				<td>Foro consulta</td>
-				<td>Fecha I Y F S1</td>
-				<td>Fecha I Y F S2</td>
-				<td>Fecha I Y F S3</td>
-				<td>Fecha I Y F S4</td>
-				<td>Fecha I Y F S5</td>
-				<td>Fecha I Y F S6</td>
-				<td>Fecha I Y F S7</td>
-				<td>Fecha I Y F S8</td>
-				<td>Avance formativo 1 Actividades</td>
-				<td>Avance formativo 1 Ponderaciones</td>
-				<td>Avance formativo 2 Actividades</td>
-				<td>Avance formativo 2 Ponderaciones</td>
-				<td>Avance formativo 3 Actividades</td>
-				<td>Avance formativo 3 Ponderaciones</td>
-				<td>Porcentaje</td>
-		  	</tr>";
+
 	foreach ($categoriesResult as $val) {
 
 		$result = NameCategory($val['id']);
 		$semester = $result["name"];
 		$program = Program($result['parent']);
 		$result = StatisticsInformation($val['id']);
-		$color_rows = 1;
 
 		while ($columna = $result->fetch_assoc()) {
 
-			// var_dump($columna);
-			if ($color_rows == 0) {
-				$class_row = "td1";
-				$color_rows = 1;
-			} else {
-				$class_row = "td2";
-				$color_rows = 0;
-			}
-
+			$curso = new curso(); 
 			$email = trim(strtolower($columna['email']));
 			$resultContenido = content($columna['course_id']);
 			$cadena = "";
@@ -152,21 +102,10 @@ function enlistmentReport($category, $program, $semester)
 			$curso->setIdCurso($columna['course_id']);
 			$curso->setNombreCurso($columna['course_fullname']);
 
-			//------PARA BORRAR
-			$fila = "
-					<tr class='" . $class_row . "'>
-						<td>" . $columna['user_id'] . "</td>
-						<td>" . ucwords(strtolower($columna['firstname'])) . " " . ucwords(strtolower($columna['lastname'])) . "</td>
-						<td>" . $columna['email'] . "</td>
-						<td>$program</td>
-						<td>$semester</td>
-						<td>" . $columna['course_id'] . "</td>
-						<td>" . $columna['course_fullname'] . "</td>";
 			$contador = 8;
 			$noCumple = 0;
 			$cumple = 0;
 
-			//--------------------------
 			while ($resultInformacion = $resultContenido->fetch_assoc()) {
 
 				$namesection = $resultInformacion['name'];
@@ -187,13 +126,12 @@ function enlistmentReport($category, $program, $semester)
 									if ((strpos($contenidoName, $valor)) !== false) {
 										$sw = true;
 										$curso->setNombreProfesor("CUMPLE");
-										$fila .= "<td>CUMPLE</td>";
 										$cumple++;
 										break;
 									} else if ((strpos($contenido, $valor)) !== false) {
 										$sw = true;
 										$curso->setNombreProfesor("CUMPLE");
-										$fila .= "<td>CUMPLE</td>";
+
 										$cumple++;
 										break;
 									}
@@ -201,30 +139,25 @@ function enlistmentReport($category, $program, $semester)
 							}
 							if ($sw == false) {
 								$curso->setNombreProfesor("NO CUMPLE");
-								$fila .= "<td>NO CUMPLE</td>";
 								$noCumple++;
 							}
 							// Req. 2 - Información de contacto (email)
 							$validar = strpos($contenido, $email);
 							if ($validar !== false) {
 								$curso->setCorreoProfesor("CUMPLE");
-								$fila .= "<td>CUMPLE</td>";
 								$cumple++;
 							} else {
 								if (validarEmail($contenido, $email, $columna['course_fullname'])) {
 									$curso->setCorreoProfesor("CUMPLE");
-									$fila .= "<td>CUMPLE</td>";
 									$cumple++;
 								} else {
 									$curso->setCorreoProfesor("NO CUMPLE");
-									$fila .= "<td>NO CUMPLE</td>";
 									$noCumple++;
 								}
 							}
 							//Req. 3 - Horario de atención
 							if ((strpos($contenido, 'indicar las horas de atencion que tendra para sus estudiantes') !== false)) {
 								$curso->setHorarioAtencion("NO CUMPLE");
-								$fila .= "<td>NO CUMPLE</td>";
 								$noCumple++;
 							} else  if (
 								(strpos($contenido, 'lunes') !== false) ||
@@ -236,21 +169,18 @@ function enlistmentReport($category, $program, $semester)
 								(strpos($contenido, 'domingo') !== false)
 							) {
 								$curso->setHorarioAtencion("CUMPLE");
-								$fila .= "<td>CUMPLE</td>";
 								$cumple++;
 							} else {
 								$curso->setHorarioAtencion("NO CUMPLE");
-								$fila .= "<td>NO CUMPLE</td>";
-								$cumple++;
+								$noCumple++;
 							}
 							//Req. 4 - Fotografia del Profesor
 							if ((strpos($contenido, 'insertar foto de tamaño 200')) !== false) {
 								$curso->setFotografia("NO CUMPLE");
-								$fila .= "<td>NO CUMPLE</td>";
+								
 								$noCumple++;
 							} else {
 								$curso->setFotografia("CUMPLE");
-								$fila .= "<td>CUMPLE</td>";
 								$cumple++;
 							}
 
@@ -263,16 +193,15 @@ function enlistmentReport($category, $program, $semester)
 								$discussions = mysqli_fetch_array($discussions);
 								if ($discussions["dis"] > 0) {
 									$curso->setForoConsulta("CUMPLE");
-									$fila .= "<td>CUMPLE</td>";
 									$cumple++;
 								} else {
 									$curso->setForoConsulta("NO CUMPLE");
-									$fila .= "<td>NO CUMPLE</td>";
+									
 									$noCumple++;
 								}
 							} else {
 								$curso->setForoConsulta("NO CUMPLE");
-								$fila .= "<td>NO CUMPLE</td>";
+								
 								$noCumple++;
 							}
 						} else if ($idsection > 0) {
@@ -289,9 +218,8 @@ function enlistmentReport($category, $program, $semester)
 								$contadorval = (int) $contadorval;
 								$section = $columnaval['section'];
 								$unidad = $section - 1;
-							if ($sectionvisible === "0") {
-								$fila .= "<td>NO APLICA</td>";
-							} else {
+							if ($sectionvisible ==! "0") {
+
 								if ((strpos($sumarycon, 'DD/MM/AAAA')) !== false) {
 									if($unidad==8){
 										$curso->setFechasUnidad8("NO CUMPLE");
@@ -310,7 +238,6 @@ function enlistmentReport($category, $program, $semester)
 									} elseif($unidad==1){
 										$curso->setFechasUnidad1("NO CUMPLE");
 									}					
-									$fila .= "<td>NO CUMPLE</td>";
 									$noCumple++;
 								} else {
 									if($unidad==8){
@@ -330,7 +257,6 @@ function enlistmentReport($category, $program, $semester)
 									} elseif ($unidad==1){
 										$curso->setFechasUnidad1("CUMPLE");
 									}
-									$fila .= "<td>CUMPLE</td>";
 									$cumple++;
 								}
 							}
@@ -351,38 +277,33 @@ function enlistmentReport($category, $program, $semester)
 			$avanceFormativo3 = gradeItems($columna['course_id'], "AVANCE FORMATIVO 3");
 			$rowsAvanceFormativo3 = $avanceFormativo3->num_rows;
 
-			$rowsGrade = "";
+			
 
 			//Revisar libro de calificaciones categoría Avance formativo 1------------------------	
 
 			if ($rowsAvanceFormativo1 > 0) {
 
 				$curso->setAF01Actividades("CUMPLE");
-				$rowsGrade .= "<td>CUMPLE</td>";
+				
 				$gc = mysqli_fetch_array($avanceFormativo1);
 				$weighingGrade = weighing($columna['course_id'], $gc["idc"]);
 				$weighing = mysqli_fetch_array($weighingGrade);
 
 				if ($weighing["gradeSum"] > 100 || $weighing["gradeSum"] == 0) {
 					$curso->setAF01Ponderaciones("NO CUMPLE");
-					$rowsGrade .= "<td>NO CUMPLE</td>";
 					$noCumple++;
 				} else {
 					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 30 || $weighing["gradeSum"] == 0.30) {
 						$curso->setAF01Ponderaciones("CUMPLE");
-						$rowsGrade .= "<td>CUMPLE</td>";
 						$cumple++;
 					} else {
 						$curso->setAF01Ponderaciones("NO CUMPLE");
-						$rowsGrade .= "<td>NO CUMPLE</td>";
 						$noCumple++;
 					}
 				}
 			} else {
 				$curso->setAF01Actividades("NO CUMPLE");
 				$curso->setAF01Ponderaciones("NO CUMPLE");
-				$rowsGrade .= "<td>NO CUMPLE</td>";
-				$rowsGrade .= "<td>NO CUMPLE</td>";
 				$noCumple+=2;
 			}
 
@@ -390,31 +311,25 @@ function enlistmentReport($category, $program, $semester)
 
 			if ($rowsAvanceFormativo2 > 0) {
 				$curso->setAF02Actividades("CUMPLE");
-				$rowsGrade .= "<td>CUMPLE</td>";
 				$gc = mysqli_fetch_array($avanceFormativo2);
 				$weighingGrade = weighing($columna['course_id'], $gc["idc"]);
 				$weighing = mysqli_fetch_array($weighingGrade);
 
 				if ($weighing["gradeSum"] > 100 || $weighing["gradeSum"] == 0) {
 					$curso->setAF02Ponderaciones("NO CUMPLE");
-					$rowsGrade .= "<td>NO CUMPLE</td>";
 					$noCumple++;
 				} else {
 					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 30 || $weighing["gradeSum"] == 0.30) {
 						$curso->setAF02Ponderaciones("CUMPLE");
-						$rowsGrade .= "<td>CUMPLE</td>";
 						$cumple++;
 					} else {
 						$curso->setAF02Ponderaciones("NO CUMPLE");
-						$rowsGrade .= "<td>NO CUMPLE</td>";
 						$noCumple++;
 					}
 				}
 			}else {
 				$curso->setAF02Actividades("NO CUMPLE");
 				$curso->setAF02Ponderaciones("NO CUMPLE");
-				$rowsGrade .= "<td>NO CUMPLE</td>";
-				$rowsGrade .= "<td>NO CUMPLE</td>";
 				$noCumple+=2;
 			}
 
@@ -422,92 +337,182 @@ function enlistmentReport($category, $program, $semester)
 
 			if ($rowsAvanceFormativo3 > 0) {
 				$curso->setAF03Actividades("CUMPLE");
-				$rowsGrade .= "<td>CUMPLE</td>";
 				$gc = mysqli_fetch_array($avanceFormativo3);
 				$weighingGrade = weighing($columna['course_id'], $gc["idc"]);
 				$weighing = mysqli_fetch_array($weighingGrade);
 
 				if ($weighing["gradeSum"] > 100 || $weighing["gradeSum"] == 0) {
 					$curso->setAF03Ponderaciones("NO CUMPLE");
-					$rowsGrade .= "<td>NO CUMPLE</td>";
 					$noCumple++;
 				} else {
 					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 40 || $weighing["gradeSum"] == 0.40) {
 						$curso->setAF03Ponderaciones("CUMPLE");
-						$rowsGrade .= "<td>CUMPLE</td>";
 						$cumple++;
 					} else {
 						$curso->setAF03Ponderaciones("NO CUMPLE");
-						$rowsGrade .= "<td>NO CUMPLE</td>";
 						$noCumple++;
 					}
 				}
 			} else {
 				$curso->setAF03Actividades("NO CUMPLE");
 				$curso->setAF03Ponderaciones("NO CUMPLE");
-				$rowsGrade .= "<td>NO CUMPLE</td>";
-				$rowsGrade .= "<td>NO CUMPLE</td>";
 				$noCumple+=2;
 			}
 			//-----------------------------------------------------------------------------
 
 			
 			$total = $noCumple+$cumple;
-			if ($total > 0) {
-				$porcentaje = str_replace(".", ",", (round(((100 / $total) * $cumple), 2)));
-				$curso->setPorcentaje($porcentaje);
-				if($porcentaje >= 80 && $porcentaje <= 100){
-					echo $fila . "" . rellenar($contador) . " " . $rowsGrade . " <td>" . $porcentaje . "%</td></tr>";
-					?>
-					<script>
-						const colorFila = document.querySelector('.td2');
-						colorFila.style.backgroundColor = '#92e27a';
-					</script>
-					<?php
-				
-				}else if ($porcentaje >= 51 && $porcentaje <= 79){
-					echo $fila . "" . rellenar($contador) . " " . $rowsGrade . " <td>" . $porcentaje . "%</td></tr>";
-					?>
-					<script>
-						const colorFila = document.querySelector('.td2');
-						colorFila.style.backgroundColor = '#FBDB48';
-					</script>
-					<?php
+			$porcentaje = str_replace(".", ",", (round(((100 / $total) * $cumple), 2)));
+			$curso->setPorcentaje($porcentaje);
+			$vector_curso[] = $curso;
+		}
+		usort($vector_curso,'ordenar');
+		
+		echo "<div id='main-container'>
+		<table border='1' cellspacing='0' cellpadding='0'>
+		<thead class='thead'>
+			<tr class='td1'>
+			<th>ID user</th>
+			<th>Nombre</th>
+			<th>Correo</th>
+			<th>Programa</th>
+			<th>Semestre</th>
+			<th>Curso</th>
+			<th>Nombre del curso</th>
+			<th>Nombre</th>
+			<th>Correo</th>
+			<th>Horario de atención</th>
+			<th>Fotografía</th>
+			<th>Foro de consulta</th>
+			<th>Fecha I Y F S1</th>
+			<th>Fecha I Y F S2</th>
+			<th>Fecha I Y F S3</th>
+			<th>Fecha I Y F S4</th>
+			<th>Fecha I Y F S5</th>
+			<th>Fecha I Y F S6</th>
+			<th>Fecha I Y F S7</th>
+			<th>Fecha I Y F S8</th>
+			<th>Avance formativo 1 Actividades</th>
+			<th>Avance formativo 1 Ponderaciones</th>
+			<th>Avance formativo 2 Actividades</th>
+			<th>Avance formativo 2 Ponderaciones</th>
+			<th>Avance formativo 3 Actividades</th>
+			<th>Avance formativo 3 Ponderaciones</th>
+			<th>Porcentaje</th>
+		  	</tr>
 
-				}else if ($porcentaje >= 0 && $porcentaje <= 50){
-					echo $fila . "" . rellenar($contador) . " " . $rowsGrade . " <td>" . $porcentaje . "%</td></tr>";
-
-					?>
-					<script>
-						const colorFila = document.querySelector('.td2');
-						colorFila.style.backgroundColor = '#F2ACB8';
-					</script>
-					<?php
-				}
-				
-			} else {
-				echo $fila . "" . rellenar($contador) . "<td>0%</td></tr>";
-			}
+		</thead>";
+		
+		foreach($vector_curso as $curse){
+			if($curse->getPorcentaje() >= 80 && $curse->getPorcentaje() <= 100){
+		
+			echo"
+				<tr class='td1'>
+				<td>".$curse->getIdUser()."</td>
+				<td>".$curse->getNombre()."</td>
+				<td>".$curse->getCorreo()."</td>
+				<td>".$curse->getPrograma()."</td>
+				<td>".$curse->getSemestre()."</td>
+				<td>".$curse->getIdCurso()."</td>
+				<td>".$curse->getNombreCurso()."</td>
+				<td>".$curse->getNombreProfesor()."</td>
+				<td>".$curse->getCorreoProfesor()."</td>
+				<td>".$curse->getHorarioAtencion()."</td>
+				<td>".$curse->getFotografia()."</td>
+				<td>".$curse->getForoConsulta()."</td>
+				<td>".$curse->getFechasUnidad1()."</td>
+				<td>".$curse->getFechasUnidad2()."</td>
+				<td>".$curse->getFechasUnidad3()."</td>
+				<td>".$curse->getFechasUnidad4()."</td>
+				<td>".$curse->getFechasUnidad5()."</td>
+				<td>".$curse->getFechasUnidad6()."</td>
+				<td>".$curse->getFechasUnidad7()."</td>
+				<td>".$curse->getFechasUnidad8()."</td>
+				<td>".$curse->getAF01Actividades()."</td>
+				<td>".$curse->getAF01Ponderaciones()."</td>
+				<td>".$curse->getAF02Actividades()."</td>
+				<td>".$curse->getAF02Ponderaciones()."</td>
+				<td>".$curse->getAF03Actividades()."</td>
+				<td>".$curse->getAF03Ponderaciones()."</td>
+				<td>".$curse->getPorcentaje()."</td>
+				</tr>";
 			
 		
-			$vector_curso[$cant] = $curso;
-			$cant++;
-		
+			}else if ($curse->getPorcentaje() >= 51 && $curse->getPorcentaje() <= 79){
+				echo"
+				<tr class='td2'>
+				<td>".$curse->getIdUser()."</td>
+				<td>".$curse->getNombre()."</td>
+				<td>".$curse->getCorreo()."</td>
+				<td>".$curse->getPrograma()."</td>
+				<td>".$curse->getSemestre()."</td>
+				<td>".$curse->getIdCurso()."</td>
+				<td>".$curse->getNombreCurso()."</td>
+				<td>".$curse->getNombreProfesor()."</td>
+				<td>".$curse->getCorreoProfesor()."</td>
+				<td>".$curse->getHorarioAtencion()."</td>
+				<td>".$curse->getFotografia()."</td>
+				<td>".$curse->getForoConsulta()."</td>
+				<td>".$curse->getFechasUnidad1()."</td>
+				<td>".$curse->getFechasUnidad2()."</td>
+				<td>".$curse->getFechasUnidad3()."</td>
+				<td>".$curse->getFechasUnidad4()."</td>
+				<td>".$curse->getFechasUnidad5()."</td>
+				<td>".$curse->getFechasUnidad6()."</td>
+				<td>".$curse->getFechasUnidad7()."</td>
+				<td>".$curse->getFechasUnidad8()."</td>
+				<td>".$curse->getAF01Actividades()."</td>
+				<td>".$curse->getAF01Ponderaciones()."</td>
+				<td>".$curse->getAF02Actividades()."</td>
+				<td>".$curse->getAF02Ponderaciones()."</td>
+				<td>".$curse->getAF03Actividades()."</td>
+				<td>".$curse->getAF03Ponderaciones()."</td>
+				<td>".$curse->getPorcentaje()."</td>
+				</tr>";
+
+	
+			}else if ($curse->getPorcentaje() >= 0 && $curse->getPorcentaje() <= 50){
+
+				print("
+				<tr class='td3'>
+				<td>".$curse->getIdUser()."</td>
+				<td>".$curse->getNombre()."</td>
+				<td>".$curse->getCorreo()."</td>
+				<td>".$curse->getPrograma()."</td>
+				<td>".$curse->getSemestre()."</td>
+				<td>".$curse->getIdCurso()."</td>
+				<td>".$curse->getNombreCurso()."</td>
+				<td>".$curse->getNombreProfesor()."</td>
+				<td>".$curse->getCorreoProfesor()."</td>
+				<td>".$curse->getHorarioAtencion()."</td>
+				<td>".$curse->getFotografia()."</td>
+				<td>".$curse->getForoConsulta()."</td>
+				<td>".$curse->getFechasUnidad1()."</td>
+				<td>".$curse->getFechasUnidad2()."</td>
+				<td>".$curse->getFechasUnidad3()."</td>
+				<td>".$curse->getFechasUnidad4()."</td>
+				<td>".$curse->getFechasUnidad5()."</td>
+				<td>".$curse->getFechasUnidad6()."</td>
+				<td>".$curse->getFechasUnidad7()."</td>
+				<td>".$curse->getFechasUnidad8()."</td>
+				<td>".$curse->getAF01Actividades()."</td>
+				<td>".$curse->getAF01Ponderaciones()."</td>
+				<td>".$curse->getAF02Actividades()."</td>
+				<td>".$curse->getAF02Ponderaciones()."</td>
+				<td>".$curse->getAF03Actividades()."</td>
+				<td>".$curse->getAF03Ponderaciones()."</td>
+				<td>".$curse->getPorcentaje()."</td>
+				</tr>");
+
+			}
+			
 		}
-		
-		
+		echo"</div>
+		</table>";
 	}
-	
-	echo "</table>";
-	
-    print_r($vector_curso);
 }
 ?>
-<script>
-		
-		$vector_curso.sort((a, b) => {
-			return a - b;
-		});
 
+</body>
 
-</script>
+</html>

@@ -47,7 +47,7 @@ class curso {
 
     // Variable donde se guardan los resultados del informe de cada curso va del 0% al 100%
 
-    private $porcentaje;
+    public $porcentaje;
 
     // Métodos para consultar y editar las variables antes mencionadas
 

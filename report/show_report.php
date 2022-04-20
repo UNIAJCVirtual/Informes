@@ -68,16 +68,7 @@
 				break;
 			}	?>
 	</div>
-	<script type="text/javascript">
-		function exportData() {
-			$("#data").val("<?php echo preg_replace("/[\r\n|\n|\r]+/", " ", $data['table']); ?>");
-			$("#export").submit();
-		}
-		$(document).ready(function() {
-			$("#carga").addClass("hidden");
-			document.getElementById("exp").removeAttribute("disabled");
-		});
-	</script>
+	
 </body>
 
 </html>
