@@ -56,19 +56,19 @@ input{
     font-weight: bold;
     text-align: center;    
 }
-.tr1{
-	white-space: nowrap;
-}
 .tr td{
 	padding: 3px 3px 2px 2px;
 }
-.td1{
+tr1{
+	color: #19a720;
 	background: #19a720;
 }
-.td2{
+tr2{
+	color: #c9c927;
 	background: #c9c927;
 }
-.td3{
+tr3{
+	color: #c53421;
 	background: #c53421;
 }
 .tdX{
