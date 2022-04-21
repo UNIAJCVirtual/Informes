@@ -1,5 +1,25 @@
-
 <?php
+include("../class/model.php");
+
+
+//Ordenar array con el método sort
+
+function ordenar($a, $b)
+{
+    $a = preg_replace('/[^0-9]/','',$a->{'grupo'});
+    $a = substr($a,0,1);
+    $b = preg_replace('/[^0-9]/','',$b->{'grupo'});
+    $b = substr($b,0,1);
+   if ($a < $b){
+	return -1;
+   }      
+   else if ($a > $b){
+	return 1;
+   }
+   return 0;
+}
+//----------------------------------------------
+
 function groupFilter1($str)
 {
 	$temp = $str[strlen($str) - 1];
@@ -67,51 +87,63 @@ function groupFilter($str)
 function statistics($program)
 {
 	include("../database/reportRequest.php");
-	
+
+	$vector_curso = [];
 	$categoriesResult = Categories(implode(",", $program));
-	echo "
-			<table border='1' cellspacing='1' cellpadding='0'>
-			<thead>
-				<tr class='tr'>
-					<th>Programa</th>
-					<th>Semestre</th>
-					<th>GRUPO</th>
-					<th>Nombre CURSO</th>
-					<th>Matriculados</th>
-					<th>NOMBRE</th>
-			  	</tr>
-			</thead>";
+
 	if ($categoriesResult) {
 		foreach ($categoriesResult as $val) {
+
 			$result = NameCategory($val['id']);
 			$semester = $result["name"];
 			$programa = Program($result['parent']);
 			$result = StatisticsInformation($val['id']);
-			$color_rows = 1;
+
 			while ($column = $result->fetch_assoc()) {
+
+                $curso = new estadistica();
 				$email = trim(strtolower($column['email']));
 				$resultMatricula = Enrolled($column['course_id'], $val['id']);
 				$resultMatriculados = $resultMatricula->fetch_assoc();
 				$grupo = explode("*", $column['course_fullname']);
-				if ($color_rows == 0) {
-					$class_row = "td1";
-					$color_rows = 1;
-				} else {
-					$class_row = "td2";
-					$color_rows = 0;
-				}
-				$fila = "
-						<tr class='" . $class_row . "'>
-							<td>" . $programa . "</td>
-							<td>" . $semester . "</td>
-							<td>" . $grupo[count($grupo) - 1] . "</td>
-							<td>" . $column['course_fullname'] . "</td>
-							<td>" . $resultMatriculados['matriculados'] . "</td>
-							<td>" . ucwords(strtolower($column['firstname'])) . " " . ucwords(strtolower($column['lastname'])) . "</td>";
-				echo $fila . "</tr>";
+
+			    $curso->setSemestre($semester);
+			    $curso->setCodigo("ejemplo");
+			    $curso->setGrupo($grupo[count($grupo) - 1]);
+			    $curso->setNombreCurso($column['course_fullname']);
+                $curso->setNombreProfesor(ucwords(strtolower($column['firstname'])) . " " . ucwords(strtolower($column['lastname'])));
+                $curso->setCantidad($resultMatriculados['matriculados']);
+                $vector_curso[] = $curso;
 			}
-		}
-	}
-	echo "</table>";
+            echo "
+            <table class='table	'>
+		        <tr class='td1'>
+		            <th colspan='6'>ESTADISTICA DE LOS CURSOS EN AULAS VIRTUALES MOODLE ".$programa."</th>
+		        </tr>
+                <tr class='td1'>
+		            <th>Semestre</th>
+		            <th>Grupo</th>
+		            <th>Código Asignatura</th>
+		            <th>Nombre Asignatura</th>
+		            <th>Profesor a Cargo</th>
+		            <th>N. Estudiantes</th>
+		        </tr>
+                ";
+
+                usort($vector_curso,'ordenar');
+
+            foreach($vector_curso as $curse){
+
+                echo"
+                <tr class='tr5'>
+				<td>".$curse->getSemestre()."</td>
+				<td>".$curse->getGrupo()."</td>
+				<td>".$curse->getCodigo()."</td>
+				<td>".$curse->getNombreCurso()."</td>
+				<td>".$curse->getNombreProfesor()."</td>
+				<td>".$curse->getCantidad()."</td>";
+		    }
+	    }
+    }
 }
 ?>

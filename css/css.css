@@ -50,41 +50,70 @@ input{
 	padding-left: 2px !important;
 	margin-left: 30px !important;
 }
-.tr{
-	background: black;
-    color: white;
-    font-weight: bold;
-    text-align: center;    
-}
 .tr td{
 	padding: 3px 3px 2px 2px;
 }
+table{
+	border-width: 1;
+	border-color: #0000008d;
+	text-align: left;
+	border-collapse: collapse;
+	width: 100%;
+}
+.td1{
+	background: black;
+	color:white;
+    text-align: center;
+	padding-top: 20px !important;
+	padding-left: 2px !important;
+	margin-left: 30px !important;
+}
+.tr5{
+	background: #ffffff;
+    text-align: center;
+	padding-top: 20px !important;
+	padding-left: 2px !important;
+	margin-left: 30px !important;
+}
 .tr1{
-	color: #19a720;
-	background: #19a720;
+	background: #a6e3b7;
+    text-align: center;
+	padding-top: 20px !important;
+	padding-left: 2px !important;
+	margin-left: 30px !important;
 }
 .tr2{
-	color: #c9c927;
-	background: #c9c927;
+	background: #ffff99;
+	text-align: center;
+	padding-top: 20px !important;
+	padding-left: 2px !important;
+	margin-left: 30px !important;
 }
 .tr3{
-	color: #c53421;
-	background: #c53421;
+	background: #ffc2c2;
+	text-align: center;
+	padding-top: 20px !important;
+	padding-left: 2px !important;
+	margin-left: 30px !important;
+}
+.tr4{
+	background: #ff9999;
+	text-align: center;
+	padding-top: 20px !important;
+	padding-left: 2px !important;
+	margin-left: 30px !important;
 }
 .tdX{
 	background: #f13131;
 	color: white;
 }
-
 .td-simple-color:nth-child(even){
-	background-color: #e0f4f7;
+	background-color: #4d97a2 !important;
 }
 
 .td-simple-color:nth-child(odd){
-	background-color: #f1f1f1;
+	background-color: #c92424bd !important;
 }
-
-
 input[type=checkbox]{
 	width: 10%;
 	height: auto;

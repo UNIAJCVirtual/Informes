@@ -1,5 +1,5 @@
 <?php
-include_once("../class/curso.php");
+include_once("../class/model.php");
 
 //Ordenar array con el método sort
 
@@ -79,6 +79,10 @@ function enlistmentReport($category, $program, $semester)
 	
 	$vector_curso = [];
 	$categoriesResult = Categories(implode(",", $program));
+	$verde=0;
+	$amarillo=0;
+	$rojoClaro=0;
+	$rojoOscuro=0;
 
 	foreach ($categoriesResult as $val) {
 
@@ -89,7 +93,7 @@ function enlistmentReport($category, $program, $semester)
 
 		while ($columna = $result->fetch_assoc()) {
 
-			$curso = new curso(); 
+			$curso = new alistamiento(); 
 			$email = trim(strtolower($columna['email']));
 			$resultContenido = content($columna['course_id']);
 			$cadena = "";
@@ -360,7 +364,6 @@ function enlistmentReport($category, $program, $semester)
 			}
 			//-----------------------------------------------------------------------------
 
-			
 			$total = $noCumple+$cumple;
 			$porcentaje = str_replace(".", ",", (round(((100 / $total) * $cumple), 2)));
 			$curso->setPorcentaje($porcentaje);
@@ -368,10 +371,9 @@ function enlistmentReport($category, $program, $semester)
 		}
 		usort($vector_curso,'ordenar');
 
-		echo "<div>
-		<table class='table table-hover'>
-		<thead class='table-dark' align='center'>
-			<tr>
+		echo "
+		<table class='table	'>
+			<tr class='td1'>
 			<th>ID user</th>
 			<th>Nombre</th>
 			<th>Correo</th>
@@ -399,118 +401,187 @@ function enlistmentReport($category, $program, $semester)
 			<th>Avance formativo 3 Actividades</th>
 			<th>Avance formativo 3 Ponderaciones</th>
 			<th>Porcentaje</th>
-		  	</tr>
-
-		</thead>";
+		  	</tr>";
 		
 		foreach($vector_curso as $curse){
-			//porcentaje verde
+			
 			if($curse->getPorcentaje() >= 80 && $curse->getPorcentaje() <= 100){
-		
+				//Porcentaje verde
+				$verde++;
 			echo"
-				<tr class='td-simple-color'>
+				<tr class='tr1'>
 				<td>".$curse->getIdUser()."</td>
 				<td>".$curse->getNombre()."</td>
 				<td>".$curse->getCorreo()."</td>
 				<td>".$curse->getPrograma()."</td>
-				<td align='center'>".$curse->getSemestre()."</td>
-				<td align='center'>".$curse->getIdCurso()."</td>
+				<td>".$curse->getSemestre()."</td>
+				<td>".$curse->getIdCurso()."</td>
 				<td>".$curse->getNombreCurso()."</td>
-				<td align='center'>".$curse->getNombreProfesor()."</td>
-				<td align='center'>".$curse->getCorreoProfesor()."</td>
-				<td align='center'>".$curse->getHorarioAtencion()."</td>
-				<td align='center'>".$curse->getFotografia()."</td>
-				<td align='center'>".$curse->getForoConsulta()."</td>
-				<td align='center'>".$curse->getFechasUnidad1()."</td>
-				<td align='center'>".$curse->getFechasUnidad2()."</td>
-				<td align='center'>".$curse->getFechasUnidad3()."</td>
-				<td align='center'>".$curse->getFechasUnidad4()."</td>
-				<td align='center'>".$curse->getFechasUnidad5()."</td>
-				<td align='center'>".$curse->getFechasUnidad6()."</td>
-				<td align='center'>".$curse->getFechasUnidad7()."</td>
-				<td align='center'>".$curse->getFechasUnidad8()."</td>
-				<td align='center'>".$curse->getAF01Actividades()."</td>
-				<td align='center'>".$curse->getAF01Ponderaciones()."</td>
-				<td align='center'>".$curse->getAF02Actividades()."</td>
-				<td align='center'>".$curse->getAF02Ponderaciones()."</td>
-				<td align='center'>".$curse->getAF03Actividades()."</td>
-				<td align='center'>".$curse->getAF03Ponderaciones()."</td>
-				<td align='center'>".$curse->getPorcentaje()."%"."</td>
+				<td>".$curse->getNombreProfesor()."</td>
+				<td>".$curse->getCorreoProfesor()."</td>
+				<td>".$curse->getHorarioAtencion()."</td>
+				<td>".$curse->getFotografia()."</td>
+				<td>".$curse->getForoConsulta()."</td>
+				<td>".$curse->getFechasUnidad1()."</td>
+				<td>".$curse->getFechasUnidad2()."</td>
+				<td>".$curse->getFechasUnidad3()."</td>
+				<td>".$curse->getFechasUnidad4()."</td>
+				<td>".$curse->getFechasUnidad5()."</td>
+				<td>".$curse->getFechasUnidad6()."</td>
+				<td>".$curse->getFechasUnidad7()."</td>
+				<td>".$curse->getFechasUnidad8()."</td>
+				<td>".$curse->getAF01Actividades()."</td>
+				<td>".$curse->getAF01Ponderaciones()."</td>
+				<td>".$curse->getAF02Actividades()."</td>
+				<td>".$curse->getAF02Ponderaciones()."</td>
+				<td>".$curse->getAF03Actividades()."</td>
+				<td>".$curse->getAF03Ponderaciones()."</td>
+				<td>".$curse->getPorcentaje()."%"."</td>
 				</tr>";
 			
 		
 			}else if ($curse->getPorcentaje() >= 51 && $curse->getPorcentaje() <= 79){
-				//porcentaje amarillo
+				//Porcentaje amarillo
+				$amarillo++;
 				echo"
-				<tr class='table-warning'>
+				<tr class='tr2'>
 				<td>".$curse->getIdUser()."</td>
 				<td>".$curse->getNombre()."</td>
 				<td>".$curse->getCorreo()."</td>
 				<td>".$curse->getPrograma()."</td>
-				<td align='center'>".$curse->getSemestre()."</td>
-				<td align='center'>".$curse->getIdCurso()."</td>
+				<td>".$curse->getSemestre()."</td>
+				<td>".$curse->getIdCurso()."</td>
 				<td>".$curse->getNombreCurso()."</td>
-				<td align='center'>".$curse->getNombreProfesor()."</td>
-				<td align='center'>".$curse->getCorreoProfesor()."</td>
-				<td align='center'>".$curse->getHorarioAtencion()."</td>
-				<td align='center'>".$curse->getFotografia()."</td>
-				<td align='center'>".$curse->getForoConsulta()."</td>
-				<td align='center'>".$curse->getFechasUnidad1()."</td>
-				<td align='center'>".$curse->getFechasUnidad2()."</td>
-				<td align='center'>".$curse->getFechasUnidad3()."</td>
-				<td align='center'>".$curse->getFechasUnidad4()."</td>
-				<td align='center'>".$curse->getFechasUnidad5()."</td>
-				<td align='center'>".$curse->getFechasUnidad6()."</td>
-				<td align='center'>".$curse->getFechasUnidad7()."</td>
-				<td align='center'>".$curse->getFechasUnidad8()."</td>
-				<td align='center'>".$curse->getAF01Actividades()."</td>
-				<td align='center'>".$curse->getAF01Ponderaciones()."</td>
-				<td align='center'>".$curse->getAF02Actividades()."</td>
-				<td align='center'>".$curse->getAF02Ponderaciones()."</td>
-				<td align='center'>".$curse->getAF03Actividades()."</td>
-				<td align='center'>".$curse->getAF03Ponderaciones()."</td>
-				<td align='center'>".$curse->getPorcentaje()."%"."</td>
+				<td>".$curse->getNombreProfesor()."</td>
+				<td>".$curse->getCorreoProfesor()."</td>
+				<td>".$curse->getHorarioAtencion()."</td>
+				<td>".$curse->getFotografia()."</td>
+				<td>".$curse->getForoConsulta()."</td>
+				<td>".$curse->getFechasUnidad1()."</td>
+				<td>".$curse->getFechasUnidad2()."</td>
+				<td>".$curse->getFechasUnidad3()."</td>
+				<td>".$curse->getFechasUnidad4()."</td>
+				<td>".$curse->getFechasUnidad5()."</td>
+				<td>".$curse->getFechasUnidad6()."</td>
+				<td>".$curse->getFechasUnidad7()."</td>
+				<td>".$curse->getFechasUnidad8()."</td>
+				<td>".$curse->getAF01Actividades()."</td>
+				<td>".$curse->getAF01Ponderaciones()."</td>
+				<td>".$curse->getAF02Actividades()."</td>
+				<td>".$curse->getAF02Ponderaciones()."</td>
+				<td>".$curse->getAF03Actividades()."</td>
+				<td>".$curse->getAF03Ponderaciones()."</td>
+				<td>".$curse->getPorcentaje()."%"."</td>
 				</tr>";
 
 	
 			}else if ($curse->getPorcentaje() >= 0 && $curse->getPorcentaje() <= 50){
-			//porcentaje rojo
+			//Porcentaje rojo claro
+				$rojoClaro++;
+
 				print("
-				<tr class='table-danger' >
+				<tr class='tr3' >
 				<td>".$curse->getIdUser()."</td>
 				<td>".$curse->getNombre()."</td>
 				<td>".$curse->getCorreo()."</td>
 				<td>".$curse->getPrograma()."</td>
-				<td align='center'>".$curse->getSemestre()."</td>
-				<td align='center'>".$curse->getIdCurso()."</td>
+				<td>".$curse->getSemestre()."</td>
+				<td>".$curse->getIdCurso()."</td>
 				<td>".$curse->getNombreCurso()."</td>
-				<td align='center'>".$curse->getNombreProfesor()."</td>
-				<td align='center'>".$curse->getCorreoProfesor()."</td>
-				<td align='center'>".$curse->getHorarioAtencion()."</td>
-				<td align='center'>".$curse->getFotografia()."</td>
-				<td align='center'>".$curse->getForoConsulta()."</td>
-				<td align='center'>".$curse->getFechasUnidad1()."</td>
-				<td align='center'>".$curse->getFechasUnidad2()."</td>
-				<td align='center'>".$curse->getFechasUnidad3()."</td>
-				<td align='center'>".$curse->getFechasUnidad4()."</td>
-				<td align='center'>".$curse->getFechasUnidad5()."</td>
-				<td align='center'>".$curse->getFechasUnidad6()."</td>
-				<td align='center'>".$curse->getFechasUnidad7()."</td>
-				<td align='center'>".$curse->getFechasUnidad8()."</td>
-				<td align='center'>".$curse->getAF01Actividades()."</td>
-				<td align='center'>".$curse->getAF01Ponderaciones()."</td>
-				<td align='center'>".$curse->getAF02Actividades()."</td>
-				<td align='center'>".$curse->getAF02Ponderaciones()."</td>
-				<td align='center'>".$curse->getAF03Actividades()."</td>
-				<td align='center'>".$curse->getAF03Ponderaciones()."</td>
-				<td align='center'>".$curse->getPorcentaje()."%"."</td>
+				<td>".$curse->getNombreProfesor()."</td>
+				<td>".$curse->getCorreoProfesor()."</td>
+				<td>".$curse->getHorarioAtencion()."</td>
+				<td>".$curse->getFotografia()."</td>
+				<td>".$curse->getForoConsulta()."</td>
+				<td>".$curse->getFechasUnidad1()."</td>
+				<td>".$curse->getFechasUnidad2()."</td>
+				<td>".$curse->getFechasUnidad3()."</td>
+				<td>".$curse->getFechasUnidad4()."</td>
+				<td>".$curse->getFechasUnidad5()."</td>
+				<td>".$curse->getFechasUnidad6()."</td>
+				<td>".$curse->getFechasUnidad7()."</td>
+				<td>".$curse->getFechasUnidad8()."</td>
+				<td>".$curse->getAF01Actividades()."</td>
+				<td>".$curse->getAF01Ponderaciones()."</td>
+				<td>".$curse->getAF02Actividades()."</td>
+				<td>".$curse->getAF02Ponderaciones()."</td>
+				<td>".$curse->getAF03Actividades()."</td>
+				<td>".$curse->getAF03Ponderaciones()."</td>
+				<td>".$curse->getPorcentaje()."%"."</td>
 				</tr>");
 
+			}else if ($curse->getPorcentaje() == 0){
+				//Porcentaje rojo claro
+				$rojoOscuro++;
+				print("
+				<tr class='tr4' >
+				<td>".$curse->getIdUser()."</td>
+				<td>".$curse->getNombre()."</td>
+				<td>".$curse->getCorreo()."</td>
+				<td>".$curse->getPrograma()."</td>
+				<td>".$curse->getSemestre()."</td>
+				<td>".$curse->getIdCurso()."</td>
+				<td>".$curse->getNombreCurso()."</td>
+				<td>".$curse->getNombreProfesor()."</td>
+				<td>".$curse->getCorreoProfesor()."</td>
+				<td>".$curse->getHorarioAtencion()."</td>
+				<td>".$curse->getFotografia()."</td>
+				<td>".$curse->getForoConsulta()."</td>
+				<td>".$curse->getFechasUnidad1()."</td>
+				<td>".$curse->getFechasUnidad2()."</td>
+				<td>".$curse->getFechasUnidad3()."</td>
+				<td>".$curse->getFechasUnidad4()."</td>
+				<td>".$curse->getFechasUnidad5()."</td>
+				<td>".$curse->getFechasUnidad6()."</td>
+				<td>".$curse->getFechasUnidad7()."</td>
+				<td>".$curse->getFechasUnidad8()."</td>
+				<td>".$curse->getAF01Actividades()."</td>
+				<td>".$curse->getAF01Ponderaciones()."</td>
+				<td>".$curse->getAF02Actividades()."</td>
+				<td>".$curse->getAF02Ponderaciones()."</td>
+				<td>".$curse->getAF03Actividades()."</td>
+				<td>".$curse->getAF03Ponderaciones()."</td>
+				<td>".$curse->getPorcentaje()."%"."</td>
+				</tr>");
 			}
-			
 		}
 	}
-	echo"</table>
-	</div>";
+	$sum=$verde+$amarillo+$rojoClaro+$rojoOscuro;
+	
+	echo"
+	</table>
+	<br>
+
+	<table class='table'>
+
+		<tr class='td1'>
+		<td colspan='2'>Porcentajes</th>
+		<td colspan='2'>Cantidad de cursos	</th>
+		</tr>
+
+		<tr class='tr1'>
+		<td colspan='2' > 100% - 80% </td>
+		<td colspan='2'>".$verde."</td>
+		</tr>
+		<tr class='tr2'>
+		<td colspan='2'> 79% - 51% </td>
+		<td colspan='2'>".$amarillo."</td>
+		</tr>
+		<tr class='tr3'>
+		<td colspan='2'> 50% - 1% </td>
+		<td colspan='2'>".$rojoClaro."</td>
+		</tr>
+		<tr class='tr4'>
+		<td colspan='2'> Sin modificaciones </td>
+		<td colspan='2'>".$rojoOscuro."</td>
+		</tr>
+		<tr class='td1'>
+		<td colspan='2'> Total de cursos </td>
+		<td colspan='2'>".$sum."</td>
+		</tr>
+	</table>
+	";
+	
+	
 }
 ?>
