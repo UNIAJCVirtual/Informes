@@ -6,14 +6,15 @@ include("../class/model.php");
 
 function ordenar($a, $b)
 {
-    $a = preg_replace('/[^0-9]/','',$a->{'grupo'});
+    /*$a = preg_replace('/[^0-9]/','',$a->{'grupo'});
     $a = substr($a,0,1);
     $b = preg_replace('/[^0-9]/','',$b->{'grupo'});
-    $b = substr($b,0,1);
-   if ($a < $b){
+    $b = substr($b,0,1);*/
+
+   if ($a->{'grupo'} < $b->{'grupo'}  ){
 	return -1;
    }      
-   else if ($a > $b){
+   else if ($a->{'grupo'} > $b->{'grupo'} ){
 	return 1;
    }
    return 0;
@@ -84,16 +85,34 @@ function groupFilter($str)
 	}
 	return $result;
 }
+
+function codigo($codigo){
+	
+	if(strstr($codigo, 'FD')){
+		return $codigo=strstr($codigo, 'FD');
+	} else if (strstr($codigo, 'CB')){
+		return $codigo=strstr($codigo, 'CB');
+	} else if (strstr($codigo, 'FI')){
+		return $codigo=strstr($codigo, 'FI');
+	}
+
+}
+
+
 function statistics($program)
 {
 	include("../database/reportRequest.php");
 
 	$vector_curso = [];
+    $vector_grupo = [];
+    $vector_profesor = [];
+	$totalEstudiantes=[];
 	$categoriesResult = Categories(implode(",", $program));
 
 	if ($categoriesResult) {
+        
 		foreach ($categoriesResult as $val) {
-
+            $sum=0;
 			$result = NameCategory($val['id']);
 			$semester = $result["name"];
 			$programa = Program($result['parent']);
@@ -106,21 +125,25 @@ function statistics($program)
 				$resultMatricula = Enrolled($column['course_id'], $val['id']);
 				$resultMatriculados = $resultMatricula->fetch_assoc();
 				$grupo = explode("*", $column['course_fullname']);
+				$codigo = codigo($column['course_shortname']);
 
 			    $curso->setSemestre($semester);
-			    $curso->setCodigo("ejemplo");
+			    $curso->setCodigo($codigo);
 			    $curso->setGrupo($grupo[count($grupo) - 1]);
 			    $curso->setNombreCurso($column['course_fullname']);
                 $curso->setNombreProfesor(ucwords(strtolower($column['firstname'])) . " " . ucwords(strtolower($column['lastname'])));
                 $curso->setCantidad($resultMatriculados['matriculados']);
+
+                $vector_grupo[] = $curso->getGrupo();
+                $vector_profesor[] = $curso->getNombreProfesor();
                 $vector_curso[] = $curso;
 			}
             echo "
-            <table class='table	'>
-		        <tr class='td1'>
+            <table class='table'>
+		        <tr class='td2'>
 		            <th colspan='6'>ESTADISTICA DE LOS CURSOS EN AULAS VIRTUALES MOODLE ".$programa."</th>
 		        </tr>
-                <tr class='td1'>
+                <tr class='td2'>
 		            <th>Semestre</th>
 		            <th>Grupo</th>
 		            <th>Código Asignatura</th>
@@ -131,9 +154,31 @@ function statistics($program)
                 ";
 
                 usort($vector_curso,'ordenar');
+				$profesor = array_unique($vector_profesor);
+				$numeroProfesores = count($profesor);
 
+				$grupo = array_unique($vector_grupo);
+				$numeroGrupos = count($grupo);
+
+				$i=0;
+			while($numeroGrupos > 0){
+				$moda[]=0;
+				$sumEstudiantes=0;
+
+				foreach($vector_curso as $curse){     
+				if($grupo[$i] === $curse->getGrupo()){
+					$moda[]=$curse->getCantidad();
+					array_count_values($moda);
+					$sumEstudiantes=$moda[1];
+				}
+				}
+				$totalEstudiantes[]=$sumEstudiantes;
+
+				$i++;
+				$numeroGrupos--;
+			}			
             foreach($vector_curso as $curse){
-
+                $sum++;
                 echo"
                 <tr class='tr5'>
 				<td>".$curse->getSemestre()."</td>
@@ -141,8 +186,24 @@ function statistics($program)
 				<td>".$curse->getCodigo()."</td>
 				<td>".$curse->getNombreCurso()."</td>
 				<td>".$curse->getNombreProfesor()."</td>
-				<td>".$curse->getCantidad()."</td>";
+				<td id='".$curse->getGrupo()."'>".$curse->getCantidad()."</td>";               
 		    }
+            echo"
+		<tr class='td2'>
+		<td colspan='2'>Total de cursos</td>
+		<td >".$sum."</td>
+		<td >Total de profesores</td>
+		<td >".$numeroProfesores."</td>
+		</tr>
+
+		<tr class='td2'>
+		<td colspan='4' ></td>
+		<td>Total de estudiantes</td>
+		<td>".array_sum($totalEstudiantes)."</td>
+		</tr>
+
+	</table>
+	";
 	    }
     }
 }

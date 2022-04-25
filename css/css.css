@@ -43,76 +43,76 @@ input{
 	height: 38px;
 }
 .top1{
-	padding-top: 20px !important;
+	padding-top: 20px;
 }
 .top2{
-	padding-top: 20px !important;
-	padding-left: 2px !important;
-	margin-left: 30px !important;
-}
-.tr td{
-	padding: 3px 3px 2px 2px;
+	padding-top: 20px;
+	padding-left: 2px;
+	margin-left: 30px;
 }
 table{
-	border-width: 1;
+	table-layout: fixed;
 	border-color: #0000008d;
 	text-align: left;
-	border-collapse: collapse;
 	width: 100%;
+	display: flex;
+	/* justify-content: center; */
+	/* align-items: center ; */
 }
+
+table tr, table td{
+	border: 1px solid black;
+	width:auto;
+}
+
 .td1{
 	background: black;
 	color:white;
     text-align: center;
-	padding-top: 20px !important;
-	padding-left: 2px !important;
-	margin-left: 30px !important;
+
+}
+.td2{
+	background: #00529c;
+	color:white;
+    text-align: center;
 }
 .tr5{
 	background: #ffffff;
     text-align: center;
-	padding-top: 20px !important;
-	padding-left: 2px !important;
-	margin-left: 30px !important;
+
 }
 .tr1{
 	background: #a6e3b7;
     text-align: center;
-	padding-top: 20px !important;
-	padding-left: 2px !important;
-	margin-left: 30px !important;
 }
 .tr2{
 	background: #ffff99;
 	text-align: center;
-	padding-top: 20px !important;
-	padding-left: 2px !important;
-	margin-left: 30px !important;
 }
 .tr3{
 	background: #ffc2c2;
 	text-align: center;
-	padding-top: 20px !important;
-	padding-left: 2px !important;
-	margin-left: 30px !important;
 }
 .tr4{
 	background: #ff9999;
 	text-align: center;
-	padding-top: 20px !important;
-	padding-left: 2px !important;
-	margin-left: 30px !important;
+	
+}
+.tr5{
+	background: #ffffff;
+	text-align: center;
+	
 }
 .tdX{
 	background: #f13131;
 	color: white;
 }
 .td-simple-color:nth-child(even){
-	background-color: #4d97a2 !important;
+	background-color: #4d97a2;
 }
 
 .td-simple-color:nth-child(odd){
-	background-color: #c92424bd !important;
+	background-color: #c92424bd;
 }
 input[type=checkbox]{
 	width: 10%;
@@ -125,7 +125,7 @@ input[type=checkbox]{
 	display: none;
 }
 .small_button{
-	width: 350px !important;
+	width: 350px;
 }
 .carga{
 	background: #000000a6;

@@ -42,6 +42,7 @@ function StatisticsInformation($id)
 				mdl_user.email,
 				mdl_user.id user_id,
 				mdl_course.fullname  course_fullname,
+				mdl_course.shortname course_shortname,
 				mdl_course.id  course_id,
 				mdl_course.startdate startdate,
 				mdl_course.enddate enddate
@@ -368,7 +369,9 @@ function FeedbackForum2($id, $user)
 				LOWER(subject) LIKE 're:%'
 		");
 	$connection3->close();
-	return $result;
+	$result = $result->fetch_assoc();
+					
+	return (count(explode(" ", $result["message"]))>2) ? "CUMPLE" : "NO CUMPLE";
 }
 // modificar
 
@@ -389,47 +392,6 @@ function FeedbackActivity($iteminstance)
 	$connection3->close();
 	$result = $result->fetch_assoc();
 	return ($result["feedback"] > 0) ? "CUMPLE" : "NO CUMPLE";
-}
-//Categoria de calificación que ya no existe  Feberero 24/2021
-/*function finalExam($courseid)
-{
-	require_once("../database/connection.php");
-	$connection3 = connection();
-	mysqli_set_charset($connection3, "utf8");
-	$result = $connection3->query("
-			SELECT 
-				SUM(mdl_grade_grades.finalgrade) record
-						
-			FROM 
-				mdl_grade_items, mdl_grade_grades,mdl_grade_categories
-			WHERE 
-				UPPER(mdl_grade_categories.fullname) LIKE UPPER('%EVALUACI%N FINAL') and
-				mdl_grade_items.courseid =  $courseid  and
-				mdl_grade_items.id = mdl_grade_grades.itemid and
-				mdl_grade_items.id = mdl_grade_grades.itemid");
-	$r = $result->fetch_array();
-	$connection3->close();
-	return (($r["record"] != null) ? $r["record"] : 0);
-}*/
-function additionalNote($courseid)
-{
-	require_once("../database/connection.php");
-	$connection3 = connection();
-	mysqli_set_charset($connection3, "utf8");
-	$result = $connection3->query("
-			SELECT 
-				SUM(mdl_grade_grades.finalgrade) record
-						
-			FROM 
-				mdl_grade_items, mdl_grade_grades,mdl_grade_categories
-			WHERE 
-				UPPER(mdl_grade_categories.fullname) LIKE UPPER('%AVANCE FORMATIVO 3') and
-				mdl_grade_items.courseid =  $courseid  and
-				mdl_grade_items.id = mdl_grade_grades.itemid and
-				mdl_grade_items.id = mdl_grade_grades.itemid");
-	$r = $result->fetch_array();
-	$connection3->close();
-	return (($r["record"] != null) ? $r["record"] : 0);
 }
 function content($course)
 {
@@ -565,32 +527,6 @@ function summary($idsection, $course)
 	return $result;
 }
 
-// Informe error scale
-function errorScale($id, $scale)
-{
-	require_once("../database/connection.php");
-	$connection3 = connection();
-	mysqli_set_charset($connection3, "utf8");
-	$result = $connection3->query("
-			SELECT 
-				mdl_course.fullname  course_fullname,
-				mdl_course.id  course_id,
-				mdl_forum.name forum_name,
-				mdl_forum.id forum,
-				mdl_forum.scale scale
-				FROM 
-				mdl_course, 
-				mdl_forum
-				WHERE 
-				mdl_course.id = mdl_forum.course AND
-				mdl_course.visible=TRUE AND
-				mdl_forum.scale = $scale AND
-				mdl_course.category = $id
-				ORDER BY course_fullname
-			");
-	$connection3->close();
-	return $result;
-}
 function log_users($min, $max)
 {
 	require_once("../database/connection.php");

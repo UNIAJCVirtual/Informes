@@ -33,7 +33,7 @@
 			case '1':
 				
 				echo "<div><h1>Alistamiento</h1></div><br>";
-				require_once("alistamiento_new.php");
+				require_once("alistamiento.php");
 				enlistmentReport($_POST["category"], $_POST["program"], "");
 				break;
 			
@@ -43,7 +43,7 @@
 			case '2':
 				echo "<div><h1>Avance formativo 1</h1></div><br>
 							 Los cursos que no aparecen en la lista es por que no tienen profesor, este informe esta verificado contra el libro de notas de la plataforma moodle seccion Avance formativo 1, se debe tener en cuenta que dichas secciones del libro de calificaciones no necesariamente debe tener foros, actividades y encuentros.<br><br>";
-				require_once("advance.php");
+				require_once("avances.php");
 			
 				$data = advanceReport($_POST["category"], $_POST["program"], "", "Avance formativo 1");
 				break;
@@ -53,7 +53,7 @@
 			case '3':
 				echo "<div><h1>Avance formativo 2</h1></div><br>
 							 Los cursos que no aparecen en la lista es por que no tienen profesor, este informe esta verificado contra el libro de notas de la plataforma moodle seccion Avance formativo 2, se debe tener en cuenta que dichas secciones del libro de calificaciones no necesariamente debe tener foros, actividades y encuentros.<br><br>";
-				require_once("advance.php");
+				require_once("avances.php");
 			
 			
 				$data = advanceReport($_POST["category"], $_POST["program"], "", "Avance formativo 2");
