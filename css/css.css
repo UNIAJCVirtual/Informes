@@ -1,42 +1,92 @@
-.body1{
-	background: #009fe5;
-}
-h2{
-	color: white;
+body{
+    padding: 0;
+    margin: 0;
+    background: #ffffff;
 }
 select{
-	margin-bottom: 12px;
-	width: 100%;
-	height: 45px;
-	border-radius: 10px;
-	background: transparent;
-	border: none;
-	font-size: 14px;
-	padding: 5px;
-	border:1px solid #d9d9d9;
-	overflow: hidden;
-	position:relative;
-	-moz-appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 5px 10px;
+    font-family:sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    background-color: #ffffff;
+    color: #201e1e;
+    border: 1px solid #9e9e9eba;
+    border-radius: 10px;
+    background-repeat: no-repeat;
+    background-size: 47px;
+    outline: none;
+    box-shadow: 0 0 20px rgb(170, 170, 182);
 }
-select::after{
-	content:"\025be";
-	display:table-cell;
-	padding-top:7px;
-	text-align:center;
-	width:30px;
-	height:30px;
-	background-color:#d9d9d9;
-	position:absolute;
-	top:0;
-	right:0px;	
-	pointer-events: none;
-}
-select:focus{ outline: none;}
-select::-ms-expand {
+select::-ms-expand{
     display: none;
 }
-select::-moz-expand {
-    display: none;
+select:hover{
+    border: 2px solid #9e9e9eba;
+}
+select option{
+    background-color: #ffffff;
+    letter-spacing: 1.2px;
+    font-weight: 400;
+    font-size: 14px;
+}
+.contenedor{
+    background-color: #e7e7e7c3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.table-borderless{
+    border-collapse: collapse;
+}
+.panel{
+    width: 1200px;
+    height: 500px;
+    border-radius: 5px;
+    text-align: left;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+.btn:hover{
+    background-position: right;
+}
+.btn{
+    border: 3px solid rgba(100, 100, 100, 0.1);
+    
+    margin-bottom: 20px;
+    width: 400px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #FFF;
+    background-size: 300%;
+    transition: 0.5s;
+}
+.btn1{
+    text-align: center;
+    font-size: 20px;
+    background-image: linear-gradient(to left, #00B7DA,#161569,#00B7DA);
+}
+img{
+    width: 1200px;
+    height: auto;
+    display: block;
+    margin: auto;
+    border-radius: 4px;
+}
+.text{
+	color: rgb(0, 0, 0);
+    font-size: 18px;
+}
+
+h2{
+	color: rgb(0, 0, 0);
 }
 input{
 	width: 100%;
@@ -56,8 +106,6 @@ table{
 	text-align: left;
 	width: 100%;
 	display: flex;
-	/* justify-content: center; */
-	/* align-items: center ; */
 }
 
 table tr, table td{
@@ -117,9 +165,6 @@ table tr, table td{
 input[type=checkbox]{
 	width: 10%;
 	height: auto;
-}
-.unborder{
-	width: 100%;
 }
 #div_scale, #div_date{
 	display: none;

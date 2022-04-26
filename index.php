@@ -5,50 +5,62 @@
 	<title>Informes</title>
 	<meta http-equiv=Content-Type content=text/html; UTF-8>
 	<script type="text/javascript" src="js/jquery.js"></script>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 	<link rel="stylesheet" type="text/css" href="css/css.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet"> 
 </head>
 
-<body onload="loadProgram()" class="body1">
-	<div class="container">
-		<br><br><br>
-		<a href="#modal_conf_mail" data-toggle="modal">
-			<button type='button' class='btn btn-success btn-sm'><span class='glyphicon glyphicon-wrench' aria-hidden='true'></span> Configurar Correos</button>
-		</a>
-		<?php
-		require("report/components/conf_mail.php");
-		modal_conf_mail("modal_conf_mail", "", "", "");
-		?>
-		<br><br><br>
-		<h2>Informes</h2>
-		<div class="panel panel-default">
-			<div class="panel-body">
-				<form name="data_form" action="report/show_report.php" method="POST" target="_blank">
-					Informe:
-					<select name="report" id="report" onchange="show(this)" required>
+<body onload="loadProgram()">
+	<div class="panel">
+		<img src="resources\img\uniajc.png" alt="uniajc">
+		<div class="contenedor">
+		<form name="data_form" action="report/show_report.php" method="POST" target="_blank">	
+		<table class="table table-borderless">
+
+			<tr>
+				<td><label class="text" for="Name">Tipo de Informe:</label></td>
+				<td><select name="report" id="report" onchange="show(this)" required>
 						<option value="">Seleccionar...</option>
 						<option value="1">Alistamiento</option>
 						<option value="2">Avance formativo 1</option>
 						<option value="3">Avance formativo 2</option>
 						<option value="4">Estadisticas</option>
-					</select><br>
-					<div id="inputs">
-						Categoria:
-						<select name="category" id="category" onchange="loadProgram();" required>
-							<option value="null">Seleccionar...</option>
+					</select><br></td>
+				<td>
+				<div id="inputs" class="contenedor">
+					<label class="text" for="Name">Categoria:</label>
+				</td>
+				<td>
+				<select name="category" id="category" onchange="loadProgram();" required>
+							<option value="">Seleccionar...</option>
 							<?php require_once('selectors/category.php');
 							selectCategory('');	?>
-						</select><br>
-						Programa:
-						<div name="programs" id="programs"></div>
-						<br>
-					<input type="submit" value="Siguiente">
-				</form>
+				</select><br>
+				</td>
+			</tr>
+			<tr>
+				<td>
+			<label class="text" for="Name">Programa:</label>
+				</td>
+				<td colspan="3">
+				<div name="programs" id="programs"></div>
+				<br>
 			</div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4">
+				<input class="btn btn1" type="submit" value="Generar">
+				</td>
+			</tr>	
 		</div>
+		</table>
+				
+				</form>
 	</div>
 
 	<!--  Scripts con ajax al final para que la pagina pueda cargar toda la parte visual, si la parte de los script es muy pesada-->
