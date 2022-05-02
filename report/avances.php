@@ -20,21 +20,21 @@ function ordenar($ar1, $ar2)
 
 function headerDetail($items,$evaluacion)
 {
-	$result = "<table>
+	$result = "<table class='tables'>
 				<tr  class='tr5'>";
 
 	if (count($items) > 0) {
 
 		for($i = 0; $i < count($items); ++$i) {
-			$result .= "<td>".$items[$i]."</td>";
+			$result .= "<td class='tr5'>".$items[$i]."</td>";
 		}
 		$result .= "</tr> <tr class='tr5'>";
 		for($i = 0; $i < count($evaluacion); ++$i) {
-			$result .= "<td>".$evaluacion[$i]."</td>";
+			$result .= "<td class='tr5'>".$evaluacion[$i]."</td>";
 		}
 
 	} else {
-		$result .= "<td>Sin actividades</td>";
+		$result .= "<td class='tr5'>Sin actividades</td>";
 	}
 	$result.= "</tr></table>";
 
@@ -141,16 +141,16 @@ function advanceReport($category, $program, $semester, $type_report)
 		}
 		usort($vector_curso,'ordenar');
 		echo "
-		<table class='table'>
+		<table class='tables'>
 			<tr class='td1'>
-			<th>ID user</th>
-			<th>Nombre</th>
-			<th>Correo</th>
-			<th>Curso</th>
-			<th>Programa</th>
-			<th>Semestre</th>
-			<th>Detalle</th>
-			<th>Porcentaje</th>
+			<th class='td1'>ID user</th>
+			<th class='td1'>Nombre</th>
+			<th class='td1'>Correo</th>
+			<th class='td1'>Curso</th>
+			<th class='td1'>Programa</th>
+			<th class='td1'>Semestre</th>
+			<th class='td1'>Detalle</th>
+			<th class='td1'>Porcentaje</th>
 		  	</tr>";
 
 		foreach($vector_curso as $curse){
@@ -160,14 +160,14 @@ function advanceReport($category, $program, $semester, $type_report)
 				//Porcentaje verde
 				$verde++;
 				print("<tr class='tr1'>
-				<td>".$curse->getIdUser()."</td>
-				<td>".$curse->getNombreProfesor()."</td>
-				<td>".$curse->getCorreo()."</td>				
-				<td>".$curse->getNombreCurso()."</td>
-				<td>".$curse->getPrograma()."</td>
-				<td>".$curse->getSemestre()."</td>
-				<td>".headerDetail($curse->items,$curse->evaluacion)."</td>
-				<td>".$curse->getPorcentaje()."%"."</td>
+				<td class='tr1'>".$curse->getIdUser()."</td>
+				<td class='tr1'>".$curse->getNombreProfesor()."</td>
+				<td class='tr1'>".$curse->getCorreo()."</td>				
+				<td class='tr1'>".$curse->getNombreCurso()."</td>
+				<td class='tr1'>".$curse->getPrograma()."</td>
+				<td class='tr1'>".$curse->getSemestre()."</td>
+				<td class='tr1'>".headerDetail($curse->items,$curse->evaluacion)."</td>
+				<td class='tr1'>".$curse->getPorcentaje()."%"."</td>
 				</tr>");			
 		
 			} elseif ($curse->getPorcentaje() >= 51 && $curse->getPorcentaje() <= 79){
@@ -175,14 +175,14 @@ function advanceReport($category, $program, $semester, $type_report)
 				
 				$amarillo++;
 				print("<tr class='tr2'>
-				<td>".$curse->getIdUser()."</td>
-				<td>".$curse->getNombreProfesor()."</td>
-				<td>".$curse->getCorreo()."</td>				
-				<td>".$curse->getNombreCurso()."</td>
-				<td>".$curse->getPrograma()."</td>
-				<td>".$curse->getSemestre()."</td>
-				<td>".headerDetail($curse->items,$curse->evaluacion)."</td>
-				<td>".$curse->getPorcentaje()."%"."</td>
+				<td class='tr2'>".$curse->getIdUser()."</td>
+				<td class='tr2'>".$curse->getNombreProfesor()."</td>
+				<td class='tr2'>".$curse->getCorreo()."</td>				
+				<td class='tr2'>".$curse->getNombreCurso()."</td>
+				<td class='tr2'>".$curse->getPrograma()."</td>
+				<td class='tr2'>".$curse->getSemestre()."</td>
+				<td class='tr2'>".headerDetail($curse->items,$curse->evaluacion)."</td>
+				<td class='tr2'>".$curse->getPorcentaje()."%"."</td>
 				</tr>");			
 	
 			} elseif ($curse->getPorcentaje() >= 0 && $curse->getPorcentaje() <= 50 && strcmp($curse->getPorcentaje(),'Sin actividades') ==! 0){
@@ -190,14 +190,14 @@ function advanceReport($category, $program, $semester, $type_report)
 			
 				$rojoClaro++;
 				print("<tr class='tr3' >
-				<td>".$curse->getIdUser()."</td>
-				<td>".$curse->getNombreProfesor()."</td>
-				<td>".$curse->getCorreo()."</td>				
-				<td>".$curse->getNombreCurso()."</td>
-				<td>".$curse->getPrograma()."</td>
-				<td>".$curse->getSemestre()."</td>
-				<td>".headerDetail($curse->items,$curse->evaluacion)."</td>
-				<td>".$curse->getPorcentaje()."%"."</td>
+				<td class='tr3'>".$curse->getIdUser()."</td>
+				<td class='tr3'>".$curse->getNombreProfesor()."</td>
+				<td class='tr3'>".$curse->getCorreo()."</td>				
+				<td class='tr3'>".$curse->getNombreCurso()."</td>
+				<td class='tr3'>".$curse->getPrograma()."</td>
+				<td class='tr3'>".$curse->getSemestre()."</td>
+				<td class='tr3'>".headerDetail($curse->items,$curse->evaluacion)."</td>
+				<td class='tr3'>".$curse->getPorcentaje()."%"."</td>
 				</tr>");			
 		
 
@@ -205,14 +205,14 @@ function advanceReport($category, $program, $semester, $type_report)
 				//Porcentaje rojo oscuro
 				$rojoOscuro++;
 				print("<tr class='tr4' >
-				<td>".$curse->getIdUser()."</td>
-				<td>".$curse->getNombreProfesor()."</td>
-				<td>".$curse->getCorreo()."</td>				
-				<td>".$curse->getNombreCurso()."</td>
-				<td>".$curse->getPrograma()."</td>
-				<td>".$curse->getSemestre()."</td>
-				<td>".headerDetail($curse->items,$curse->evaluacion)."</td>
-				<td>Sin actividades</td>
+				<td class='tr4'>".$curse->getIdUser()."</td>
+				<td class='tr4'>".$curse->getNombreProfesor()."</td>
+				<td class='tr4'>".$curse->getCorreo()."</td>				
+				<td class='tr4'>".$curse->getNombreCurso()."</td>
+				<td class='tr4'>".$curse->getPrograma()."</td>
+				<td class='tr4'>".$curse->getSemestre()."</td>
+				<td class='tr4'>".headerDetail($curse->items,$curse->evaluacion)."</td>
+				<td class='tr4'>Sin actividades</td>
 				</tr>");
 			}
 		}
@@ -225,32 +225,32 @@ function advanceReport($category, $program, $semester, $type_report)
 	</table>
 	<br>
 
-	<table class='table'>
+	<table class='tables'>
 
 		<tr class='td1'>
-		<td colspan='2'>Porcentajes</th>
-		<td colspan='2'>Cantidad de cursos	</th>
+		<td class='td1' colspan='2'>Porcentajes</th>
+		<td class='td1' colspan='2'>Cantidad de cursos	</th>
 		</tr>
 
 		<tr class='tr1'>
-		<td colspan='2' > 100% - 80% </td>
-		<td colspan='2'>".$verde."</td>
+		<td class='tr1' colspan='2' > 100% - 80% </td>
+		<td class='tr1' colspan='2'>".$verde."</td>
 		</tr>
 		<tr class='tr2'>
-		<td colspan='2'> 79% - 51% </td>
-		<td colspan='2'>".$amarillo."</td>
+		<td class='tr2' colspan='2'> 79% - 51% </td>
+		<td class='tr2' colspan='2'>".$amarillo."</td>
 		</tr>
 		<tr class='tr3'>
-		<td colspan='2'> 50% - 0% </td>
-		<td colspan='2'>".$rojoClaro."</td>
+		<td class='tr3' colspan='2'> 50% - 0% </td>
+		<td class='tr3' colspan='2'>".$rojoClaro."</td>
 		</tr>
 		<tr class='tr4'>
-		<td colspan='2'> Sin actividades </td>
-		<td colspan='2'>".$rojoOscuro."</td>
+		<td class='tr4' colspan='2'> Sin actividades </td>
+		<td class='tr4' colspan='2'>".$rojoOscuro."</td>
 		</tr>
 		<tr class='td1'>
-		<td colspan='2'> Total de cursos </td>
-		<td colspan='2'>".$sum."</td>
+		<td class='td1' colspan='2'> Total de cursos </td>
+		<td class='td1' colspan='2'>".$sum."</td>
 		</tr>
 	</table>
 	";

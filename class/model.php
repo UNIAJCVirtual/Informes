@@ -193,25 +193,21 @@ class alistamiento{
     // Variables del modulo "Foro de consulta y fechas de las unidades"
 
     private $foroConsulta;
-    private $fechasUnidad1="NO APLICA";
-    private $fechasUnidad2="NO APLICA";
-    private $fechasUnidad3="NO APLICA";
-    private $fechasUnidad4="NO APLICA";
-    private $fechasUnidad5="NO APLICA";
-    private $fechasUnidad6="NO APLICA";
-    private $fechasUnidad7="NO APLICA";
-    private $fechasUnidad8="NO APLICA";
+    public $unidades=[];
 
     // Variables del modulo "Libro de calificaciones"
     
     private $af01Actividades;
     private $af01Ponderaciones;
+    private $af01Disponibilidad;
 
     private $af02Actividades;
     private $af02Ponderaciones;
+    private $af02Disponibilidad;
 
     private $af03Actividades;
     private $af03Ponderaciones;
+    private $af03Disponibilidad;
 
     // Variable donde se guardan los resultados del informe de cada curso va del 0% al 100%
 
@@ -339,87 +335,7 @@ class alistamiento{
         $this->foroConsulta = $form;
     }
 
-     // Funciones get y set de la variable fechasUnidad1
-
-     public function getFechasUnidad1(){
-        return $this->fechasUnidad1;
-    }
-
-    public function setFechasUnidad1($dateUnid1){
-        $this->fechasUnidad1 = $dateUnid1;
-    }
-
-     // Funciones get y set de la variable fechasUnidad2
-
-     public function getFechasUnidad2(){
-        return $this->fechasUnidad2;
-    }
-
-    public function setFechasUnidad2($dateUnid2){
-        $this->fechasUnidad2 = $dateUnid2;
-    }
-
-     // Funciones get y set de la variable fechasUnidad3
-
-     public function getFechasUnidad3(){
-        return $this->fechasUnidad3;
-    }
-
-    public function setFechasUnidad3($dateUnid3){
-        $this->fechasUnidad3 = $dateUnid3;
-    }
-
-     // Funciones get y set de la variable fechasUnidad4
-
-     public function getFechasUnidad4(){
-        return $this->fechasUnidad4;
-    }
-
-    public function setFechasUnidad4($dateUnid4){
-        $this->fechasUnidad4 = $dateUnid4;
-    }
-
-     // Funciones get y set de la variable fechasUnidad5
-
-     public function getFechasUnidad5(){
-        return $this->fechasUnidad5;
-    }
-
-    public function setFechasUnidad5($dateUnid5){
-        $this->fechasUnidad5 = $dateUnid5;
-    }
-
-     // Funciones get y set de la variable fechasUnidad6
-
-     public function getFechasUnidad6(){
-        return $this->fechasUnidad6;
-    }
-
-    public function setFechasUnidad6($dateUnid6){
-        $this->fechasUnidad6 = $dateUnid6;
-    }
-
-     // Funciones get y set de la variable fechasUnidad7
-
-     public function getFechasUnidad7(){
-        return $this->fechasUnidad7;
-    }
-
-    public function setFechasUnidad7($dateUnid7){
-        $this->fechasUnidad7 = $dateUnid7;
-    }
-
-     // Funciones get y set de la variable fechasUnidad8
-
-     public function getFechasUnidad8(){
-        return $this->fechasUnidad8;
-    }
-
-    public function setFechasUnidad8($dateUnid8){
-        $this->fechasUnidad8 = $dateUnid8;
-    }
-
-     // Funciones get y set de la variable codigo
+     // Funciones get y set de la variable af01Actividades
 
      public function getAF01Actividades(){
         return $this->af01Actividades;
@@ -429,7 +345,7 @@ class alistamiento{
         $this->af01Actividades = $AF01A;
     }
 
-    // Funciones get y set de la variable cantidad
+    // Funciones get y set de la variable af01Ponderaciones
 
     public function getAF01Ponderaciones(){
         return $this->af01Ponderaciones;
@@ -439,6 +355,15 @@ class alistamiento{
         $this->af01Ponderaciones = $AF01P;
     }
 
+    // Funciones get y set de la variable af01Disponibilidad
+
+    public function getAF01Disponibilidad(){
+        return $this->af01Disponibilidad;
+    }
+
+    public function setAF01Disponibilidad($AF01D){
+        $this->af01Disponibilidad = $AF01D;
+    }
      // Funciones get y set de la variable af02Actividades
 
      public function getAF02Actividades(){
@@ -459,6 +384,16 @@ class alistamiento{
         $this->af02Ponderaciones = $AF02P;
     }
 
+    // Funciones get y set de la variable af02Disponibilidad
+
+    public function getAF02Disponibilidad(){
+        return $this->af02Disponibilidad;
+    }
+
+    public function setAF02Disponibilidad($AF02D){
+        $this->af02Disponibilidad = $AF02D;
+    }
+
      // Funciones get y set de la variable af03Actividades
 
      public function getAF03Actividades(){
@@ -477,6 +412,16 @@ class alistamiento{
 
     public function setAF03Ponderaciones($AF03P){
         $this->af03Ponderaciones = $AF03P;
+    }
+
+    // Funciones get y set de la variable af03Disponibilidad
+
+    public function getAF03Disponibilidad(){
+        return $this->af03Disponibilidad;
+    }
+
+    public function setAF03Disponibilidad($AF03D){
+        $this->af03Disponibilidad = $AF03D;
     }
 
     // Funciones get y set de la variable porcentaje

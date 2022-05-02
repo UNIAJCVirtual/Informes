@@ -11,7 +11,7 @@ function ordenar($a, $b)
     $b = preg_replace('/[^0-9]/','',$b->{'grupo'});
     $b = substr($b,0,1);*/
 
-   if ($a->{'grupo'} < $b->{'grupo'}  ){
+   if ($a->{'grupo'} < $b->{'grupo'} ){
 	return -1;
    }      
    else if ($a->{'grupo'} > $b->{'grupo'} ){
@@ -138,18 +138,20 @@ function statistics($program)
                 $vector_profesor[] = $curso->getNombreProfesor();
                 $vector_curso[] = $curso;
 			}
+			
+			$numGrup = count($vector_grupo);
             echo "
-            <table class='table'>
+            <table class='table' id='".$numGrup."'>
 		        <tr class='td2'>
-		            <th colspan='6'>ESTADISTICA DE LOS CURSOS EN AULAS VIRTUALES MOODLE ".$programa."</th>
+		            <th colspan='7'>ESTADISTICA DE LOS CURSOS EN AULAS VIRTUALES MOODLE ".$programa."</th>
 		        </tr>
                 <tr class='td2'>
-		            <th>Semestre</th>
-		            <th>Grupo</th>
-		            <th>Código Asignatura</th>
-		            <th>Nombre Asignatura</th>
-		            <th>Profesor a Cargo</th>
-		            <th>N. Estudiantes</th>
+		            <th class='td2'>Semestre</th>
+		            <th class='td2'>Grupo</th>
+		            <th class='td2'>Código Asignatura</th>
+		            <th class='td2'>Nombre Asignatura</th>
+		            <th class='td2'>Profesor a Cargo</th>
+		            <th class='td2' colspan='2'>N. Estudiantes</th>
 		        </tr>
                 ";
 
@@ -181,27 +183,22 @@ function statistics($program)
                 $sum++;
                 echo"
                 <tr class='tr5'>
-				<td>".$curse->getSemestre()."</td>
-				<td>".$curse->getGrupo()."</td>
-				<td>".$curse->getCodigo()."</td>
-				<td>".$curse->getNombreCurso()."</td>
-				<td>".$curse->getNombreProfesor()."</td>
-				<td id='".$curse->getGrupo()."'>".$curse->getCantidad()."</td>";               
+				<td class='tr5'>".$curse->getSemestre()."</td>
+				<td class='tr5' id='group' >".$curse->getGrupo()."</td>
+				<td class='tr5'>".$curse->getCodigo()."</td>
+				<td class='tr5'>".$curse->getNombreCurso()."</td>
+				<td class='tr5'>".$curse->getNombreProfesor()."</td>
+				<td class='tr5'colspan='2' id='".$curse->getGrupo()."'>".$curse->getCantidad()."</td>";               
 		    }
             echo"
 		<tr class='td2'>
-		<td colspan='2'>Total de cursos</td>
-		<td >".$sum."</td>
-		<td >Total de profesores</td>
-		<td >".$numeroProfesores."</td>
+		<td class='td2' colspan='2'>Total de cursos</td>
+		<td class='td2'>".$sum."</td>
+		<td class='td2'>Total de profesores</td>
+		<td class='td2'>".$numeroProfesores."</td>
+		<td class='td2'>Total estudiantes</td>
+		<td class='td2'>".array_sum($totalEstudiantes)."</td>
 		</tr>
-
-		<tr class='td2'>
-		<td colspan='4' ></td>
-		<td>Total de estudiantes</td>
-		<td>".array_sum($totalEstudiantes)."</td>
-		</tr>
-
 	</table>
 	";
 	    }

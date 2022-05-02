@@ -212,8 +212,8 @@ function dataAssign($id)
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$quer = "
-		SELECT 
-			*
+		SELECT
+		*
 		FROM 
 			mdl_assign
 		WHERE 
@@ -235,6 +235,26 @@ function dataQuiz($id)
 			*
 		FROM 
 			mdl_quiz
+		WHERE 
+			id=$id";
+
+
+	$result = $connection3->query($quer);
+	$connection3->close();
+	return $result;
+}
+
+function dataForum($id)
+{
+
+	require_once("../database/connection.php");
+	$connection3 = connection();
+	mysqli_set_charset($connection3, "utf8");
+	$quer = "
+		SELECT 
+			*
+		FROM 
+			mdl_forum
 		WHERE 
 			id=$id";
 

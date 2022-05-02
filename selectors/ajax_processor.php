@@ -17,17 +17,11 @@ function loadProgram()
 	include_once("../database/connection.php");
 	mysqli_set_charset($connection, "utf8");
 	$result = $connection->query("SELECT id, name FROM mdl_course_categories WHERE parent = " . $_POST["category"]);
-	$c = 0;
-	$inputs = "<table><tr>";
+	$inputs = "<table>";
 	if (is_array($result) || is_object($result))
 	{
 		foreach ($result as $data) {
-			$c++;
-			//$inputs .= "<td><input type='checkbox' id='" . $data["id"] . "' name='program[]' value='" . $data["id"] . "'>&nbsp;<label for='" . $data["id"] . "'> " . $data["name"] . "</label></td>";
-			$inputs .= "<td><label for='" . $data["id"] . "'><input type='checkbox' id='" . $data["id"] . "' name='program[]' value='" . $data["id"] . "'> " . $data["name"] . "</label></td>";
-			if ($c % 2 == 0) {
-				$inputs .= "</tr><tr>";
-			}
+			$inputs .= "<tr><td colspan='2'><label for='" . $data["id"] . "'><input type='checkbox' id='" . $data["id"] . "' name='program[]' value='" . $data["id"] . "'> " . $data["name"] . "</label></td></tr>";
 		}
 	}
 	echo $inputs . "</table>";

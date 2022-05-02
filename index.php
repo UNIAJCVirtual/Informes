@@ -2,9 +2,8 @@
 <html>
 
 <head>
-	<title>Informes</title>
+<title>Informes</title>
 	<meta http-equiv=Content-Type content=text/html; UTF-8>
-	<script type="text/javascript" src="js/jquery.js"></script>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 	<link rel="stylesheet" type="text/css" href="css/css.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -16,30 +15,31 @@
 
 <body onload="loadProgram()">
 	<div class="panel">
-		<img src="resources\img\uniajc.png" alt="uniajc">
+		<img src="resources\img\uniajc2.png" alt="uniajc">
 		<div class="contenedor">
-		<form name="data_form" action="report/show_report.php" method="POST" target="_blank">	
+		<form name="data_form" action="report/tipo_reporte.php" method="POST" target="_blank">	
 		<table class="table table-borderless">
 
 			<tr>
 				<td><label class="text" for="Name">Tipo de Informe:</label></td>
-				<td><select name="report" id="report" onchange="show(this)" required>
+				<td><select name="report" id="report" required>
 						<option value="">Seleccionar...</option>
 						<option value="1">Alistamiento</option>
 						<option value="2">Avance formativo 1</option>
 						<option value="3">Avance formativo 2</option>
 						<option value="4">Estadisticas</option>
 					</select><br></td>
-				<td>
 				<div id="inputs" class="contenedor">
-					<label class="text" for="Name">Categoria:</label>
-				</td>
+
+				<td><label class="text" for="Name">Categoria:</label></td>
+
 				<td>
 				<select name="category" id="category" onchange="loadProgram();" required>
 							<option value="">Seleccionar...</option>
 							<?php require_once('selectors/category.php');
 							selectCategory('');	?>
-				</select><br>
+				</select>
+				<br>
 				</td>
 			</tr>
 			<tr>
@@ -99,15 +99,6 @@
 					}
 				})
 			}
-		}
-
-		function show(report) {
-			var x = document.getElementById("div_scale");
-			report.value == 7 ? x.style.display = "block" : x.style.display = "none";
-			var inp = document.getElementById("inputs");
-			report.value == 8 ? inp.style.display = "none" : inp.style.display = "block";
-			var div = document.getElementById("div_date");
-			report.value == 8 ? div.style.display = "block" : div.style.display = "none";
 		}
 	</script>
 </body>
