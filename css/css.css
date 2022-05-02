@@ -4,6 +4,7 @@
     --primary-color: #011a62;
     --blue-color: #00afef;
     --white-color: #fff;
+    --black-color: #000;
   }
 .tables{
 	table-layout: fixed;
@@ -20,12 +21,12 @@ select{
     width: auto;
     padding: 6px 8px;
     font-family: 'Poppins',sans-serif;
-    font-weight: 200px;
+    font-weight: 300px;
     font-size: 14px;
     letter-spacing: 0.5px;
     cursor: pointer;
-    background-color: var(--select-color);
-    border: 6px solid var(--select-color);
+    background-color: var(--white-color);
+    border: 1px solid var(--blue-color);
     border-radius: 5px;
     background-repeat: no-repeat;
     background-size: 47px;
@@ -37,13 +38,20 @@ select::-ms-expand{
     display: none;
 }
 select:hover{
-    border: 5px solid #05AFF2;
+    border: 1px solid #ffffff;
+    background-color: var(--select-color);
+    color: var(--white-color);
 }
 select option{
-    background-color: #05AFF2;
-    letter-spacing: 1.2px;
-    font-weight: 400;
-    font-size: 18px;
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+    font-size: 14px;
+    padding: 6px 8px;
+}
+select option:hover {
+    box-shadow: 0 0 10px 100px #000 inset;
+    padding: 6px 8px;
+    background-color: #ffffff;
 }
 .contenedor{
     background-color: #e7e7e7c3;
