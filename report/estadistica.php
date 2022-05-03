@@ -24,7 +24,6 @@ function ordenar($a, $b)
 function groupFilter1($str)
 {
 	$temp = $str[strlen($str) - 1];
-	//echo $str."<br>";
 	// se empieza del antepenultimo para tener la letra A B C o cualquiera
 	for ($i = (strlen($str) - 2); $i >= 0; $i--) {
 		if (is_numeric($str[$i])) {
@@ -150,8 +149,8 @@ function statistics($program)
 		            <th class='td2'>Grupo</th>
 		            <th class='td2'>Código Asignatura</th>
 		            <th class='td2'>Nombre Asignatura</th>
-		            <th class='td2'>Profesor a Cargo</th>
-		            <th class='td2' colspan='2'>N. Estudiantes</th>
+		            <th class='td2'>N. Estudiantes</th>
+		            <th class='td2' colspan='2'>Profesor a Cargo</th>
 		        </tr>
                 ";
 
@@ -181,23 +180,23 @@ function statistics($program)
 			}			
             foreach($vector_curso as $curse){
                 $sum++;
-                echo"
+                echo("
                 <tr class='tr5'>
 				<td class='tr5'>".$curse->getSemestre()."</td>
 				<td class='tr5' id='group' >".$curse->getGrupo()."</td>
 				<td class='tr5'>".$curse->getCodigo()."</td>
 				<td class='tr5'>".$curse->getNombreCurso()."</td>
-				<td class='tr5'>".$curse->getNombreProfesor()."</td>
-				<td class='tr5'colspan='2' id='".$curse->getGrupo()."'>".$curse->getCantidad()."</td>";               
+				<td class='tr5' id='".$curse->getGrupo()."'>".$curse->getCantidad()."</td>
+				<td class='tr5' colspan='2'>".$curse->getNombreProfesor()."</td>");               
 		    }
             echo"
 		<tr class='td2'>
 		<td class='td2' colspan='2'>Total de cursos</td>
 		<td class='td2'>".$sum."</td>
-		<td class='td2'>Total de profesores</td>
-		<td class='td2'>".$numeroProfesores."</td>
 		<td class='td2'>Total estudiantes</td>
 		<td class='td2'>".array_sum($totalEstudiantes)."</td>
+		<td class='td2'>Total de profesores</td>
+		<td class='td2'>".$numeroProfesores."</td>
 		</tr>
 	</table>
 	";
