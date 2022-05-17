@@ -63,6 +63,8 @@ function advanceReport($category, $program, $semester, $type_report)
 			$program = Program($semester["parent"]);
 			$coursesResult = Courses($value['courseid'], $value['userid'], $type_report);
 			
+			
+
             foreach ($coursesResult as $valueC) {
 
                 $curso->setIdUser($value['userid']);
@@ -185,7 +187,7 @@ function advanceReport($category, $program, $semester, $type_report)
 				<td class='tr2'>".$curse->getPorcentaje()."%"."</td>
 				</tr>");			
 	
-			} elseif ($curse->getPorcentaje() >= 0 && $curse->getPorcentaje() <= 50 && strcmp($curse->getPorcentaje(),'Sin actividades') ==! 0){
+			} elseif ($curse->getPorcentaje() >= 0 && $curse->getPorcentaje() <= 50 ){
 			//Porcentaje rojo claro
 			
 				$rojoClaro++;
@@ -217,41 +219,43 @@ function advanceReport($category, $program, $semester, $type_report)
 			}
 		}
 		echo "</table>";
-	}
 
-	$sum=$verde+$amarillo+$rojoClaro+$rojoOscuro;
+		$sum=$verde+$amarillo+$rojoClaro+$rojoOscuro;
 	
-	echo"
-	</table>
-	<br>
-
-	<table class='tables'>
-
-		<tr class='td1'>
-		<td class='td1' colspan='2'>Porcentajes</th>
-		<td class='td1' colspan='2'>Cantidad de cursos	</th>
-		</tr>
-
-		<tr class='tr1'>
-		<td class='tr1' colspan='2' > 100% - 80% </td>
-		<td class='tr1' colspan='2'>".$verde."</td>
-		</tr>
-		<tr class='tr2'>
-		<td class='tr2' colspan='2'> 79% - 51% </td>
-		<td class='tr2' colspan='2'>".$amarillo."</td>
-		</tr>
-		<tr class='tr3'>
-		<td class='tr3' colspan='2'> 50% - 0% </td>
-		<td class='tr3' colspan='2'>".$rojoClaro."</td>
-		</tr>
-		<tr class='tr4'>
-		<td class='tr4' colspan='2'> Sin actividades </td>
-		<td class='tr4' colspan='2'>".$rojoOscuro."</td>
-		</tr>
-		<tr class='td1'>
-		<td class='td1' colspan='2'> Total de cursos </td>
-		<td class='td1' colspan='2'>".$sum."</td>
-		</tr>
-	</table>
-	";
+		echo"
+		</table>
+		<br>
+	
+		<table class='tables'>
+	
+			<tr class='td1'>
+			<td class='td1' colspan='2'>Porcentajes</th>
+			<td class='td1' colspan='2'>Cantidad de cursos	</th>
+			</tr>
+	
+			<tr class='tr1'>
+			<td class='tr1' colspan='2' > 100% - 80% </td>
+			<td class='tr1' colspan='2'>".$verde."</td>
+			</tr>
+			<tr class='tr2'>
+			<td class='tr2' colspan='2'> 79% - 51% </td>
+			<td class='tr2' colspan='2'>".$amarillo."</td>
+			</tr>
+			<tr class='tr3'>
+			<td class='tr3' colspan='2'> 50% - 0% </td>
+			<td class='tr3' colspan='2'>".$rojoClaro."</td>
+			</tr>
+			<tr class='tr4'>
+			<td class='tr4' colspan='2'> Sin actividades </td>
+			<td class='tr4' colspan='2'>".$rojoOscuro."</td>
+			</tr>
+			<tr class='td1'>
+			<td class='td1' colspan='2'> Total de cursos </td>
+			<td class='td1' colspan='2'>".$sum."</td>
+			</tr>
+		</table>
+		";
+	}else{
+		echo("<b> En estos momentos el programa: ".Program(implode(",", $program))."  no cuenta con cursos.</b><br>");
+	}
 }

@@ -67,7 +67,7 @@ function StatisticsInformation($id)
 	$connection3->close();
 	return $result;
 }
-function Enrolled($id, $category)
+function Enrolled($id, $tipoRol)
 {
 	require_once("../database/connection.php");
 	$connection3 = connection();
@@ -77,10 +77,6 @@ function Enrolled($id, $category)
 				mdl_user.username) matriculados,
 				mdl_user.firstname,
 				mdl_user.lastname,
-				mdl_user.email,
-				mdl_user.id user_id,
-				mdl_course.fullname  course_fullname,
-				mdl_course.id  course_id
 				FROM 
 				mdl_user, 
 				mdl_role,
@@ -94,16 +90,13 @@ function Enrolled($id, $category)
 				mdl_user.id = mdl_user_enrolments.userid AND
 				mdl_course.id = mdl_enrol.courseid AND
 				mdl_enrol.id= mdl_user_enrolments.enrolid AND
-				mdl_role.id = 5 AND 
+				mdl_role.id = " . $tipoRol . " AND 
 				mdl_course.visible=TRUE AND
-				mdl_course.id =" . $id . " AND
-				mdl_course.category = " . $category . "
-				ORDER BY username,course_fullname
+				mdl_course.id =" . $id . "
 			");
 	$connection3->close();
 	return $result;
 }
-// FirstAdvance
 function Teachers($filter)
 {
 	require_once("../database/connection.php");
@@ -182,29 +175,6 @@ function ItemCourse($courseid, $category)
 	$connection3->close();
 	return $result;
 }
-function ItemCourseEnlistement($courseid)
-{
-	require_once("../database/connection.php");
-	$connection3 = connection();
-	mysqli_set_charset($connection3, "utf8");
-	$quer = "
-		SELECT 
-			gi.id,
-			gi.courseid,
-			gi.iteminstance iteminstance,
-			gi.itemname name,				
-			gi.itemmodule
-		FROM 
-			mdl_grade_items gi
-		WHERE 
-			gi.courseid =  $courseid AND
-			itemmodule not in('null','forum')";
-
-	$result = $connection3->query($quer);
-	$connection3->close();
-	return $result;
-}
-
 function dataAssign($id)
 {
 
@@ -311,32 +281,6 @@ function weighing($courseid, $categoryid)
 	$connection3->close();
 	return $result;
 }
-
-
-function ItemEva($courseid, $category)
-{
-	require_once("../database/connection.php");
-	$connection3 = connection();
-	mysqli_set_charset($connection3, "utf8");
-	$result = $connection3->query("
-			SELECT 
-				gi.id,
-			    gi.courseid,
-				gi.iteminstance iteminstance,
-				gi.itemname name,				
-				gi.itemmodule,
-				gc.fullname
-			FROM 
-				mdl_grade_items gi,
-				mdl_grade_categories gc
-			WHERE 
-			    gc.id = gi.categoryid AND
-				gc.fullname = '$category' AND
-				gi.courseid =  $courseid
-		");
-	$connection3->close();
-	return $result;
-}
 function ScoreItem($itemid)
 {
 	require_once("../database/connection.php");
@@ -390,8 +334,8 @@ function FeedbackForum2($id, $user)
 		");
 	$connection3->close();
 	$result = $result->fetch_assoc();
-					
-	return (count(explode(" ", $result["message"]))>2) ? "CUMPLE" : "NO CUMPLE";
+
+	return (count(explode(" ", $result["message"])) > 2) ? "CUMPLE" : "NO CUMPLE";
 }
 // modificar
 
@@ -439,34 +383,6 @@ function content($course)
 	$connection3->close();
 	return $result;
 }
-function contentValidation($course)
-{
-	require_once("../database/connection.php");
-	$connection3 = connection();
-	mysqli_set_charset($connection3, "utf8");
-	$result = $connection3->query("
-			SELECT 
-				modulo.course,
-				modulo.module,
-				modulo.instance,
-				unidad.section,
-				unidad.name,
-				count(unidad.name) contador,
-				modulo.section,
-				modulo.visible
-			FROM 
-				mdl_course_modules modulo,
-				mdl_course_sections unidad
-			WHERE 
-				modulo.section=unidad.id AND 
-				unidad.section <> 0 AND
-				unidad.section = $idsection AND
-				modulo.course= " . $course . "
-				GROUP BY unidad.name
-				ORDER BY unidad.section");
-	$connection3->close();
-	return $result;
-}
 function forum($course)
 {
 	require_once("../database/connection.php");
@@ -498,26 +414,6 @@ function forumDiscussions($id)
 	$connection3->close();
 	return $result;
 }
-function microcurriculo($course)
-{
-	require_once("../database/connection.php");
-	$connection3 = connection();
-	mysqli_set_charset($connection3, "utf8");
-	$result = $connection3->query("
-			SELECT  
-				count(a.id) 
-			FROM  
-				mdl_course_modules a,
-				mdl_scorm b 
-			WHERE  
-				a.instance = b.id AND
-				UPPER(b.name) LIKE UPPER('microcurr%culo') AND 
-				a.course =$course AND
-				a.module = 16 AND 
-				b.reference IS NOT NULL AND  b.revision > 0");
-	$connection3->close();
-	return $result;
-}
 function summary($idsection, $course)
 {
 	require_once("../database/connection.php");
@@ -543,36 +439,6 @@ function summary($idsection, $course)
 				modulo.course= $course
 			GROUP BY unidad.name 
 			ORDER BY unidad.section");
-	$connection3->close();
-	return $result;
-}
-
-function log_users($min, $max)
-{
-	require_once("../database/connection.php");
-	$connection3 = connection();
-	mysqli_set_charset($connection3, "utf8");
-	$result = $connection3->query("
-			SELECT 
-				l.userid,
-				u.firstname,
-				u.lastname,
-				u.email,
-				l.courseid,
-				c.fullname,
-				l.contextinstanceid,
-				l.action,
-				l.timecreated,
-				l.ip
-				FROM 
-				mdl_logstore_standard_log l, 
-				mdl_user u,
-				mdl_course c
-				WHERE 
-				l.userid = u.id AND
-				l.courseid = c.id AND
-				l.timecreated BETWEEN '$min' AND '$max'
-			");
 	$connection3->close();
 	return $result;
 }

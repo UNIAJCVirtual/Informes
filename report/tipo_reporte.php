@@ -9,17 +9,8 @@
 </head>
 
 <body>
-	<?php
-	$mail_proccess = false;
-	if ($_POST["report"] == 4) {
-		$class = "top1";
-	} else {
-		$class = "top2";
-	}
-	?>
-	<div class='container  <?php echo $class; ?>'>
+	<div class='container'>
 		<?php
-		$report = "Informe no disponible";
 		switch ($_POST["report"]) {
 
 			

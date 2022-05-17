@@ -1,6 +1,6 @@
 <?php
 include_once("../class/model.php");
-
+header('Content-Type: text/html; charset=UTF-8');
 
 //Ordenar array con el método sort
 
@@ -19,6 +19,7 @@ function ordenar($ar1, $ar2)
 function validarEmail($cont, $e, $c)
 {
 	$flag = false;
+	$email='';
 	$buscar = array(chr(13) . chr(10), "\r\n", "\n", "\r");
 	$reemplazar = array("", "", "", "");
 	$sin = str_replace($buscar, $reemplazar, strip_tags($cont));
@@ -66,10 +67,10 @@ function validarEmail($cont, $e, $c)
 
 function quitar_tildes($cadena)
 {
-	//$cade = utf8_decode($cadena);
+	$cade = utf8_decode($cadena);
 	$no_permitidas = array("á", "é", "í", "ó", "ú", "Á", "É", "Í", "Ó", "Ú");
-	$permitidas = array("a", "e", "i", "o", "u", "A", "E", "I", "O", "U",);
-	$texto = str_replace($no_permitidas, $permitidas, $cadena);
+	$permitidas = array("a", "e", "i", "o", "u", "A", "E", "I", "O", "U");
+	$texto = str_replace($no_permitidas, $permitidas, $cade);
 	return $texto;
 }
 
@@ -563,110 +564,112 @@ function enlistmentReport($category, $program, $semester)
 			$curso->setPorcentaje($porcentaje);
 			$vector_curso[] = $curso;
 		}
-		usort($vector_curso,'ordenar');
+	}
+	usort($vector_curso,'ordenar');
+
+	echo("
+	<table class='table'>
+		<tr class='td1'>
+			<td class='td1' rowspan='2'>ID user</td>
+			<td class='td1' rowspan='2'>Nombre</td>
+			<td class='td1' rowspan='2'>Correo</td>
+			<td class='td1' rowspan='2'>Programa</td>
+			<td class='td1' rowspan='2'>Semestre</td>
+			<td class='td1' rowspan='2'>Curso</td>
+			<td class='td1' rowspan='2'>Nombre del curso</td>
+			<td class='td1' colspan='4'>Presentación del profesor</td>
+			<td class='td1' colspan='9'>Foro de consultas y fechas de unidades</td>
+			<td class='td1' colspan='3'>Avance formativo 1</td>
+			<td class='td1' colspan='3'>Avance formativo 2</td>
+			<td class='td1' colspan='3'>Avance formativo 3</td>
+			<td class='td1' rowspan='2'>Porcentaje</td>
+		</tr>
+		<tr class='td1'>
+			<td class='td1'>Nombre</td>
+			<td class='td1'>Correo</td>
+			<td class='td1'>Horario de atención</td>
+			<td class='td1'>Fotografía</td>
+			<td class='td1'>Foro de consulta</td>
+			<td class='td1'>Unidad 1</td>
+			<td class='td1'>Unidad 2</td>
+			<td class='td1'>Unidad 3</td>
+			<td class='td1'>Unidad 4</td>
+			<td class='td1'>Unidad 5</td>
+			<td class='td1'>Unidad 6</td>
+			<td class='td1'>Unidad 7</td>
+			<td class='td1'>Unidad 8</td>
+			<td class='td1'>Actividades</td>
+			<td class='td1'>Disponibilidad</td>
+			<td class='td1'>Ponderaciones</td>
+			<td class='td1'>Actividades</td>
+			<td class='td1'>Disponibilidad</td>
+			<td class='td1'>Ponderaciones</td>
+			<td class='td1'>Actividades</td>
+			<td class='td1'>Disponibilidad</td>
+			<td class='td1'>Ponderaciones</td>
+		</tr>");
+	
+	foreach($vector_curso as $curse){
+		
+		if($curse->getPorcentaje() >= 80 && $curse->getPorcentaje() <= 100){
+			//Porcentaje verde
+			$verde++;
+			$color="tr1";
+	
+		}else if ($curse->getPorcentaje() >= 51 && $curse->getPorcentaje() <= 79){
+			//Porcentaje amarillo
+			$amarillo++;
+			$color="tr2";
+			
+		}else if ($curse->getPorcentaje() >= 0 && $curse->getPorcentaje() <= 50){
+		//Porcentaje rojo claro
+			$rojoClaro++;
+			$color="tr3";
+
+		}else if ($curse->getPorcentaje() == 0){
+			//Porcentaje rojo claro
+			$rojoOscuro++;
+			$color="tr4";
+		}
+		echo("<tr class='".$color."'>
+		<td class='".$color."'>".$curse->getIdUser()."</td>
+		<td class='".$color."'>".$curse->getNombre()."</td>
+		<td class='".$color."'>".$curse->getCorreo()."</td>
+		<td class='".$color."'>".$curse->getPrograma()."</td>
+		<td class='".$color."'>".$curse->getSemestre()."</td>
+		<td class='".$color."'>".$curse->getIdCurso()."</td>
+		<td class='".$color."'>".$curse->getNombreCurso()."</td>
+		<td class='".$color."'>".$curse->getNombreProfesor()."</td>
+		<td class='".$color."'>".$curse->getCorreoProfesor()."</td>
+		<td class='".$color."'>".$curse->getHorarioAtencion()."</td>
+		<td class='".$color."'>".$curse->getFotografia()."</td>
+		<td class='".$color."'>".$curse->getForoConsulta()."</td>
+		");
+		$contar = count($curse->unidades);
+		for ($i = 0; $i <= 7; $i++) {
+			if($contar > 0){
+				echo("<td class='".$color."'>".$curse->unidades[$i]."</td>");
+			}else{
+				echo("<td class='".$color."'>NO APLICA</td>");
+			}
+			$contar--;
+		}
 
 		echo("
-		<table class='table'>
-			<tr class='td1'>
-				<td class='td1' rowspan='2'>ID user</td>
-				<td class='td1' rowspan='2'>Nombre</td>
-				<td class='td1' rowspan='2'>Correo</td>
-				<td class='td1' rowspan='2'>Programa</td>
-				<td class='td1' rowspan='2'>Semestre</td>
-				<td class='td1' rowspan='2'>Curso</td>
-				<td class='td1' rowspan='2'>Nombre del curso</td>
-				<td class='td1' colspan='4'>Presentación del profesor</td>
-				<td class='td1' colspan='9'>Foro de consultas y fechas de unidades</td>
-				<td class='td1' colspan='3'>Avance formativo 1</td>
-				<td class='td1' colspan='3'>Avance formativo 2</td>
-				<td class='td1' colspan='3'>Avance formativo 3</td>
-				<td class='td1' rowspan='2'>Porcentaje</td>
-			</tr>
-			<tr class='td1'>
-				<td class='td1'>Nombre</td>
-				<td class='td1'>Correo</td>
-				<td class='td1'>Horario de atención</td>
-				<td class='td1'>Fotografía</td>
-				<td class='td1'>Foro de consulta</td>
-				<td class='td1'>Unidad 1</td>
-				<td class='td1'>Unidad 2</td>
-				<td class='td1'>Unidad 3</td>
-				<td class='td1'>Unidad 4</td>
-				<td class='td1'>Unidad 5</td>
-				<td class='td1'>Unidad 6</td>
-				<td class='td1'>Unidad 7</td>
-				<td class='td1'>Unidad 8</td>
-				<td class='td1'>Actividades</td>
-				<td class='td1'>Disponibilidad</td>
-				<td class='td1'>Ponderaciones</td>
-				<td class='td1'>Actividades</td>
-				<td class='td1'>Disponibilidad</td>
-				<td class='td1'>Ponderaciones</td>
-				<td class='td1'>Actividades</td>
-				<td class='td1'>Disponibilidad</td>
-				<td class='td1'>Ponderaciones</td>
-			</tr>");
-		
-		foreach($vector_curso as $curse){
-			
-			if($curse->getPorcentaje() >= 80 && $curse->getPorcentaje() <= 100){
-				//Porcentaje verde
-				$verde++;
-				$color="tr1";
-		
-			}else if ($curse->getPorcentaje() >= 51 && $curse->getPorcentaje() <= 79){
-				//Porcentaje amarillo
-				$amarillo++;
-				$color="tr2";
-				
-			}else if ($curse->getPorcentaje() >= 0 && $curse->getPorcentaje() <= 50){
-			//Porcentaje rojo claro
-				$rojoClaro++;
-				$color="tr3";
-
-			}else if ($curse->getPorcentaje() == 0){
-				//Porcentaje rojo claro
-				$rojoOscuro++;
-				$color="tr4";
-			}
-			echo("<tr class='".$color."'>
-			<td class='".$color."'>".$curse->getIdUser()."</td>
-			<td class='".$color."'>".$curse->getNombre()."</td>
-			<td class='".$color."'>".$curse->getCorreo()."</td>
-			<td class='".$color."'>".$curse->getPrograma()."</td>
-			<td class='".$color."'>".$curse->getSemestre()."</td>
-			<td class='".$color."'>".$curse->getIdCurso()."</td>
-			<td class='".$color."'>".$curse->getNombreCurso()."</td>
-			<td class='".$color."'>".$curse->getNombreProfesor()."</td>
-			<td class='".$color."'>".$curse->getCorreoProfesor()."</td>
-			<td class='".$color."'>".$curse->getHorarioAtencion()."</td>
-			<td class='".$color."'>".$curse->getFotografia()."</td>
-			<td class='".$color."'>".$curse->getForoConsulta()."</td>
-			");
-			$contar = count($curse->unidades);
-			for ($i = 0; $i <= 7; $i++) {
-				if($contar > 0){
-					echo("<td class='".$color."'>".$curse->unidades[$i]."</td>");
-				}else{
-					echo("<td class='".$color."'>NO APLICA</td>");
-				}
-				$contar--;
-			}
-
-			echo("
-			<td class='".$color."'>".$curse->getAF01Actividades()."</td>
-			<td class='".$color."'>".$curse->getAF01Disponibilidad()."</td>
-			<td class='".$color."'>".$curse->getAF01Ponderaciones()."</td>
-			<td class='".$color."'>".$curse->getAF02Actividades()."</td>
-			<td class='".$color."'>".$curse->getAF02Disponibilidad()."</td>
-			<td class='".$color."'>".$curse->getAF02Ponderaciones()."</td>
-			<td class='".$color."'>".$curse->getAF03Actividades()."</td>			
-			<td class='".$color."'>".$curse->getAF03Disponibilidad()."</td>
-			<td class='".$color."'>".$curse->getAF03Ponderaciones()."</td>
-			<td class='".$color."'>".$curse->getPorcentaje()."%"."</td>
-			</tr>");
-		}
+		<td class='".$color."'>".$curse->getAF01Actividades()."</td>
+		<td class='".$color."'>".$curse->getAF01Disponibilidad()."</td>
+		<td class='".$color."'>".$curse->getAF01Ponderaciones()."</td>
+		<td class='".$color."'>".$curse->getAF02Actividades()."</td>
+		<td class='".$color."'>".$curse->getAF02Disponibilidad()."</td>
+		<td class='".$color."'>".$curse->getAF02Ponderaciones()."</td>
+		<td class='".$color."'>".$curse->getAF03Actividades()."</td>			
+		<td class='".$color."'>".$curse->getAF03Disponibilidad()."</td>
+		<td class='".$color."'>".$curse->getAF03Ponderaciones()."</td>
+		<td class='".$color."'>".$curse->getPorcentaje()."%"."</td>
+		</tr>");
 	}
+
+
 	$sum=$verde+$amarillo+$rojoClaro+$rojoOscuro;
 	
 	echo"
