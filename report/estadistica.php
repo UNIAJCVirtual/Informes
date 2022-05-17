@@ -117,6 +117,8 @@ function codigo($codigo)
 		return $codigo = strstr($codigo, 'FI');
 	} else if (strstr($codigo, 'CE')) {
 		return $codigo = strstr($codigo, 'CE');
+	} else if (strstr($codigo, 'CS')) {
+		return $codigo = strstr($codigo, 'CS');
 	}
 }
 
@@ -150,8 +152,8 @@ function statistics($program)
 				$grupo = explode("*", $column['course_fullname']);
 				$codigo = codigo($column['course_shortname']);
 
-				$resultProfesores = Enrolled($column['course_id'], 3);
-				$numProfesores = $resultMatricula->fetch_assoc(); 
+				// $resultProfesores = Enrolled($column['course_id'], 3);
+				// $numProfesores = $resultMatricula->fetch_assoc(); 
 
 				$curso->setSemestre($semester);
 				$curso->setCodigo($codigo);
@@ -198,8 +200,10 @@ function statistics($program)
 				$moda[] = $curse->getCantidad();
 			}
 		}
-		array_count_values($moda);
-		$totalEstudiantes += $moda[0];
+		if(!empty($moda)){
+			array_count_values($moda);
+			$totalEstudiantes += $moda[0];
+		}
 		$i++;
 		$numeroGrupos--;
 	}
