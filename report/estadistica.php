@@ -142,13 +142,16 @@ function statistics($program)
 
 			while ($column = $result->fetch_assoc()) {
 
-				//la variable rol define el rol que vamos a buscar 3 Profesor y 5 Estudiante
-				$rol=5;
+				
 				$curso = new estadistica();
-				$resultMatricula = Enrolled($column['course_id'], $rol);
+				//la variable requerida en la función Enrolled es el rol que vamos a buscar 3 Profesor y 5 Estudiante
+				$resultMatricula = Enrolled($column['course_id'], 5);
 				$resultMatriculados = $resultMatricula->fetch_assoc();
 				$grupo = explode("*", $column['course_fullname']);
 				$codigo = codigo($column['course_shortname']);
+
+				$resultProfesores = Enrolled($column['course_id'], 3);
+				$numProfesores = $resultMatricula->fetch_assoc(); 
 
 				$curso->setSemestre($semester);
 				$curso->setCodigo($codigo);

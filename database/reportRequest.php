@@ -76,7 +76,7 @@ function Enrolled($id, $tipoRol)
 			SELECT count(distinct
 				mdl_user.username) matriculados,
 				mdl_user.firstname,
-				mdl_user.lastname,
+				mdl_user.lastname
 				FROM 
 				mdl_user, 
 				mdl_role,
