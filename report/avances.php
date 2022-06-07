@@ -15,6 +15,16 @@ function ordenar($ar1, $ar2)
    return 0;
 }
 //----------------------------------------------
+function quitar_tildes($cadena)
+{
+	$cade = utf8_decode($cadena);
+	$no_permitidas = array("á", "é", "í", "ó", "ú", "Á", "É", "Í", "Ó", "Ú","?");
+	$permitidas = array("a", "e", "i", "o", "u", "A", "E", "I", "O", "U","ñ");
+	$texto = str_replace($no_permitidas, $permitidas, $cade);
+	return $texto;
+}
+
+//----------------------------------------------
 
 //Imprimir los items con la evaluación en una tabla
 
@@ -68,7 +78,7 @@ function advanceReport($category, $program, $semester, $type_report)
             foreach ($coursesResult as $valueC) {
 
                 $curso->setIdUser($value['userid']);
-			    $curso->setNombreProfesor(ucwords(strtolower($value['mdl_user_firstname'])) . " " . ucwords(strtolower($value['mdl_user_lastname'])));
+			    $curso->setNombreProfesor(quitar_tildes(ucwords(strtolower($value['mdl_user_firstname'])) . " " . ucwords(strtolower($value['mdl_user_lastname']))));
 			    $curso->setCorreo($value["mdl_user_email"]);
 			    $curso->setPrograma($program);
 			    $curso->setSemestre($semester["name"]);

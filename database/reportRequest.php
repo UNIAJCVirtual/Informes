@@ -149,7 +149,7 @@ function Courses($course, $userid, $filter)
 
 	return $result;
 }
-function ItemCourse($courseid, $category)
+function ItemCourse($courseid, $tipoReport)
 {
 	require_once("../database/connection.php");
 	$connection3 = connection();
@@ -167,7 +167,7 @@ function ItemCourse($courseid, $category)
 			mdl_grade_categories gc
 		WHERE 
 			gc.id = gi.categoryid AND
-			UPPER(gc.fullname) =  '$category' AND
+			UPPER(gc.fullname) =  '$tipoReport'AND
 			gi.courseid =  $courseid";
 	//echo $quer;
 
