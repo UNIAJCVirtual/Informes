@@ -2,21 +2,40 @@
 include_once("../class/model.php");
 header('Content-Type: text/html; charset=UTF-8');
 
-//Ordenar array con el método sort
+/*
 
-function ordenar($ar1, $ar2)
+@fuction: Ordenar
+@description: El metodo se encarga de comparar el porcentaje de un curso con en anterior, los cuales estan en un array de objectos.
+@param: object
+@param: object
+@return: int : -1 si el curso1 es mayor que el curso2, 1 si el curso1 es menor que el curso2 y 0 si son iguales.
+@author:	José David Lamilla A.
+@version	1.0
+
+*/
+
+function ordenar($curso1, $curso2)
 {
-   if ($ar1->{'porcentaje'} > $ar2->{'porcentaje'}){
+   if ($curso1->{'porcentaje'} > $curso2->{'porcentaje'}){
 	return -1;
    }      
-   else if ($ar1->{'porcentaje'}<$ar2->{'porcentaje'}){
+   else if ($curso1->{'porcentaje'}<$curso2->{'porcentaje'}){
 	return 1;
    }
    return 0;
 }
-//----------------------------------------------
 
-function validarEmail($cont, $e, $c)
+/*
+@fuction: validarEmail
+@description: El metodo se encarga de validar si en el contenido de la información del tutor tiene un correo valido.
+@param: String
+@param: String
+@return: Boolean : indicando true si es valido y false si no es valido.
+@author:	José David Lamilla A.
+@version	2.0
+*/
+
+function validarEmail($cont, $e)
 {
 	$flag = false;
 	$email='';
@@ -25,35 +44,19 @@ function validarEmail($cont, $e, $c)
 	$sin = str_replace($buscar, $reemplazar, strip_tags($cont));
 	$arrayContenido = explode(":", $sin);
 	if (count($arrayContenido) > 0) {
-		$posicion = 0;
 		for ($i = 0; $i < count($arrayContenido); $i++) {
 			if (substr_count($arrayContenido[$i], "@") == 1) {
 				$email = $arrayContenido[$i];
 				$flag = true;
 				break;
-			} else {
-				// echo "Error5  ".$e."  --> ".$arrayContenido[$i]."-->$i<br>";					
 			}
 		}
 		if ($flag) {
 			if ((strpos($email, $e)) !== false) {
 				return true;
-			}
-			if (substr_count($email, "@") == 1) {
-				$var = explode("@", $email);
-				if (strlen($var[0]) > 2) {
-					$domainsExt = array(".com", ".edu", ".es", ".co", ".org", ".gob", ".mil", ".ws", ".biz", ".cc", ".info", ".tv", ".net", ".pro", ".coop");
-					$domainsExt = implode(" ", $domainsExt);
-					$validacion = strpos($domainsExt, ".com");
-					if ($validacion !== false) {
-						return true;
-					} else {
-						return false;
-					}
-				} else {
-					return false;
-				}
-			} else {
+			}else if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+				return true;
+			}else {
 				return false;
 			}
 		} else {
@@ -64,16 +67,32 @@ function validarEmail($cont, $e, $c)
 	}
 }
 
+/*
+@fuction:quitar_tildes
+@description: Permite quitarle las tildes a cualquier variable de tipo String
+@param: String
+@return: String : retorna una cadena sin tildes. 
+@author:	José David Lamilla A.
+@version	2.0
+*/
 
 function quitar_tildes($cadena)
 {
-	$cade = utf8_decode($cadena);
+	$cadena = utf8_decode($cadena);
 	$no_permitidas = array("á", "é", "í", "ó", "ú", "Á", "É", "Í", "Ó", "Ú");
 	$permitidas = array("a", "e", "i", "o", "u", "A", "E", "I", "O", "U");
-	$texto = str_replace($no_permitidas, $permitidas, $cade);
+	$texto = str_replace($no_permitidas, $permitidas, $cadena);
 	return $texto;
 }
 
+/*
+@fuction:
+@description:
+@param: 
+@return: int : 
+@author:	José David Lamilla A.
+@version	2.0
+*/
 
 function enlistmentReport($category, $program, $semester)
 {
