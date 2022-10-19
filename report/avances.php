@@ -1,6 +1,6 @@
 <?php
 
-include("../class/model.php");
+include("../models/avance_model.php");
 
 //Ordenar array con el método sort
 
@@ -54,7 +54,7 @@ function headerDetail($items,$evaluacion)
 
 function advanceReport($category, $program, $semester, $type_report)
 {
-	include("../database/reportRequest.php");
+	include("../services/reportRequest.php");
     $vector_curso = [];
 	$teachesResult = Teachers(implode(",", $program));
 	$verde=0;

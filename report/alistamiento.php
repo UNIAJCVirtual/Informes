@@ -1,5 +1,5 @@
 <?php
-include_once("../class/model.php");
+include_once("../models/alistamiento_model.php");
 header('Content-Type: text/html; charset=UTF-8');
 
 /*
@@ -94,9 +94,9 @@ function quitar_tildes($cadena)
 @version	2.0
 */
 
-function enlistmentReport($category, $program, $semester)
+function enlistmentReport($program, $semester)
 {
-	include("../database/reportRequest.php");
+	include("../services/reportRequest.php");
 	$fechaInicioP1 = strtotime(date("Y")."-02-01 00:00:00",time());
 	$fechaFinalP1 = strtotime(date("Y")."-07-15 00:00:00",time());
 	$fechaInicioP2 = strtotime(date("Y")."-08-01 00:00:00",time());
@@ -128,17 +128,12 @@ function enlistmentReport($category, $program, $semester)
 			$curso->setSemestre($semester);
 			$curso->setIdCurso($columna['course_id']);
 			$curso->setNombreCurso($columna['course_fullname']);
-
-			$contador = 8;
 			$noCumple = 0;
 			$cumple = 0;
-			$unidad=0;
 			while ($resultInformacion = $resultContenido->fetch_assoc()) {
-				$namesection = $resultInformacion['name'];
 				$contenidoName = strtolower($resultInformacion['page_name']);
 				$contenido = strtolower(quitar_tildes($resultInformacion['page_content']));
 				$idsection = $resultInformacion['section_id'];
-				$sectionvisible = $resultInformacion['visible'];
 				
 						if ($idsection == 0) {
 

@@ -125,7 +125,7 @@ function codigo($codigo)
 
 function statistics($program)
 {
-	include("../database/reportRequest.php");
+	include("../services/reportRequest.php");
 
 	$vector_curso = [];
 	$vector_grupo = [];

@@ -14,7 +14,7 @@ switch ($_POST["opc"]) {
 function loadProgram()
 {
 
-	include_once("../database/connection.php");
+	include_once("../services/connection.php");
 	mysqli_set_charset($connection, "utf8");
 	$result = $connection->query("SELECT id, name FROM mdl_course_categories WHERE parent = " . $_POST["category"]);
 	$inputs = "<table>";
@@ -31,7 +31,7 @@ function loadProgram()
 
 function loadSemester()
 {
-	include_once("../database/connection.php");
+	include_once("../services/connection.php");
 	$sql = "SELECT id, name FROM mdl_course_categories WHERE parent = " . $_POST["program"];
 	$result = $connection->query($sql);
 	echo "<option value=''>Seleccionar...</option>";
