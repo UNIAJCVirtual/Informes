@@ -23,7 +23,7 @@
 
 				echo "<div><h1>Alistamiento</h1></div><br>";
 				require_once("alistamiento.php");
-				enlistmentReport($_POST["category"], $_POST["program"], "");
+				enlistmentReport($_POST["program"],$_POST["category"],"");
 				break;
 
 
