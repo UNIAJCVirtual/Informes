@@ -1,6 +1,20 @@
 <?php
-include_once("../class/model.php");
+include_once("../models/alistamiento_model.php");
 header('Content-Type: text/html; charset=UTF-8');
+
+/*
+@Variables publicas
+@description: El metodo se encarga de comparar el porcentaje de un curso con en anterior, los cuales estan en un array de objectos.
+@author:	José David Lamilla A.
+@version	1.0
+@fecha: 26/10/2022
+*/
+
+	$fechaInicio;
+	$fechaFinal;
+	$af01="AVANCE FORMATIVO 1";
+	$af02="AVANCE FORMATIVO 2";
+	$af03="AVANCE FORMATIVO 3";
 
 /*
 
@@ -78,11 +92,43 @@ function validarEmail($cont, $e)
 
 function quitar_tildes($cadena)
 {
-	$cadena = utf8_decode($cadena);
-	$no_permitidas = array("á", "é", "í", "ó", "ú", "Á", "É", "Í", "Ó", "Ú");
-	$permitidas = array("a", "e", "i", "o", "u", "A", "E", "I", "O", "U");
-	$texto = str_replace($no_permitidas, $permitidas, $cadena);
+	$cade = utf8_decode($cadena);
+	$no_permitidas = array("á", "é", "í", "ó", "ú", "Á", "É", "Í", "Ó", "Ú","?");
+	$permitidas = array("a", "e", "i", "o", "u", "A", "E", "I", "O", "U","ñ");
+	$texto = str_replace($no_permitidas, $permitidas, $cade);
 	return $texto;
+}
+
+
+/*
+@fuction: fechaPeriodo
+@description: Se pasan dos variables una del mes actual y la otra del día actual, el metodo
+busca obtener las fechas del periodo actual.
+@param: mes , dia 
+@return: void
+@author:	José David Lamilla A.
+@version	1.0
+@fecha: 25/10/2022
+*/
+
+function fechaPeriodo($mes,$dia)
+{
+	global $fechaFinal, $fechaInicio;
+	if ($mes == 7) {
+		if($dia < 16){
+			$fechaInicio = strtotime(date("Y") . "-01-01 00:00:00", time());
+			$fechaFinal = strtotime(date("Y") . "-07-15 00:00:00", time());
+		}else {
+			$fechaInicio = strtotime(date("Y") . "-07-16 00:00:00", time());
+			$fechaFinal = strtotime(date("Y") . "-12-31 00:00:00", time());
+	    }
+	}elseif ($mes < 7) {
+		$fechaInicio = strtotime(date("Y") . "-01-01 00:00:00", time());
+		$fechaFinal = strtotime(date("Y") . "-07-15 00:00:00", time());
+	}else {
+		$fechaInicio = strtotime(date("Y") . "-07-16 00:00:00", time());
+		$fechaFinal = strtotime(date("Y") . "-12-31 00:00:00", time());
+	}
 }
 
 /*
@@ -94,19 +140,17 @@ function quitar_tildes($cadena)
 @version	2.0
 */
 
-function enlistmentReport($category, $program, $semester)
+function enlistmentReport($program, $semester)
 {
-	include("../database/reportRequest.php");
-	$fechaInicioP1 = strtotime(date("Y")."-02-01 00:00:00",time());
-	$fechaFinalP1 = strtotime(date("Y")."-07-15 00:00:00",time());
-	$fechaInicioP2 = strtotime(date("Y")."-08-01 00:00:00",time());
-	$fechaFinalP2 = strtotime(date("Y")."-12-15 00:00:00",time());
-	$vector_curso = [];
-	$categoriesResult = Categories(implode(",", $program));
+	include("../services/reportRequest.php");
+	fechaPeriodo(date("m"),date("d"));
+	global $fechaFinal, $fechaInicio, $af01, $af02, $af03;
 	$verde=0;
 	$amarillo=0;
 	$rojoClaro=0;
 	$rojoOscuro=0;
+	$vector_curso = [];
+	$categoriesResult = Categories(implode(",", $program));
 
 	foreach ($categoriesResult as $val) {
 
@@ -120,7 +164,6 @@ function enlistmentReport($category, $program, $semester)
 			$curso = new alistamiento(); 
 			$email = trim(strtolower($columna['email']));
 			$resultContenido = content($columna['course_id']);
-
 			$curso->setIdUser($columna['user_id']);
 			$curso->setNombre(ucwords(strtolower($columna['firstname'])) . " " . ucwords(strtolower($columna['lastname'])));
 			$curso->setCorreo($columna['email']);
@@ -128,83 +171,91 @@ function enlistmentReport($category, $program, $semester)
 			$curso->setSemestre($semester);
 			$curso->setIdCurso($columna['course_id']);
 			$curso->setNombreCurso($columna['course_fullname']);
-
-			$contador = 8;
 			$noCumple = 0;
 			$cumple = 0;
-			$unidad=0;
 			while ($resultInformacion = $resultContenido->fetch_assoc()) {
-				$namesection = $resultInformacion['name'];
 				$contenidoName = strtolower($resultInformacion['page_name']);
 				$contenido = strtolower(quitar_tildes($resultInformacion['page_content']));
 				$idsection = $resultInformacion['section_id'];
-				$sectionvisible = $resultInformacion['visible'];
 				
 						if ($idsection == 0) {
+								
+							
+								//Req. 1 - Validar si existe la pagina de Información del profesor
+								
 
-							//Req. 1 - Información del docente
-							$nombreCompleto = strtolower($columna['firstname'])." ".strtolower($columna['lastname']);
-							$Nombre =explode(" ",$nombreCompleto);
-							$name=false;
-							foreach ($Nombre as $valor) {
-								if ($valor != null) {
-									if ((strpos($contenidoName, $valor))) {
-										$curso->setNombreProfesor("CUMPLE");
-										$cumple++;
-										break;
-									}else{
-										$name=true;
+								//Req. 2 - Nombre del profesor
+
+								$nombreCompleto = strtolower($columna['firstname'])." ".strtolower($columna['lastname']);
+								$Nombre =explode(" ",$nombreCompleto);
+								$name=false;
+
+								foreach ($Nombre as $valor) {
+									if ($valor != null) {
+										if ((strpos($contenidoName, $valor))) {
+											$curso->setNombreProfesor("CUMPLE");
+											$cumple++;
+											break;
+										}else{
+											$name=true;
+										}
 									}
 								}
-							}
-							if($name){
-								$curso->setNombreProfesor("NO CUMPLE");
-								$noCumple++;
-							}
-							// Req. 2 - Información de contacto (email)
-							$validar = strpos($contenido, $email);
-							if ($validar !== false) {
-								$curso->setCorreoProfesor("CUMPLE");
-								$cumple++;
-							} else {
-								if (validarEmail($contenido, $email, $columna['course_fullname'])) {
+								if($name){
+									$curso->setNombreProfesor("NO CUMPLE");
+									$noCumple++;
+								}
+								// Req. 2 - Información de contacto (email)
+								$validar = strpos($contenido, $email);
+								if ($validar !== false) {
 									$curso->setCorreoProfesor("CUMPLE");
 									$cumple++;
 								} else {
-									$curso->setCorreoProfesor("NO CUMPLE");
+									if (validarEmail($contenido, $email, $columna['course_fullname'])) {
+										$curso->setCorreoProfesor("CUMPLE");
+										$cumple++;
+									} else {
+										$curso->setCorreoProfesor("NO CUMPLE");
+										$noCumple++;
+									}
+								}
+								//Req. 3 - Horario de atención
+								if ((strpos($contenido, 'indicar las horas de atencion que tendra para sus estudiantes') !== false)) {
+									$curso->setHorarioAtencion("NO CUMPLE");
+									$noCumple++;
+								} else  if (
+									(strpos($contenido, 'lunes') !== false) ||
+									(strpos($contenido, 'martes') !== false) ||
+									(strpos($contenido, 'miercoles') !== false) ||
+									(strpos($contenido, 'jueves') !== false) ||
+									(strpos($contenido, 'viernes') !== false) ||
+									(strpos($contenido, 'sabado') !== false) ||
+									(strpos($contenido, 'sabados') !== false) ||
+									(strpos($contenido, 'domingo') !== false) ||
+									(strpos($contenido, 'domingos') !== false)
+								) {
+									$curso->setHorarioAtencion("CUMPLE");
+									$cumple++;
+								} else {
+									$curso->setHorarioAtencion("NO CUMPLE");
 									$noCumple++;
 								}
-							}
-							//Req. 3 - Horario de atención
-							if ((strpos($contenido, 'indicar las horas de atencion que tendra para sus estudiantes') !== false)) {
+								//Req. 4 - Fotografia del Profesor
+								if ((strpos($contenido, 'insertar foto de tamaño 200')) !== false) {
+									$curso->setFotografia("NO CUMPLE");
+									$noCumple++;
+								} else {
+									$curso->setFotografia("CUMPLE");
+									$cumple++;
+								}
+							}else{
+								$curso->setNombreProfesor("NO CUMPLE");
+								$curso->setCorreoProfesor("NO CUMPLE");
 								$curso->setHorarioAtencion("NO CUMPLE");
-								$noCumple++;
-							} else  if (
-								(strpos($contenido, 'lunes') !== false) ||
-								(strpos($contenido, 'martes') !== false) ||
-								(strpos($contenido, 'miercoles') !== false) ||
-								(strpos($contenido, 'jueves') !== false) ||
-								(strpos($contenido, 'viernes') !== false) ||
-								(strpos($contenido, 'sabado') !== false) ||
-								(strpos($contenido, 'domingo') !== false)
-							) {
-								$curso->setHorarioAtencion("CUMPLE");
-								$cumple++;
-							} else {
-								$curso->setHorarioAtencion("NO CUMPLE");
-								$noCumple++;
-							}
-							//Req. 4 - Fotografia del Profesor
-							if ((strpos($contenido, 'insertar foto de tamaño 200')) !== false) {
 								$curso->setFotografia("NO CUMPLE");
-								
-								$noCumple++;
-							} else {
-								$curso->setFotografia("CUMPLE");
-								$cumple++;
+								$noCumple+=4;
 							}
-
-							// validacion foro consulta
+							//Req. 5 validacion foro consulta
 							$resultFC = forum($columna['course_id']);
 
 							if ($resultFC->num_rows > 0) {
@@ -222,7 +273,7 @@ function enlistmentReport($category, $program, $semester)
 								$curso->setForoConsulta("NO CUMPLE");
 								$noCumple++;
 							}
-						} else{
+					
 							// validacion de unidades
 							$sumarycon = $resultInformacion['summary'];
 
@@ -232,32 +283,31 @@ function enlistmentReport($category, $program, $semester)
 								$columnaval = mysqli_fetch_array($resultValidacion);
 								$contadorval = $columnaval['contador'];
 								$contadorval = (int) $contadorval;
-								$section = $columnaval['section'];
 
 							if ((strpos($sumarycon, 'DD/MM/AAAA')) !== false) {
 								$curso->unidades[]= "NO CUMPLE";
 								$noCumple++;
 								
 								} else {
-									$curso->unidades[]= "CUMPLE";
+								$curso->unidades[]= "CUMPLE";
 								$cumple++;
 								}
 							}
-						}
+						
 			}
 
-			$avanceFormativo1 = gradeItems($columna['course_id'], "AVANCE FORMATIVO 1");
+			$avanceFormativo1 = gradeItems($columna['course_id'], $af01);
 			$rowsAvanceFormativo1 = $avanceFormativo1->num_rows;
 
-			$avanceFormativo2 = gradeItems($columna['course_id'], "AVANCE FORMATIVO 2");
+			$avanceFormativo2 = gradeItems($columna['course_id'], $af02);
 			$rowsAvanceFormativo2 = $avanceFormativo2->num_rows;
 
-			$avanceFormativo3 = gradeItems($columna['course_id'], "AVANCE FORMATIVO 3");
+			$avanceFormativo3 = gradeItems($columna['course_id'], $af03);
 			$rowsAvanceFormativo3 = $avanceFormativo3->num_rows;
 
 			
 
-			//Revisar libro de calificaciones categoría Avance formativo 1------------------------	
+			//Revisar libro de calificaciones categoría $af01------------------------	
 
 			if ($rowsAvanceFormativo1 > 0) {
 
@@ -269,13 +319,12 @@ function enlistmentReport($category, $program, $semester)
 				$noCumpleDispo=0;
 				$CumpleDispo=0;
 
-				//Disponibilidad de las actividades  Avance formativo 1------------------------------------------
+				//Disponibilidad de las actividades  $af01------------------------------------------
 
 				foreach ($avanceFormativo1 as $record) {
 
 				if ($record["itemmodule"] == "assign") {
-						$dataAssign = dataAssign($record["iteminstance"]);
-				
+				$dataAssign = dataAssign($record["iteminstance"]);
 				foreach ($dataAssign as $data) {
 
 					if ($data["duedate"] == 0 || $data["allowsubmissionsfromdate"] == 0 || $data["cutoffdate"] == 0) {
@@ -288,8 +337,7 @@ function enlistmentReport($category, $program, $semester)
 						//Variable de Fecha límite
 						$cutoffdate = intval($data["cutoffdate"]);
 
-						if ($dateSubmissions > $fechaInicioP1 && $duedate > $fechaInicioP1 && $cutoffdate < $fechaFinalP1 
-						 || $dateSubmissions > $fechaInicioP2 && $duedate > $fechaInicioP2 && $cutoffdate < $fechaFinalP2 ) {
+						if ($dateSubmissions > $fechaInicio && $duedate > $fechaInicio && $cutoffdate < $fechaFinal) {
 							$CumpleDispo++;
 						} else {
 							$noCumpleDispo++;
@@ -307,8 +355,7 @@ function enlistmentReport($category, $program, $semester)
 						$timeOpen = $data["timeopen"];
 						//la variable timeClose significa la fecha cerrar cuestionario
 						$timeClose = $data["timeclose"];
-						if ($timeOpen > $fechaInicioP1 && $timeClose < $fechaFinalP1 ||
-							$timeOpen > $fechaInicioP2 && $timeClose < $fechaFinalP2) {
+						if ($timeOpen > $fechaInicio && $timeClose < $fechaFinal) {
 							$CumpleDispo++;
 						} else {
 							$noCumpleDispo++;
@@ -326,8 +373,7 @@ function enlistmentReport($category, $program, $semester)
 						$duedate = $data["duedate"];
 						//la variable cutoffdate significa Fecha límite
 						$cutoffdate = $data["cutoffdate"];
-						if ($duedate > $fechaInicioP1 && $cutoffdate < $fechaFinalP1 ||
-							$duedate > $fechaInicioP2 && $cutoffdate < $fechaFinalP2) {
+						if ($duedate > $fechaInicio && $cutoffdate < $fechaFinal) {
 							$CumpleDispo++;
 						} else {
 							$noCumpleDispo++;
@@ -343,13 +389,13 @@ function enlistmentReport($category, $program, $semester)
 			$curso->setAF01Disponibilidad("CUMPLE");
 			$cumple++;
 		}
-		//------Ponderación de las actividades  Avance formativo 1------------------------------------------------------------------------
+		//------Ponderación de las actividades  $af01------------------------------------------------------------------------
 				
 				if ($weighing["gradeSum"] > 100 || $weighing["gradeSum"] == 0) {
 					$curso->setAF01Ponderaciones("NO CUMPLE");
 					$noCumple++;
 				} else {
-					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 30 || $weighing["gradeSum"] == 0.30 || $weighing["gradeSum"] == 1) {
+					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 30 || $weighing["gradeSum"] == 0.30 || $weighing["gradeSum"] == 1 || $weighing["gradeSum"] == 99.99) {
 						$curso->setAF01Ponderaciones("CUMPLE");
 						$cumple++;
 					} else {
@@ -366,7 +412,7 @@ function enlistmentReport($category, $program, $semester)
 				$noCumple+=3;
 			}
 
-			//Revisar libro de calificaciones categoría Avance formativo 2------------------------	
+			//Revisar libro de calificaciones categoría $af02------------------------	
 
 			if ($rowsAvanceFormativo2 > 0) {
 				$curso->setAF02Actividades("CUMPLE");
@@ -376,7 +422,7 @@ function enlistmentReport($category, $program, $semester)
 				$noCumpleDispo=0;
 				$CumpleDispo=0;
 
-			//Disponibilidad de las actividades  Avance formativo 2------------------------------------------
+			//Disponibilidad de las actividades  $af02------------------------------------------
 
 				foreach ($avanceFormativo2 as $record) {
 
@@ -395,8 +441,7 @@ function enlistmentReport($category, $program, $semester)
 						//Variable de Fecha límite
 						$cutoffdate = intval($data["cutoffdate"]);
 
-						if ($dateSubmissions > $fechaInicioP1 && $duedate > $fechaInicioP1 && $cutoffdate < $fechaFinalP1 
-						 || $dateSubmissions > $fechaInicioP2 && $duedate > $fechaInicioP2 && $cutoffdate < $fechaFinalP2 ) {
+						if ($dateSubmissions > $fechaInicio && $duedate > $fechaInicio && $cutoffdate < $fechaFinal) {
 							$CumpleDispo++;
 						} else {
 							$noCumpleDispo++;
@@ -414,8 +459,7 @@ function enlistmentReport($category, $program, $semester)
 						$timeOpen = $data["timeopen"];
 						//la variable timeClose significa la fecha cerrar cuestionario
 						$timeClose = $data["timeclose"];
-						if ($timeOpen > $fechaInicioP1 && $timeClose < $fechaFinalP1 ||
-							$timeOpen > $fechaInicioP2 && $timeClose < $fechaFinalP2) {
+						if ($timeOpen > $fechaInicio && $timeClose < $fechaFinal) {
 							$CumpleDispo++;
 						} else {
 							$noCumpleDispo++;
@@ -433,8 +477,7 @@ function enlistmentReport($category, $program, $semester)
 						$duedate = $data["duedate"];
 						//la variable cutoffdate significa Fecha límite
 						$cutoffdate = $data["cutoffdate"];
-						if ($duedate > $fechaInicioP1 && $cutoffdate < $fechaFinalP1 ||
-							$duedate > $fechaInicioP2 && $cutoffdate < $fechaFinalP2) {
+						if ($duedate > $fechaInicio && $cutoffdate < $fechaFinal) {
 							$CumpleDispo++;
 						} else {
 							$noCumpleDispo++;
@@ -450,13 +493,13 @@ function enlistmentReport($category, $program, $semester)
 			$curso->setAF02Disponibilidad("CUMPLE");
 			$cumple++;
 		}
-		//------Ponderación de las actividades  Avance formativo 2------------------------------------------------------------------------
+		//------Ponderación de las actividades  $af02------------------------------------------------------------------------
 				
 				if ($weighing["gradeSum"] > 100 || $weighing["gradeSum"] == 0) {
 					$curso->setAF02Ponderaciones("NO CUMPLE");
 					$noCumple++;
 				} else {
-					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 30 || $weighing["gradeSum"] == 0.30 || $weighing["gradeSum"] == 1) {
+					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 30 || $weighing["gradeSum"] == 0.30 || $weighing["gradeSum"] == 1 || $weighing["gradeSum"] == 99.99) {
 						$curso->setAF02Ponderaciones("CUMPLE");
 						$cumple++;
 					} else {
@@ -471,7 +514,7 @@ function enlistmentReport($category, $program, $semester)
 				$noCumple+=3;
 			}
 
-		//Revisar libro de calificaciones categoría Avance formativo 3------------------------	
+		//Revisar libro de calificaciones categoría $af03------------------------	
 
 			if ($rowsAvanceFormativo3 > 0) {
 				$curso->setAF03Actividades("CUMPLE");
@@ -481,7 +524,7 @@ function enlistmentReport($category, $program, $semester)
 				$noCumpleDispo=0;
 				$CumpleDispo=0;
 
-			//Disponibilidad de las actividades  Avance formativo 3------------------------------------------
+			//Disponibilidad de las actividades  $af03------------------------------------------
 
 				foreach ($avanceFormativo3 as $record) {
 
@@ -500,8 +543,7 @@ function enlistmentReport($category, $program, $semester)
 						//Variable de Fecha límite
 						$cutoffdate = intval($data["cutoffdate"]);
 
-						if ($dateSubmissions > $fechaInicioP1 && $duedate > $fechaInicioP1 && $cutoffdate < $fechaFinalP1 
-						 || $dateSubmissions > $fechaInicioP2 && $duedate > $fechaInicioP2 && $cutoffdate < $fechaFinalP2 ) {
+						if ($dateSubmissions > $fechaInicio && $duedate > $fechaInicio && $cutoffdate < $fechaFinal) {
 							$CumpleDispo++;
 						} else {
 							$noCumpleDispo++;
@@ -519,8 +561,7 @@ function enlistmentReport($category, $program, $semester)
 						$timeOpen = $data["timeopen"];
 						//la variable timeClose significa la fecha cerrar cuestionario
 						$timeClose = $data["timeclose"];
-						if ($timeOpen > $fechaInicioP1 && $timeClose < $fechaFinalP1 ||
-							$timeOpen > $fechaInicioP2 && $timeClose < $fechaFinalP2) {
+						if ($timeOpen > $fechaInicio && $timeClose < $fechaFinal) {
 							$CumpleDispo++;
 						} else {
 							$noCumpleDispo++;
@@ -538,8 +579,7 @@ function enlistmentReport($category, $program, $semester)
 						$duedate = $data["duedate"];
 						//la variable cutoffdate significa Fecha límite
 						$cutoffdate = $data["cutoffdate"];
-						if ($duedate > $fechaInicioP1 && $cutoffdate < $fechaFinalP1 ||
-							$duedate > $fechaInicioP2 && $cutoffdate < $fechaFinalP2) {
+						if ($duedate > $fechaInicio && $cutoffdate < $fechaFinal) {
 							$CumpleDispo++;
 						} else {
 							$noCumpleDispo++;
@@ -555,14 +595,14 @@ function enlistmentReport($category, $program, $semester)
 			$curso->setAF03Disponibilidad("CUMPLE");
 			$cumple++;
 		}
-		//------Ponderación de las actividades  Avance formativo 3------------------------------------------------------------------------
+		//------Ponderación de las actividades  $af03------------------------------------------------------------------------
 		
 
 				if ($weighing["gradeSum"] > 100 || $weighing["gradeSum"] == 0) {
 					$curso->setAF03Ponderaciones("NO CUMPLE");
 					$noCumple++;
 				} else {
-					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 40 || $weighing["gradeSum"] == 0.40 || $weighing["gradeSum"] == 1) {
+					if ($weighing["gradeSum"] == 100 || $weighing["gradeSum"] == 40 || $weighing["gradeSum"] == 0.40 || $weighing["gradeSum"] == 1 || $weighing["gradeSum"] == 99.99) {
 						$curso->setAF03Ponderaciones("CUMPLE");
 						$cumple++;
 					} else {
@@ -579,7 +619,7 @@ function enlistmentReport($category, $program, $semester)
 		//-----------------------------------------------------------------------------
 
 			$total = $noCumple+$cumple;
-			$porcentaje = (round(((100 / $total) * $cumple), 2));
+			$porcentaje = (round(((100 / $total) * $cumple)));
 			$curso->setPorcentaje($porcentaje);
 			$vector_curso[] = $curso;
 		}
@@ -587,46 +627,39 @@ function enlistmentReport($category, $program, $semester)
 	usort($vector_curso,'ordenar');
 
 	echo("
-	<table class='table'>
-		<tr class='td1'>
-			<td class='td1' rowspan='2'>ID user</td>
-			<td class='td1' rowspan='2'>Nombre</td>
-			<td class='td1' rowspan='2'>Correo</td>
-			<td class='td1' rowspan='2'>Programa</td>
-			<td class='td1' rowspan='2'>Semestre</td>
-			<td class='td1' rowspan='2'>Curso</td>
-			<td class='td1' rowspan='2'>Nombre del curso</td>
-			<td class='td1' colspan='4'>Presentación del profesor</td>
-			<td class='td1' colspan='9'>Foro de consultas y fechas de unidades</td>
-			<td class='td1' colspan='3'>Avance formativo 1</td>
-			<td class='td1' colspan='3'>Avance formativo 2</td>
-			<td class='td1' colspan='3'>Avance formativo 3</td>
-			<td class='td1' rowspan='2'>Porcentaje</td>
-		</tr>
-		<tr class='td1'>
-			<td class='td1'>Nombre</td>
-			<td class='td1'>Correo</td>
-			<td class='td1'>Horario de atención</td>
-			<td class='td1'>Fotografía</td>
-			<td class='td1'>Foro de consulta</td>
-			<td class='td1'>Unidad 1</td>
-			<td class='td1'>Unidad 2</td>
-			<td class='td1'>Unidad 3</td>
-			<td class='td1'>Unidad 4</td>
-			<td class='td1'>Unidad 5</td>
-			<td class='td1'>Unidad 6</td>
-			<td class='td1'>Unidad 7</td>
-			<td class='td1'>Unidad 8</td>
-			<td class='td1'>Actividades</td>
-			<td class='td1'>Disponibilidad</td>
-			<td class='td1'>Ponderaciones</td>
-			<td class='td1'>Actividades</td>
-			<td class='td1'>Disponibilidad</td>
-			<td class='td1'>Ponderaciones</td>
-			<td class='td1'>Actividades</td>
-			<td class='td1'>Disponibilidad</td>
-			<td class='td1'>Ponderaciones</td>
-		</tr>");
+	<table id='example' class='table table-striped table-bordered' cellspacing='0' width='100%'>
+	<thead class='td1 thead-table' nowrap>
+		<td class='td1'>ID user</td>
+		<td class='td1'>Nombre</td>
+		<td class='td1'>Correo</td>
+		<td class='td1'>Programa</td>
+		<td class='td1'>Semestre</td>
+		<td class='td1'>Curso</td>
+		<td class='td1'>Nombre del curso</td>
+		<td class='td1'>Nombre del profesor</td>
+		<td class='td1'>Correo</td>
+		<td class='td1'>Horario de atención</td>
+		<td class='td1'>Fotografía</td>
+		<td class='td1'>Foro de consulta</td>
+		<td class='td1'>Fecha de inicio y Finalización Unidad 1</td>
+		<td class='td1'>Fecha de inicio y Finalización Unidad 2</td>
+		<td class='td1'>Fecha de inicio y Finalización Unidad 3</td>
+		<td class='td1'>Fecha de inicio y Finalización Unidad 4</td>
+		<td class='td1'>Fecha de inicio y Finalización Unidad 5</td>
+		<td class='td1'>Fecha de inicio y Finalización Unidad 6</td>
+		<td class='td1'>Fecha de inicio y Finalización Unidad 7</td>
+		<td class='td1'>Fecha de inicio y Finalización Unidad 8</td>
+		<td class='td1'>AF01 Actividades</td>
+		<td class='td1'>AF01 Disponibilidad</td>
+		<td class='td1'>AF01 Ponderaciones</td>
+		<td class='td1'>AF02 Actividades</td>
+		<td class='td1'>AF02 Disponibilidad</td>
+		<td class='td1'>AF02 Ponderaciones</td>
+		<td class='td1'>AF03 Actividades</td>
+		<td class='td1'>AF03 Disponibilidad</td>
+		<td class='td1'>AF03 Ponderaciones</td>
+		<td class='td1'>Porcentaje</td>
+	</thead>");
 	
 	foreach($vector_curso as $curse){
 		
@@ -650,7 +683,8 @@ function enlistmentReport($category, $program, $semester)
 			$rojoOscuro++;
 			$color="tr4";
 		}
-		echo("<tr class='".$color."'>
+		echo("
+		<tr class='".$color."'>
 		<td class='".$color."'>".$curse->getIdUser()."</td>
 		<td class='".$color."'>".$curse->getNombre()."</td>
 		<td class='".$color."'>".$curse->getCorreo()."</td>
@@ -691,7 +725,7 @@ function enlistmentReport($category, $program, $semester)
 
 	$sum=$verde+$amarillo+$rojoClaro+$rojoOscuro;
 	
-	echo"
+	echo("
 	</table>
 	<br>
 
@@ -723,8 +757,7 @@ function enlistmentReport($category, $program, $semester)
 		<td class='td1' colspan='2'>".$sum."</td>
 		</tr>
 	</table>
-	";
+	");
 	
 	
 }
-?>

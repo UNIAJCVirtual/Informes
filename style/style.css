@@ -1,52 +1,13 @@
     :root {
         --select-color: #0468BF;
-        --select-text-color:#ffffff;
+        --select-text-color: #ffffff;
         --primary-color: #011a62;
         --blue-color: #00afef;
         --white-color: #fff;
         --black-color: #000;
     }
 
-.preloader{
-    width: 100%;
-    height: 100%;
-    background: var(--black-color);
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 1000;
-}
-.spiner{
-    width: 70px;
-    height: 70px;
-    border-top: 5px solid var(--primary-color);
-    border-right:5px solid transparent ;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    margin: auto;
-    z-index: 100000;
-}
-
-.spiner > div {
-    box-sizing: border-box;
-    margin: auto;
-    width: 100%;
-    height: 100%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    100%{
-        transform: rotate(360deg);
-    }
-}
-
-    .tables{
+    .tables {
         table-layout: fixed;
         border-color: #0000008d;
         text-align: left;
@@ -54,13 +15,13 @@
         display: flex;
     }
 
-    select{
+    select {
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
         width: auto;
         padding: 6px 8px;
-        font-family: 'Poppins',sans-serif;
+        font-family: 'Poppins', sans-serif;
         font-weight: 300px;
         font-size: 14px;
         letter-spacing: 0.5px;
@@ -72,41 +33,48 @@
         background-size: 47px;
         background-position: 247px 0.5px;
         outline: none;
-        box-shadow: 0 0 20px rgba(20,20,30,0.25);
+        box-shadow: 0 0 20px rgba(20, 20, 30, 0.25);
     }
-    select::-ms-expand{
+
+    select::-ms-expand {
         display: none;
     }
-    select:hover{
+
+    select:hover {
         border: 1px solid #ffffff;
         background-color: var(--select-color);
         color: var(--white-color);
     }
-    select option{
+
+    select option {
         background-color: #ffffff;
         color: rgb(0, 0, 0);
         font-size: 14px;
         padding: 6px 8px;
     }
+
     select option:hover {
         box-shadow: 0 0 10px 100px #000 inset;
         padding: 6px 8px;
         background-color: #ffffff;
     }
-    .contenedor{
+
+    .contenedor {
         background-color: #e7e7e7c3;
         display: flex;
         justify-content: center;
         align-items: center;
-        
+
     }
-    .tablepanel{
+
+    .tablepanel {
         margin-top: 50px;
         margin-bottom: 10px;
         border-collapse: separate;
         align-items: center;
     }
-    .panel{
+
+    .panel {
         width: 900px;
         height: 300px;
         border-radius: 5px;
@@ -114,13 +82,15 @@
         position: absolute;
         top: 30%;
         left: 50%;
-        transform: translate(-50%,-50%);
+        transform: translate(-50%, -50%);
     }
-    .btn:hover{
+
+    .btn:hover {
         background-position: right;
         color: #FFF;
     }
-    .btn{
+
+    .btn {
         border: 3px solid rgba(100, 100, 100, 0.1);
         width: 900px;
         height: auto;
@@ -132,8 +102,9 @@
         background-size: 300%;
         transition: 0.5s;
     }
-    .btn1{
-        background: linear-gradient(to right,var(--blue-color) 0%,var(--primary-color) 51%,var(--blue-color) 100%);
+
+    .btn1 {
+        background: linear-gradient(to right, var(--blue-color) 0%, var(--primary-color) 51%, var(--blue-color) 100%);
         background-size: 200% auto;
         font-family: var(--title-fonts);
         font-size: 16px;
@@ -147,124 +118,146 @@
         -moz-border-radius: 5px;
         border-radius: 5px;
     }
-    img{
+
+    img {
         width: 900px;
         height: 200px;
         display: block;
         margin: auto;
         border-radius: 4px;
     }
-    .text{
+
+    .text {
         color: rgb(0, 0, 0);
         font-size: 18px;
     }
 
-    h2{
+    h2 {
         color: rgb(0, 0, 0);
     }
-    input{
+
+    input {
         width: 100%;
         height: 38px;
     }
-    .top1{
+
+    .top1 {
         padding-top: 20px;
     }
-    .top2{
+
+    .top2 {
         padding-top: 20px;
         padding-left: 2px;
         margin-left: 30px;
     }
 
-    .td1{
+    .td1 {
         background: black;
-        color:white;
+        color: white;
         text-align: center;
         border: 1px solid rgb(255, 255, 255);
-    border-spacing: 10px 5px;
+        border-spacing: 10px 5px;
     }
-    .td2{
+
+    .td2 {
         background: #00529c;
-        color:white;
+        color: white;
         text-align: center;
         border: 1px solid black;
-        width:auto;
+        width: auto;
     }
-    .tr5{
+
+    .tr5 {
         background: #ffffff;
         text-align: center;
         border: 1px solid black;
-        width:auto;
+        width: auto;
     }
-    .tr1{
+
+    .tr1 {
         background: #a6e3b7;
         text-align: center;
         border: 1px solid black;
-        width:auto;
+        width: auto;
     }
-    .tr2{
+
+    .tr2 {
         background: #ffff99;
         text-align: center;
         border: 1px solid black;
-        width:auto;
+        width: auto;
     }
-    .tr3{
+
+    .tr3 {
         background: #ffc2c2;
         text-align: center;
         border: 1px solid black;
-        width:auto;
+        width: auto;
     }
-    .tr4{
+
+    .tr4 {
         background: #ff9999;
         text-align: center;
         border: 1px solid black;
-        width:auto;
-        
+        width: auto;
+
     }
-    .tr5{
+
+    .tr5 {
         background: #ffffff;
         text-align: center;
         border: 1px solid black;
-        width:auto;
+        width: auto;
     }
-    .tdX{
+
+    .tdX {
         background: #f13131;
         color: white;
     }
-    .td-simple-color:nth-child(even){
+
+    .td-simple-color:nth-child(even) {
         background-color: #4d97a2;
     }
 
-    .td-simple-color:nth-child(odd){
+    .td-simple-color:nth-child(odd) {
         background-color: #c92424bd;
     }
-    input[type=checkbox]{
+
+    input[type=checkbox] {
         width: 10%;
         height: auto;
     }
-    #div_scale, #div_date{
+
+    #div_scale, #div_date {
         display: none;
     }
-    .small_button{
+
+    .small_button {
         width: 350px;
     }
-    .carga{
+
+    .carga {
         background: #000000a6;
         height: 100%;
         position: fixed;
         width: 100%;
     }
-    .carga div{
+
+    .carga div {
         margin: 37%;
         width: 500px;
         color: white;
     }
-    .carga div h1{
+
+    .carga div h1 {
         font-size: 35pt;
     }
-    .hidden{
+
+    .hidden {
         display: none;
     }
-    .btn_proccess{
+
+    .btn_proccess {
         float: left;
         margin-right: 33px;
     }

@@ -153,6 +153,7 @@ function statistics($program)
 				$curso->setNombreCurso($column['course_fullname']);
 				$curso->setNombreProfesor(ucwords(strtolower($column['firstname'])) . " " . ucwords(strtolower($column['lastname'])));
 				$curso->setEstudiantes($estudiantesMatriculados['matriculados']-$profesoresMatriculados['matriculados']);
+				$cantidadEstudiantes += $curso->getEstudiantes();
 
 				$vector_semestre []= $curso->getSemestre();
 				$vector_grupo[] = $curso->getGrupo();
@@ -163,10 +164,10 @@ function statistics($program)
 		}
 	}
 	echo "
-	<table id='example' class='table table-striped table-bordered' cellspacing='0' width='100%'>
-	<thead class='td2'>
+	<table class='table'>
+		<tr class='td2'>
 			<th colspan='7'>ESTADISTICA DE LOS CURSOS EN AULAS VIRTUALES MOODLE " . $programa . "</th>
-		</thead>
+		</tr>
 		<tr class='td2'>
 			<th class='td2'>Fecha</th>
 			<th class='td2'>Semestre</th>
@@ -181,7 +182,7 @@ function statistics($program)
 	$cantidadGrupos = count(elementosUnicos($vector_grupo));
 	$cantidadCodigos = count(elementosUnicos($vector_codigo));
 	$cantidadProfesores = count(elementosUnicos($vector_profesor));
-	$cantidadEstudiantes = count(elementosUnicos($vector_estudiantes))-$cantidadProfesores ;
+	
 	$fecha = date("Y-m-d H:i:s");
 
 	foreach ($vector_curso as $curse) {

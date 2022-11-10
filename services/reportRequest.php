@@ -2,7 +2,7 @@
 // Statistics Rport
 function Categories($id_programs)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$result = $connection3->query("SELECT DISTINCT id FROM mdl_course_categories WHERE parent IN(" . $id_programs . ")");
@@ -11,7 +11,7 @@ function Categories($id_programs)
 }
 function NameCategory($id)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$result = $connection3->query("SELECT id,name,parent FROM mdl_course_categories WHERE id =" . $id);
@@ -21,7 +21,7 @@ function NameCategory($id)
 }
 function Program($id)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$result = $connection3->query("SELECT id,name,parent FROM mdl_course_categories WHERE id =" . $id);
@@ -31,7 +31,7 @@ function Program($id)
 }
 function StatisticsInformation($id)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$result = $connection3->query("
@@ -67,9 +67,44 @@ function StatisticsInformation($id)
 	$connection3->close();
 	return $result;
 }
+function StatisticsInformation2($id)
+{
+	require_once("../services/connection.php");
+	$connection3 = connection();
+	mysqli_set_charset($connection3, "utf8");
+	$result = $connection3->query("
+				SELECT distinct
+					mdl_user.username,
+					mdl_user.id user_id,
+					mdl_course.fullname  course_fullname,
+					mdl_course.shortname course_shortname,
+					mdl_course.id  course_id,
+					mdl_course.startdate startdate,
+					mdl_course.enddate enddate
+					FROM 
+					mdl_user, 
+					mdl_role,
+					mdl_role_assignments,
+					mdl_user_enrolments,
+					mdl_course, 
+					mdl_enrol
+					WHERE 
+					mdl_role.id = mdl_role_assignments.roleid AND
+					mdl_role_assignments.userid = mdl_user.id AND
+					mdl_user.id = mdl_user_enrolments.userid AND
+					mdl_course.id = mdl_enrol.courseid AND
+					mdl_enrol.id= mdl_user_enrolments.enrolid AND
+					mdl_role.id = 5 AND 
+					mdl_course.visible=TRUE AND
+					mdl_course.category = " . $id . "
+			");
+	$connection3->close();
+	return $result;
+}
+
 function Enrolled($id, $tipoRol)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$result = $connection3->query("
@@ -99,7 +134,7 @@ function Enrolled($id, $tipoRol)
 }
 function Teachers($filter)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$query = "SELECT DISTINCT u.id userid, u.username AS mdl_user_username, u.firstname AS mdl_user_firstname, u.lastname AS mdl_user_lastname, u.email AS mdl_user_email, c.fullname course_name, c.id courseid, c.category cat 
@@ -123,7 +158,7 @@ function Teachers($filter)
 }
 function Courses($course, $userid, $filter)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$result = $connection3->query("
@@ -151,7 +186,7 @@ function Courses($course, $userid, $filter)
 }
 function ItemCourse($courseid, $tipoReport)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$quer = "
@@ -178,7 +213,7 @@ function ItemCourse($courseid, $tipoReport)
 function dataAssign($id)
 {
 
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$quer = "
@@ -197,7 +232,7 @@ function dataAssign($id)
 function dataQuiz($id)
 {
 
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$quer = "
@@ -217,7 +252,7 @@ function dataQuiz($id)
 function dataForum($id)
 {
 
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$quer = "
@@ -237,7 +272,7 @@ function dataForum($id)
 function gradeItems($courseid, $category)
 {
 
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$quer = "
@@ -265,7 +300,7 @@ function gradeItems($courseid, $category)
 function weighing($courseid, $categoryid)
 {
 
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$quer = "
@@ -283,7 +318,7 @@ function weighing($courseid, $categoryid)
 }
 function ScoreItem($itemid)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$query = "
@@ -302,7 +337,7 @@ function ScoreItem($itemid)
 }
 function FeedbackForum1($courseid, $instance)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$result = $connection3->query("
@@ -319,7 +354,7 @@ function FeedbackForum1($courseid, $instance)
 }
 function FeedbackForum2($id, $user)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$result = $connection3->query("
@@ -341,7 +376,7 @@ function FeedbackForum2($id, $user)
 
 function FeedbackActivity($iteminstance)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$result = $connection3->query("
@@ -359,7 +394,7 @@ function FeedbackActivity($iteminstance)
 }
 function content($course)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$result = $connection3->query("
@@ -385,7 +420,7 @@ function content($course)
 }
 function forum($course)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$result = $connection3->query("
@@ -401,7 +436,7 @@ function forum($course)
 }
 function forumDiscussions($id)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$result = $connection3->query("
@@ -416,7 +451,7 @@ function forumDiscussions($id)
 }
 function summary($idsection, $course)
 {
-	require_once("../database/connection.php");
+	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$result =  $connection3->query("
