@@ -15,6 +15,17 @@ $amarillo = 0;
 $rojoClaro = 0;
 $rojoOscuro = 0;
 
+//----------------------------------------------
+function elementosUnicos($array)
+{
+	$arraySinDuplicados = [];
+	foreach ($array as $elemento) {
+		if (!in_array($elemento, $arraySinDuplicados)) {
+			$arraySinDuplicados[] = $elemento;
+		}
+	}
+	return $arraySinDuplicados;
+}
 
 /*
 @fuction: color
@@ -42,46 +53,6 @@ function color($porcentaje)
 		$rojoOscuro++;
 		return "tr4";
 	}
-}
-
-/*
-@fuction: ordenar
-@description: Se declaran las varialbes que ayudaran a ordenar comparando el porcentaje y utiliazando el metodo usort.
-@param: array $ar1
-@param: array $ar2
-@return: int : el cual ayudara a ordenar utilizando el metodo usort.
-@author:	José David Lamilla A.
-@version	1.0
-@fecha: por definir
-*/
-
-function ordenar($ar1, $ar2)
-{
-	if ($ar1->{'porcentaje'} > $ar2->{'porcentaje'}) {
-		return -1;
-	} else if ($ar1->{'porcentaje'} < $ar2->{'porcentaje'}) {
-		return 1;
-	}
-	return 0;
-}
-
-/*
-@fuction: quitar_tildes
-@description: se formatea la cadena con utf8 y se quitan las tildes.
-@param: String $cadena
-@return: String : devuelve la cadena ya sin tildes.
-@author:	José David Lamilla A.
-@version	1.0
-@fecha: por definir
-*/
-
-function quitar_tildes($cadena)
-{
-	$cade = utf8_decode($cadena);
-	$no_permitidas = array("á", "é", "í", "ó", "ú", "Á", "É", "Í", "Ó", "Ú", "?");
-	$permitidas = array("a", "e", "i", "o", "u", "A", "E", "I", "O", "U", "ñ");
-	$texto = str_replace($no_permitidas, $permitidas, $cade);
-	return $texto;
 }
 /*
 @fuction: headerItems
@@ -118,18 +89,23 @@ function headerItems($cantItems)
 @fecha: 26/10/2022
 */
 
-function items($items, $cantItems)
+function items($items,$cantItems,$porcentaje)
 {
 	$result = "";
-	$cantItems *= 3;
-
+	$cantItems*=3;
 	if (count($items) > 0) {
-		for ($i = 0; $i < $cantItems; ++$i) {
-			$result .= count($items) > $i ? "<td nowrap>" . $items[$i] . "</td>" : "<td></td>";
+		for($i = 0; $i < $cantItems; ++$i) {
+			$result .= count($items) > $i ? "<td nowrap>".$items[$i]."</td>" : "<td></td>";
 		}
-	} else {
+	}elseif($porcentaje == -2){
+		$result .= "<td nowrap class='tr4'>No coincide la categoría</td>";
+		for($i = 0; $i < $cantItems-1; ++$i) {
+			$result .= "<td nowrap></td>";
+		}
+	}
+	 else {
 		$result .= "<td nowrap class='tr4'>Sin actividades</td>";
-		for ($i = 0; $i < $cantItems - 1; ++$i) {
+		for($i = 0; $i < $cantItems-1; ++$i) {
 			$result .= "<td nowrap></td>";
 		}
 	}
@@ -149,157 +125,156 @@ function items($items, $cantItems)
 
 function advanceReport($program, $semestre, $type_report)
 {
-	global $verde, $amarillo, $rojoClaro, $rojoOscuro;
+	global $verde,$amarillo,$rojoClaro,$rojoOscuro;
 	include("../services/reportRequest.php");
-	$vector_curso = [];
+    $vector_curso = [];
+	$vector_idCurso = [];
 	$teachesResult = Teachers(implode(",", $program));
 	$cantidadItems = 0;
+	date_default_timezone_set("America/Bogota");
+	$fecha = date("Y-m-d H:i:s");
+	
 
 	if ($teachesResult->num_rows > 0) {
 
 		foreach ($teachesResult as $value) {
-
 			$cumple = 0;
 			$noCumple = 0;
-			$curso = new avance();
+            $curso = new avance();
 			$semestre = NameCategory($value['cat']);
 			$program = Program($semestre["parent"]);
 			$coursesResult = Courses($value['courseid'], $value['userid'], $type_report);
 
-			foreach ($coursesResult as $valueC) {
-				$curso->setIdUser($value['userid']);
-				$curso->setNombreProfesor(quitar_tildes(ucwords(strtolower($value['mdl_user_firstname'])) . " " . ucwords(strtolower($value['mdl_user_lastname']))));
-				$curso->setCorreo($value["mdl_user_email"]);
-				$curso->setPrograma($program);
-				$curso->setSemestre($semestre["name"]);
-				$curso->setNombreCurso($value['course_name']);
+			//Información del profesor y del curso
+			$curso->setIdUser($value['userid']);
+			$curso->setNombreProfesor(ucwords(mb_strtolower($value['mdl_user_firstname'],"utf8")) . " " . ucwords(mb_strtolower($value['mdl_user_lastname'],"utf8")));
+			$curso->setCorreo($value["mdl_user_email"]);
+			$curso->setPrograma($program);
+			$curso->setSemestre($semestre["name"]);
+			$curso->setNombreCurso($value['course_name']);
 
-				$recordItem = ItemCourse($value['courseid'], strtoupper($type_report));
-				$cantidad = $recordItem->num_rows;
-				$cantidadItems = ($cantidadItems < $cantidad) ? $cantidad : $cantidadItems;
-				if ($cantidad > 0) {
-
-					foreach ($recordItem as $recordItems) {
-						if ($recordItems["itemmodule"] == "forum") {
-
-							$curso->items[] = $recordItems["name"];
-
-							//calificaciones del foro
-							$score = ScoreItem($recordItems["id"]);
-							($score == "CUMPLE") ? $cumple++ : $noCumple++;
-							$curso->items[] = $score;
-
-							//retroalimentación del foro
-							$resultFeedback = FeedbackForum1($valueC['id'], $recordItems["iteminstance"]);
-
-							if ($resultFeedback->num_rows > 0) {
-								$feed1 = $resultFeedback->fetch_assoc();
-								$resultFeedback = FeedbackForum2($feed1['id'], $value["userid"]);
+			//Validaciones
+			if($coursesResult->num_rows > 0){
+				foreach ($coursesResult as $valueC) {
+					$recordItem = ItemCourse($value['courseid'], strtoupper($type_report));
+					$cantidad = $recordItem->num_rows;
+					$cantidadItems = ($cantidadItems < $cantidad ) ? $cantidad : $cantidadItems;
+					if ($cantidad > 0) {
+						foreach ($recordItem as $recordItems) {
+							if ($recordItems["itemmodule"] == "forum") {
+								$curso->items []= $recordItems["name"];
+								//calificaciones del foro
+								$score = ScoreItem($recordItems["id"]);
+								($score == "CUMPLE") ? $cumple++ : $noCumple++;
+								$curso->items []= $score;
+	
+								//retroalimentación del foro
+								$resultFeedback = FeedbackForum1($valueC['id'], $recordItems["iteminstance"]);
+	
+								if ($resultFeedback->num_rows > 0) {
+									$feed1 = $resultFeedback->fetch_assoc();
+									$resultFeedback = FeedbackForum2($feed1['id'], $value["userid"]);
+									($resultFeedback == "CUMPLE") ? $cumple++ : $noCumple++;
+									$curso->items []=$resultFeedback;
+								} else {
+									$curso->items []="NO CUMPLE";
+									$noCumple++;
+								}
+	
+							}elseif ($recordItems["itemmodule"] == "assign") {
+	
+								$curso->items []= $recordItems["name"];	
+	
+								//calificaciones de la tarea
+								$score = ScoreItem($recordItems["id"]);
+								($score == "CUMPLE") ? $cumple++ : $noCumple++;
+								$curso->items []= $score;
+								//retroalimentación de la tarea
+								$resultFeedback = FeedbackActivity($recordItems["iteminstance"]);
 								($resultFeedback == "CUMPLE") ? $cumple++ : $noCumple++;
-								$curso->items[] = $resultFeedback;
-							} else {
-								$curso->items[] = "NO CUMPLE";
-								$noCumple++;
-							}
-						} elseif ($recordItems["itemmodule"] == "assign") {
-
-							$curso->items[] = $recordItems["name"];
-
-							//calificaciones de la tarea
-							$score = ScoreItem($recordItems["id"]);
-							($score == "CUMPLE") ? $cumple++ : $noCumple++;
-							$curso->items[] = $score;
-							//retroalimentación de la tarea
-							$resultFeedback = FeedbackActivity($recordItems["iteminstance"]);
-							($resultFeedback == "CUMPLE") ? $cumple++ : $noCumple++;
-							$curso->items[] = $resultFeedback;
-						} elseif ($recordItems["itemmodule"] == "quiz") {
-
-							$curso->items[] = $recordItems["name"];
-							//calificaciones del quiz	
-							$curso->items[] = "CUMPLE";
-							//retroalimentaciones del quiz
-							$curso->items[] = "NO APLICA";
-							$cumple++;
+								$curso->items []=$resultFeedback;
+	
+								
+							}elseif ($recordItems["itemmodule"] == "quiz") {
+	
+								$curso->items []= $recordItems["name"];
+								//calificaciones del quiz	
+								$curso->items []= "CUMPLE";
+								//retroalimentaciones del quiz
+								$curso->items []= "NO APLICA";
+								$cumple++;
+							}							
 						}
 					}
+						$total = (($cumple + $noCumple) == 0) ? -1 : ($cumple + $noCumple);
+						$per = ($total == -1) ? -1 : round(((100 / $total) * $cumple));
+						$curso->setPorcentaje($per);
 				}
-				$total = (($cumple + $noCumple) == 0) ? -1 : ($cumple + $noCumple);
-				$per = ($total == -1) ? -1 : round(((100 / $total) * $cumple));
-				$curso->setPorcentaje($per);
+			}else{
+				$curso->setPorcentaje(-2);
 			}
+            
 			$vector_curso[] = $curso;
+			$vector_idCurso[] = $value['courseid'];
 		}
-		usort($vector_curso, 'ordenar');
-		echo "
-
+		echo("
+		<div class='title-estadist'>
+			<h2>".$type_report."</h2>
+		</div>
 		<table id='example' class='table table-striped table-bordered' cellspacing='0' width='100%'>
 			<thead>
 				<tr class='td1 thead-table' nowrap>
+					<th class='td1' nowrap>Fecha</th>
 					<th class='td1' nowrap>ID user</th>
 					<th class='td1' nowrap>Nombre</th>
 					<th class='td1' nowrap>Correo</th>
 					<th class='td1' nowrap>Curso</th>
 					<th class='td1' nowrap>Programa</th>
 					<th class='td1' nowrap>Semestre</th>"
-			. headerItems($cantidadItems) . "
+					. headerItems($cantidadItems) . "
 					<th class='td1' nowrap>Porcentaje</th>
 		  		</tr>
 			</thead>
-			<tbody>";
+			<tbody>");
 
-		foreach ($vector_curso as $curse) {
-
-			$color = color($curse->getPorcentaje());
-			$porcentaje = ($curse->getPorcentaje() == -1) ? 'Sin actividades' : $curse->getPorcentaje() . "%";
-			print("
-				<tr class='" . $color . "'>
-					<td nowrap class='" . $color . "'>" . $curse->getIdUser() . "</td>
-					<td nowrap class='" . $color . "'>" . $curse->getNombreProfesor() . "</td>
-					<td nowrap class='" . $color . "'>" . $curse->getCorreo() . "</td>				
-					<td nowrap class='" . $color . "'>" . $curse->getNombreCurso() . "</td>
-					<td nowrap class='" . $color . "'>" . $curse->getPrograma() . "</td>
-					<td nowrap class='" . $color . "'>" . $curse->getSemestre() . "</td>"
-				. items($curse->items, $cantidadItems) . "
-					<td nowrap class='" . $color . "'>" . $porcentaje . "</td>
-				</tr>");
-		}
+			foreach($vector_curso as $curse){
+				$color = color($curse->getPorcentaje());
+				if($curse->getPorcentaje()== -1){
+					$porcentaje = -1;
+				}elseif($curse->getPorcentaje()== -2){
+					$porcentaje = -2;
+				}else{
+					$porcentaje = $curse->getPorcentaje()."%";
+				}
+				print("
+					<tr class='".$color."'>
+						<td nowrap class='".$color."'>".$fecha."</td>
+						<td nowrap class='".$color."'>".$curse->getIdUser()."</td>
+						<td nowrap class='".$color."'>".$curse->getNombreProfesor()."</td>
+						<td nowrap class='".$color."'>".$curse->getCorreo()."</td>				
+						<td nowrap class='".$color."'>".$curse->getNombreCurso()."</td>
+						<td nowrap class='".$color."'>".$curse->getPrograma()."</td>
+						<td nowrap class='".$color."'>".$curse->getSemestre()."</td>"
+						.items($curse->items,$cantidadItems,$porcentaje)."
+						<td nowrap class='".$color."'>".$porcentaje."</td>
+					</tr>");
+			}
 
 		$sum = $verde + $amarillo + $rojoClaro + $rojoOscuro;
-
-		echo "
-			</tbody>
-		</table>
-		<br>
-		<table class='tables'>
-	
-			<tr class='td1'>
-			<td class='td1' colspan='2'>Porcentajes</th>
-			<td class='td1' colspan='2'>Cantidad de cursos</th>
-			</tr>
-	
-			<tr class='tr1'>
-			<td class='tr1' colspan='2' > 100% - 80% </td>
-			<td class='tr1' colspan='2'>" . $verde . "</td>
-			</tr>
-			<tr class='tr2'>
-			<td class='tr2' colspan='2'> 79% - 51% </td>
-			<td class='tr2' colspan='2'>" . $amarillo . "</td>
-			</tr>
-			<tr class='tr3'>
-			<td class='tr3' colspan='2'> 50% - 0% </td>
-			<td class='tr3' colspan='2'>" . $rojoClaro . "</td>
-			</tr>
-			<tr class='tr4'>
-			<td class='tr4' colspan='2'> Sin actividades </td>
-			<td class='tr4' colspan='2'>" . $rojoOscuro . "</td>
-			</tr>
-			<tr class='td1'>
-			<td class='td1' colspan='2'> Total de cursos </td>
-			<td class='td1' colspan='2'>" . $sum . "</td>
-			</tr>
-		</table>
-		";
+		$cantidadCursos = count(elementosUnicos($vector_idCurso));
+		$cantidadRepetidos = count($vector_idCurso) - $cantidadCursos;
+		echo ("
+		</tbody>
+	</table>
+	<div class='container-items-porcent'>
+        <div class='item-porcent tr1'><span class='txt-black'>100% - 80% |</span>		<h5>" . $verde . "</h5></div>
+        <div class='item-porcent tr2'><span class='txt-black'>79% - 51%  |</span>     <h5>" . $amarillo . "</h5></div>
+        <div class='item-porcent tr3'><span class='txt-black'>50% - 0%   |</span>		<h5>" . $rojoClaro . "</h5></div>
+        <div class='item-porcent tr4'><span class='txt-black'>Sin actividades	|</span><h5>" . $rojoOscuro . "</h5></div>
+        <div class='item-porcent td2'><span>Total de cursos	|</span><h5>" . $sum . "</h5></div>
+        <div class='item-porcent td2'><span>Cursos Repetidos	|</span><h5>" . $cantidadRepetidos . "</h5></div>
+   	</div>
+	");
 	} else {
 		echo ("<b> En estos momentos el programa: " . Program(implode(",", $program)) . "  no cuenta con cursos.</b><br>");
 	}

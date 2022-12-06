@@ -10,6 +10,7 @@ class estadistica{
     public $grupo;
     private $codigo;
     private $estudiantes;
+    private $idCurso;
 
     // Funciones get y set de la variable programa
 
@@ -80,7 +81,15 @@ class estadistica{
     public function setEstudiantes($estudents){
         $this->estudiantes = $estudents;
     }
-    
+    // Funciones get y set de la variable idCurso
+
+    public function getIdCurso(){
+        return $this->idCurso;
+    }
+
+    public function setIdCurso($idCurso){
+        $this->idCurso = $idCurso;
+    }
 }
 
 ?>

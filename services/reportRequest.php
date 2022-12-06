@@ -1,5 +1,7 @@
 <?php
 // Statistics Rport
+
+//SI SE USA
 function Categories($id_programs)
 {
 	require_once("../services/connection.php");
@@ -9,6 +11,7 @@ function Categories($id_programs)
 	$connection3->close();
 	return $result;
 }
+//SI SE USA
 function NameCategory($id)
 {
 	require_once("../services/connection.php");
@@ -19,6 +22,7 @@ function NameCategory($id)
 	$connection3->close();
 	return $r;
 }
+//SI SE USA
 function Program($id)
 {
 	require_once("../services/connection.php");
@@ -29,6 +33,7 @@ function Program($id)
 	$connection3->close();
 	return $r["name"];
 }
+//SI SE USA
 function StatisticsInformation($id)
 {
 	require_once("../services/connection.php");
@@ -67,6 +72,7 @@ function StatisticsInformation($id)
 	$connection3->close();
 	return $result;
 }
+//SI SE USA
 function StatisticsInformation2($id)
 {
 	require_once("../services/connection.php");
@@ -101,7 +107,7 @@ function StatisticsInformation2($id)
 	$connection3->close();
 	return $result;
 }
-
+//SI SE USA
 function Enrolled($id, $tipoRol)
 {
 	require_once("../services/connection.php");
@@ -132,6 +138,7 @@ function Enrolled($id, $tipoRol)
 	$connection3->close();
 	return $result;
 }
+//SI SE USA
 function Teachers($filter)
 {
 	require_once("../services/connection.php");
@@ -151,11 +158,11 @@ function Teachers($filter)
 			en.userid = u.id AND
 			u.id = ra.userid AND
 			ra.roleid= 3";
-	//echo "<p>$query</p><br>";
 	$result = $connection3->query($query);
 	$connection3->close();
 	return $result;
 }
+//SI SE USA
 function Courses($course, $userid, $filter)
 {
 	require_once("../services/connection.php");
@@ -184,6 +191,7 @@ function Courses($course, $userid, $filter)
 
 	return $result;
 }
+//SI SE USA
 function ItemCourse($courseid, $tipoReport)
 {
 	require_once("../services/connection.php");
@@ -204,12 +212,11 @@ function ItemCourse($courseid, $tipoReport)
 			gc.id = gi.categoryid AND
 			UPPER(gc.fullname) =  '$tipoReport'AND
 			gi.courseid =  $courseid";
-	//echo $quer;
-
 	$result = $connection3->query($quer);
 	$connection3->close();
 	return $result;
 }
+//SI SE USA
 function dataAssign($id)
 {
 
@@ -229,6 +236,7 @@ function dataAssign($id)
 	$connection3->close();
 	return $result;
 }
+//SI SE USA
 function dataQuiz($id)
 {
 
@@ -248,7 +256,7 @@ function dataQuiz($id)
 	$connection3->close();
 	return $result;
 }
-
+//SI SE USA
 function dataForum($id)
 {
 
@@ -268,7 +276,7 @@ function dataForum($id)
 	$connection3->close();
 	return $result;
 }
-
+//SI SE USA
 function gradeItems($courseid, $category)
 {
 
@@ -297,25 +305,29 @@ function gradeItems($courseid, $category)
 	$connection3->close();
 	return $result;
 }
-function weighing($courseid, $categoryid)
+//SI SE USA
+function weighing($courseid, $category)
 {
-
 	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
-	$quer = "
+	$result = $connection3->query("
 		SELECT 
-			SUM(`aggregationcoef`)  as gradeSum 
+			SUM(gi.aggregationcoef)  as gradeSum 
 		FROM 
-			`mdl_grade_items` 
+			mdl_grade_items gi,
+			mdl_grade_categories gc 
 		where
-			`courseid`=$courseid and `categoryid`= $categoryid";
-
-	//echo $quer;
-	$result = $connection3->query($quer);
+			gc.id = gi.categoryid AND
+			gc.fullname LIKE '$category%' AND
+			gi.courseid =  $courseid
+			");
+	$row = mysqli_fetch_array($result);	
+	$gradesum = $row['gradeSum'];
 	$connection3->close();
-	return $result;
+	return $gradesum;
 }
+//SI SE USA
 function ScoreItem($itemid)
 {
 	require_once("../services/connection.php");
@@ -329,12 +341,12 @@ function ScoreItem($itemid)
 	WHERE 
 		gg.itemid = $itemid
 	";
-	//echo $query;
 	$result = $connection3->query($query);
 	$connection3->close();
 	$score = $result->fetch_assoc();
 	return ($score["score"] > 0) ? "CUMPLE" : "NO CUMPLE";
 }
+//SI SE USA
 function FeedbackForum1($courseid, $instance)
 {
 	require_once("../services/connection.php");
@@ -352,6 +364,7 @@ function FeedbackForum1($courseid, $instance)
 	$connection3->close();
 	return $result;
 }
+//SI SE USA
 function FeedbackForum2($id, $user)
 {
 	require_once("../services/connection.php");
@@ -373,7 +386,7 @@ function FeedbackForum2($id, $user)
 	return (count(explode(" ", $result["message"])) > 2) ? "CUMPLE" : "NO CUMPLE";
 }
 // modificar
-
+//SI SE USA
 function FeedbackActivity($iteminstance)
 {
 	require_once("../services/connection.php");
@@ -392,7 +405,8 @@ function FeedbackActivity($iteminstance)
 	$result = $result->fetch_assoc();
 	return ($result["feedback"] > 0) ? "CUMPLE" : "NO CUMPLE";
 }
-function content($course)
+//SI SE USA
+function contentPage($course)
 {
 	require_once("../services/connection.php");
 	$connection3 = connection();
@@ -418,6 +432,49 @@ function content($course)
 	$connection3->close();
 	return $result;
 }
+//SI SE USA
+function contentPageId($course,$idNumberPage)
+{
+	require_once("../services/connection.php");
+	$conn = connection();
+	mysqli_set_charset($conn, "utf8");
+	$result = $conn->query("
+			SELECT 
+				mdl_page.name as name, 
+				mdl_page.content as content
+			FROM 
+				mdl_page,
+				mdl_course_modules
+			WHERE 
+				mdl_course_modules.course = '" . $course . "' AND 
+				mdl_course_modules.idnumber = '" . $idNumberPage . "' AND
+				mdl_course_modules.instance = mdl_page.id");
+	$conn->close();
+	return $result;
+}
+//SI SE USA
+function contentUnits($course)
+{
+	require_once("../services/connection.php");
+	$connection3 = connection();
+	mysqli_set_charset($connection3, "utf8");
+	$result = $connection3->query("
+			SELECT distinct(mdl_course_sections.section) as section_id,
+				mdl_course_sections.name as name,
+				mdl_course_sections.visible as visible,
+				mdl_course_sections.summary as summary
+			FROM 
+				mdl_course, 
+				mdl_course_sections
+			WHERE 
+				mdl_course.id = mdl_course_sections.course AND
+				mdl_course.id = '" . $course . "' AND
+				mdl_course_sections.section != 0
+				ORDER BY section_id");
+	$connection3->close();
+	return $result;
+}
+//SI SE USA
 function forum($course)
 {
 	require_once("../services/connection.php");
@@ -434,6 +491,7 @@ function forum($course)
 	$connection3->close();
 	return $result;
 }
+//SI SE USA
 function forumDiscussions($id)
 {
 	require_once("../services/connection.php");
@@ -449,6 +507,8 @@ function forumDiscussions($id)
 	$connection3->close();
 	return $result;
 }
+//NO SE USA
+/*
 function summary($idsection, $course)
 {
 	require_once("../services/connection.php");
@@ -476,4 +536,4 @@ function summary($idsection, $course)
 			ORDER BY unidad.section");
 	$connection3->close();
 	return $result;
-}
+}*/
