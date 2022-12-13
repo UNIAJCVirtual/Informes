@@ -134,7 +134,39 @@ function nameValidate(String $contentName , String $name , String $lastname){
 }
 
 /*
-@function name: validarEmail
+@function name: emailValidate
+@description: El metodo se encarga de validar si el correo que esta dentro de la variable content es igual al correo del profesor que tiene en moodle,
+si no son iguales envia a un metodo que valida si el correo es valido.
+@parameters: String
+@return: String : Si cumple o no Cumple.
+@author:	José David Lamilla A.
+@version	2.0
+@fecha: 26/10/2022
+*/
+
+function emailValidate($content,$email){
+
+	global $countFails, $countSucces , $fails, $succes;
+
+	if (strpos($content, $email)) {
+		$countSucces++;
+		return $succes;
+
+	} else {
+
+	if (confirmarEmail($content, $email)){
+		$countSucces++;
+		return $succes;
+
+		} else {
+			$countFails++;
+			return $fails;
+
+		}
+	}
+}
+/*
+@function name: emailValidate
 @description: El metodo se encarga de validar si en el contenido de la información del tutor tiene un correo valido.
 @parameters: String
 @return: Boolean : indicando true si es valido y false si no es valido.
@@ -143,31 +175,6 @@ function nameValidate(String $contentName , String $name , String $lastname){
 @fecha: 26/10/2022
 */
 
-function validarEmail($contenido,$email){
-
-	global $countFails, $countSucces , $fails, $succes;
-
-	
-	if (strpos($contenido, $email)) {
-
-		$countSucces++;
-		return $succes;
-
-	} else {
-
-	if (confirmarEmail($contenido, $email)){
-
-		$countSucces++;
-		return $succes;
-
-		} else {
-
-			$countFails++;
-			return $fails;
-
-		}
-	}
-}
 function confirmarEmail($cont, $e)
 {
 	$flag = false;
@@ -200,25 +207,33 @@ function confirmarEmail($cont, $e)
 	}
 }
 
-//---------------------------------------
+/*
+@function name: validateOpeningHours
+@description: El metodo se encarga de validar si en la variable content existe cualquiera de los días de la semana.
+@parameters: String
+@return: String :  Si CUMPLE o no NO CUMPLE.
+@author:	José David Lamilla A.
+@version	2.0
+@fecha: 26/10/2022
+*/
 
-function validarHorarioAtencion($contenido){
+function validateOpeningHours($content){
 
 	global $countFails, $countSucces , $fails, $succes;
 
-	if ((strpos($contenido, 'indicar las horas de atencion que tendra para sus estudiantes') !== false)) {
+	if ((strpos($content, 'indicar las horas de atencion que tendra para sus estudiantes') !== false)) {
 		$countFails++;
 		return $fails;
 	} else  if (
-		(strpos($contenido, 'lunes') !== false) ||
-		(strpos($contenido, 'martes') !== false) ||
-		(strpos($contenido, 'miercoles') !== false) ||
-		(strpos($contenido, 'jueves') !== false) ||
-		(strpos($contenido, 'viernes') !== false) ||
-		(strpos($contenido, 'sabado') !== false) ||
-		(strpos($contenido, 'sabados') !== false) ||
-		(strpos($contenido, 'domingo') !== false) ||
-		(strpos($contenido, 'domingos') !== false)
+		(strpos($content, 'lunes') !== false) ||
+		(strpos($content, 'martes') !== false) ||
+		(strpos($content, 'miercoles') !== false) ||
+		(strpos($content, 'jueves') !== false) ||
+		(strpos($content, 'viernes') !== false) ||
+		(strpos($content, 'sabado') !== false) ||
+		(strpos($content, 'sabados') !== false) ||
+		(strpos($content, 'domingo') !== false) ||
+		(strpos($content, 'domingos') !== false)
 	) {
 		$countSucces++;
 		return $succes;
@@ -230,11 +245,11 @@ function validarHorarioAtencion($contenido){
 
 //---------------------------------------
 
-function validarFotografia ($contenido){
+function validarFotografia ($content){
 
 	global $countFails, $countSucces , $fails, $succes;
 
-	if ((strpos($contenido, 'insertar foto de tamaño 200')) !== false) {
+	if ((strpos($content, 'insertar foto de tamaño 200')) !== false) {
 		$countFails++;
 		return $fails;
 	} else {
@@ -448,6 +463,7 @@ function enlistmentReport($program, $semester)
 	$vector_curse = [];
 	$vector_idCurse = [];
 	$categoriesResult = Categories(implode(",", $program));
+	
 
 	foreach ($categoriesResult as $category) {
 
@@ -456,7 +472,6 @@ function enlistmentReport($program, $semester)
 
 		$program = Program($nameCategoryResult['parent']);
 		$result = StatisticsInformation($category['id']);
-
 		while ($columna = $result->fetch_assoc()) {
 
 			$course = new alistamiento(); 
@@ -485,10 +500,10 @@ function enlistmentReport($program, $semester)
 				$course->setNombreProfesor(nameValidate($page['name'],$columna['firstname'],$columna['lastname']));
 
 				// Req. 3 - Validar el correo del profesor
-				$course->setCorreoProfesor(validarEmail($contenido,$email));
+				$course->setCorreoProfesor(emailValidate($contenido,$email));
 
 				//Req. 3 - Validar el Horario de atención
-				$course->setHorarioAtencion(validarHorarioAtencion($contenido));
+				$course->setHorarioAtencion(validateOpeningHours($contenido));
 
 				//Req. 4 - Validar la fotografia del profesor
 				$course->setFotografia(validarFotografia($contenido));

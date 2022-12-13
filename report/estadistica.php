@@ -114,48 +114,48 @@ function statistics($program)
 	$vector_profesor = [];
 	$vector_programa = [];
 
-	$categoriesResult = Categories(implode(",", $program));
+	$semesters = Semesters(implode(",", $program));
 
-	if ($categoriesResult) {
+	if ($semesters) {
 
-		foreach ($categoriesResult as $val) {
-			$result = NameCategory($val['id']);
-			$semester = $result["name"];
-			$programa = Program($result['parent']);
-			$result = StatisticsInformation($val['id']);
-			$estudiantes = StatisticsInformation2($val['id']);
+		foreach ($semesters as $semester) {
+			$programName = ProgramsName(implode(",", $program));
+			$semesterName = $semester["name"];
+			$coursesInformation = CoursesInformation($semester["id"]);
+			
+			while ($courseInfo = $coursesInformation->fetch_assoc()) {
+				$course = new estadistica();
+				$teachersNames="";
 
-			while ($totalestudiantes = $estudiantes->fetch_assoc()) {
-				$vector_estudiantes[] = $totalestudiantes['user_id'];
-			}
-
-			while ($column = $result->fetch_assoc()) {
-
-
-				$curso = new estadistica();
 				//la variable requerida en la función Enrolled es el rol que vamos a buscar 3 Profesor y 5 Estudiante
-				$profesorMatricula = Enrolled($column['course_id'], 3);
-				$profesoresMatriculados = $profesorMatricula->fetch_assoc();
-				$estudianteMatricula = Enrolled($column['course_id'], 5);
-				$estudiantesMatriculados = $estudianteMatricula->fetch_assoc();
+				$teachers = Usersquantity($courseInfo['course_id'], 3);
+				$students = Usersquantity($courseInfo['course_id'], 5);
+				
+				while($teacher = $teachers->fetch_assoc()){
+					$teachersNames .= ($teachers->num_rows== 1 ) ? 
+					ucwords(mb_strtolower($teacher['firstname'],'UTF-8')) . " " . ucwords(mb_strtolower($teacher['lastname'],'UTF-8')) : 
+					ucwords(mb_strtolower($teacher['firstname'],'UTF-8')) . " " . ucwords(mb_strtolower($teacher['lastname'],'UTF-8'))." - ";
+				}
+				while($student = $students->fetch_assoc()){
+					$vector_estudiantes [] = $student['user_id'];
+				}
 
-				$grupo = explode("*", $column['course_fullname']);
-				$codigo = codigo($column['course_shortname']);
-				$curso->setSemestre($semester);
-				$curso->setPrograma($programa);
-				$curso->setCodigo($codigo);
-				$curso->setGrupo($grupo[count($grupo) - 1]);
-				$curso->setNombreCurso($column['course_fullname']);
-				$curso->setIdCurso($column['course_id']);
-				$curso->setNombreProfesor(ucwords(mb_strtolower($column['firstname'],'UTF-8')) . " " . ucwords(mb_strtolower($column['lastname'],'UTF-8')));
-				$curso->setEstudiantes($estudiantesMatriculados['matriculados'] - $profesoresMatriculados['matriculados']);
-				$vector_programa []= $curso->getPrograma();
-				$vector_semestre[] = $curso->getSemestre();
-				$vector_grupo[] = $curso->getGrupo();
-				$vector_idCurso[] = $curso->getIdCurso();
-				$vector_codigo[] = $curso->getCodigo();
-				$vector_profesor[] = $curso->getNombreProfesor();
-				$vector_curso[] = $curso;
+				$grup = explode("*", $courseInfo['course_name']);
+				$course->setSemestre($semesterName);
+				$course->setPrograma($programName);
+				$course->setCodigo($courseInfo['course_code']);
+				$course->setGrupo($grup[count($grup) - 1]);
+				$course->setNombreCurso($courseInfo['course_name']);
+				$course->setIdCurso($courseInfo['course_id']);
+				$course->setNombreProfesor($teachersNames);
+				$course->setEstudiantes($students->num_rows - $teachers->num_rows);
+				$vector_programa []= $course->getPrograma();
+				$vector_semestre[] = $course->getSemestre();
+				$vector_grupo[] = $course->getGrupo();
+				$vector_idCurso[] = $course->getIdCurso();
+				$vector_codigo[] = $course->getCodigo();
+				$vector_profesor[] = $course->getNombreProfesor();
+				$vector_curso[] = $course;
 			}
 		}
 	}

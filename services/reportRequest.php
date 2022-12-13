@@ -1,141 +1,70 @@
 <?php
-// Statistics Rport
 
 //SI SE USA
-function Categories($id_programs)
+function Semesters($id_programs)
 {
 	require_once("../services/connection.php");
-	$connection3 = connection();
-	mysqli_set_charset($connection3, "utf8");
-	$result = $connection3->query("SELECT DISTINCT id FROM mdl_course_categories WHERE parent IN(" . $id_programs . ")");
-	$connection3->close();
+	$con = connection();
+	mysqli_set_charset($con, "utf8");
+	$result = $con->query("SELECT DISTINCT id,name,parent FROM mdl_course_categories WHERE parent IN(" . $id_programs . ")");
+	$con->close();
 	return $result;
 }
 //SI SE USA
-function NameCategory($id)
+function ProgramsName($id_programs)
 {
 	require_once("../services/connection.php");
-	$connection3 = connection();
-	mysqli_set_charset($connection3, "utf8");
-	$result = $connection3->query("SELECT id,name,parent FROM mdl_course_categories WHERE id =" . $id);
+	$con = connection();
+	mysqli_set_charset($con, "utf8");
+	$result = $con->query("SELECT name FROM mdl_course_categories WHERE id =" . $id_programs);
 	$r = $result->fetch_assoc();
-	$connection3->close();
-	return $r;
-}
-//SI SE USA
-function Program($id)
-{
-	require_once("../services/connection.php");
-	$connection3 = connection();
-	mysqli_set_charset($connection3, "utf8");
-	$result = $connection3->query("SELECT id,name,parent FROM mdl_course_categories WHERE id =" . $id);
-	$r = $result->fetch_assoc();
-	$connection3->close();
+	$con->close();
 	return $r["name"];
 }
 //SI SE USA
-function StatisticsInformation($id)
+function CoursesInformation($idCategory)
 {
 	require_once("../services/connection.php");
-	$connection3 = connection();
-	mysqli_set_charset($connection3, "utf8");
-	$result = $connection3->query("
-			SELECT distinct
-				mdl_user.username,
-				mdl_user.firstname,
-				mdl_user.lastname,
-				mdl_user.email,
-				mdl_user.id user_id,
-				mdl_course.fullname  course_fullname,
-				mdl_course.shortname course_shortname,
-				mdl_course.id  course_id,
-				mdl_course.startdate startdate,
-				mdl_course.enddate enddate
-				FROM 
-				mdl_user, 
-				mdl_role,
-				mdl_role_assignments,
-				mdl_user_enrolments,
-				mdl_course, 
-				mdl_enrol
-				WHERE 
-				mdl_role.id = mdl_role_assignments.roleid AND
-				mdl_role_assignments.userid = mdl_user.id AND
-				mdl_user.id = mdl_user_enrolments.userid AND
-				mdl_course.id = mdl_enrol.courseid AND
-				mdl_enrol.id= mdl_user_enrolments.enrolid AND
-				mdl_role.id = 3 AND 
-				mdl_course.visible=TRUE AND
-				mdl_course.category = " . $id . "
-				ORDER BY username,course_fullname
-			");
-	$connection3->close();
+	$con = connection();
+	mysqli_set_charset($con, "utf8");
+	$result = $con->query("SELECT 
+							mdl_course.id as course_id,
+							mdl_course.fullname as course_name,
+							mdl_course.shortname as course_code
+							FROM 
+							mdl_course 
+							WHERE 
+							mdl_course.category =".$idCategory);
+	$con->close();
 	return $result;
 }
 //SI SE USA
-function StatisticsInformation2($id)
+function Usersquantity($idCourse, $rol)
 {
 	require_once("../services/connection.php");
-	$connection3 = connection();
-	mysqli_set_charset($connection3, "utf8");
-	$result = $connection3->query("
-				SELECT distinct
-					mdl_user.username,
-					mdl_user.id user_id,
-					mdl_course.fullname  course_fullname,
-					mdl_course.shortname course_shortname,
-					mdl_course.id  course_id,
-					mdl_course.startdate startdate,
-					mdl_course.enddate enddate
-					FROM 
-					mdl_user, 
-					mdl_role,
-					mdl_role_assignments,
-					mdl_user_enrolments,
-					mdl_course, 
-					mdl_enrol
-					WHERE 
-					mdl_role.id = mdl_role_assignments.roleid AND
-					mdl_role_assignments.userid = mdl_user.id AND
-					mdl_user.id = mdl_user_enrolments.userid AND
-					mdl_course.id = mdl_enrol.courseid AND
-					mdl_enrol.id= mdl_user_enrolments.enrolid AND
-					mdl_role.id = 5 AND 
-					mdl_course.visible=TRUE AND
-					mdl_course.category = " . $id . "
-			");
-	$connection3->close();
-	return $result;
-}
-//SI SE USA
-function Enrolled($id, $tipoRol)
-{
-	require_once("../services/connection.php");
-	$connection3 = connection();
-	mysqli_set_charset($connection3, "utf8");
-	$result = $connection3->query("
-			SELECT count(distinct
-				mdl_user.username) matriculados,
-				mdl_user.firstname,
-				mdl_user.lastname
-				FROM 
-				mdl_user, 
-				mdl_role,
-				mdl_role_assignments,
-				mdl_user_enrolments,
-				mdl_course, 
-				mdl_enrol
-				WHERE 
-				mdl_role.id = mdl_role_assignments.roleid AND
-				mdl_role_assignments.userid = mdl_user.id AND
-				mdl_user.id = mdl_user_enrolments.userid AND
-				mdl_course.id = mdl_enrol.courseid AND
-				mdl_enrol.id= mdl_user_enrolments.enrolid AND
-				mdl_role.id = " . $tipoRol . " AND 
-				mdl_course.visible=TRUE AND
-				mdl_course.id =" . $id . "
-			");
-	$connection3->close();
+	$con = connection();
+	mysqli_set_charset($con, "utf8");
+	$result = $con->query("SELECT distinct 
+							mdl_user.firstname as firstname,
+							mdl_user.lastname as lastname,
+							mdl_user.id user_id
+							FROM
+							mdl_user, 
+							mdl_role,
+							mdl_role_assignments,
+							mdl_user_enrolments,
+							mdl_course, 
+							mdl_enrol
+							WHERE 
+							mdl_role.id = mdl_role_assignments.roleid AND
+							mdl_role_assignments.userid = mdl_user.id AND
+							mdl_user.id = mdl_user_enrolments.userid AND
+							mdl_course.id = mdl_enrol.courseid AND
+							mdl_enrol.id= mdl_user_enrolments.enrolid AND
+							mdl_course.visible=TRUE AND
+							mdl_role.id = ".$rol." AND
+							mdl_course.id = ".$idCourse."");
+	$con->close();
 	return $result;
 }
 //SI SE USA

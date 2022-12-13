@@ -9,11 +9,13 @@
 	<link rel='stylesheet' href='https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css'>
 	<link rel='stylesheet' href='https://cdn.datatables.net/buttons/1.2.2/css/buttons.bootstrap.min.css'>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<link rel="stylesheet" href="../css/style-dashboard.css">
 	<title>Reporte</title>
 </head>
 
 <body>
+	<div id="loading"></div>
 	<div id="content-wrapper" class="d-flex flex-column">
 		<!-- Main Content -->
 		<div id="content">
@@ -24,7 +26,6 @@
 					<i class="fa fa-bars"></i>
 				</button>
 				<!-- Topbar Search -->
-
 				<!-- Topbar Navbar -->
 				<ul class="navbar-nav ml-auto">
 					<!-- Nav Item - Search Dropdown (Visible Only XS) -->
@@ -54,12 +55,12 @@
 						/*Caso 2: En esta sesión se tendrá el Avance formativo 1, se enviaran tres variables: categoría, programa y el nombre de la categoría en Moodle */
 					case '2':
 						require_once("avances.php");
-						$data = advanceReport($_POST["program"], "", "Avance formativo 1");
+						advanceReport($_POST["program"], "", "Avance formativo 1");
 						break;
 						/*Caso 3: En esta sesión se tendrá el Avance formativo 2, se enviaran tres variables: categoría, programa y el nombre de la categoría en Moodle */
 					case '3':
 						require_once("avances.php");
-						$data = advanceReport($_POST["program"], "", "Avance formativo 2");
+						advanceReport($_POST["program"], "", "Avance formativo 2");
 						break;
 						/*Caso 4: En esta sesión se tendrá las estadisticas, se enviara una sola variable programa */
 					case '4':
@@ -94,7 +95,16 @@
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js'></script>
 	<script src='https://unpkg.com/feather-icons'></script>
 	<script src="../js/datatable.js"></script>
-
+	
+	<script type="text/javascript">
+		let loading = $("#loading").val();
+			$.ajax({
+				url: 'program.php',
+				data: {loading: loading,},
+				type: 'post',
+				success: function(data) {$("#programs").html(data);}
+			})
+	</script>
 </body>
 
 </html>
