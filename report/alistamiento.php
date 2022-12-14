@@ -102,7 +102,7 @@ etiqueta de profesor.Para esto recibe el nombre del recourse page del inicio del
 @version	2.1
 @fecha: 05/12/2022
 */
-function nameValidate(String $contentName , String $name , String $lastname){
+function nameValidate(String $contentName , String $fullName){
 
 	global $countFails, $countSucces , $fails, $succes, $descriptionName;
 
@@ -116,7 +116,7 @@ function nameValidate(String $contentName , String $name , String $lastname){
 	}else{
 
 		$countName = 0;
-		$separateName = explode(" ", removeTildes(mb_strtolower($name,'UTF-8') . " " . mb_strtolower($lastname,'UTF-8')));
+		$separateName = explode(" ", removeTildes(mb_strtolower($fullName,'UTF-8') . " "));
 
 		foreach ($separateName as $value) {
 			if(!empty($value)) {
@@ -148,6 +148,7 @@ function emailValidate($content,$email){
 
 	global $countFails, $countSucces , $fails, $succes;
 
+
 	if (strpos($content, $email)) {
 		$countSucces++;
 		return $succes;
@@ -177,6 +178,7 @@ function emailValidate($content,$email){
 
 function confirmarEmail($cont, $e)
 {
+	
 	$flag = false;
 	$email = '';
 	$buscar = array(chr(13) . chr(10), "\r\n", "\n", "\r");
@@ -195,8 +197,10 @@ function confirmarEmail($cont, $e)
 			if ((strpos($email, $e)) !== false) {
 				return true;
 			} else if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+				
 				return true;
 			} else {
+				echo($email);
 				return false;
 			}
 		} else {
@@ -462,32 +466,49 @@ function enlistmentReport($program, $semester)
 	$darkRed = 0;
 	$vector_curse = [];
 	$vector_idCurse = [];
-	$categoriesResult = Categories(implode(",", $program));
+	$semestersResult = Semesters(implode(",", $program));
 	
 
-	foreach ($categoriesResult as $category) {
+	foreach ($semestersResult as $semester) {
 
-		$nameCategoryResult = NameCategory($category['id']);
-		$semester = $nameCategoryResult["name"];
+		$programName = ProgramsName($semester["parent"]);
+		$semesterName = $semester["name"];
+		$coursesInformation = CoursesInformation($semester["id"]);
 
-		$program = Program($nameCategoryResult['parent']);
-		$result = StatisticsInformation($category['id']);
-		while ($columna = $result->fetch_assoc()) {
+		while ($courseInfo = $coursesInformation->fetch_assoc()) {
 
 			$course = new alistamiento(); 
-			$email = trim(strtolower($columna['email']));
-			$course->setIdUser($columna['user_id']);
-			$course->setNombre(ucwords(mb_strtolower($columna['firstname'],'UTF-8')) . " " . ucwords(mb_strtolower($columna['lastname'],'UTF-8')));
-			$course->setCorreo($columna['email']);
-			$course->setPrograma($program);
-			$course->setSemestre($semester);
-			$course->setIdcurso($columna['course_id']);
-			$course->setNombreCurso($columna['course_fullname']);
+			$teachersNames="";
+			$teachersEmails="";
+			$teachersUsersIds="";
+
+				//la variable requerida en la función Usersquantity es el rol que vamos a buscar 3 Profesor
+				$teachers = Usersquantity($courseInfo['course_id'], 3);
+				
+				while($teacher = $teachers->fetch_assoc()){
+					if($teachers->num_rows == 1 ){
+						$teachersNames = ucwords(mb_strtolower($teacher['firstname'],'UTF-8')) . " " . ucwords(mb_strtolower($teacher['lastname'],'UTF-8'));
+						$teachersEmails = mb_strtolower($teacher['email'],'UTF-8');
+						$teachersUsersIds = mb_strtolower($teacher['user_id'],'UTF-8');
+					}else{
+						$teachersNames .= ucwords(mb_strtolower($teacher['firstname'],'UTF-8')) . " " . ucwords(mb_strtolower($teacher['lastname'],'UTF-8'))." <br> ";
+						$teachersEmails .= mb_strtolower($teacher['email'],'UTF-8')." <br> ";
+						$teachersUsersIds .= mb_strtolower($teacher['user_id'],'UTF-8')." <br> ";
+					}
+				}
+
+			$course->setIdUser($teachersUsersIds);
+			$course->setNombre($teachersNames);
+			$course->setCorreo($teachersEmails);
+			$course->setPrograma($programName);
+			$course->setSemestre($semesterName);
+			$course->setIdcurso($courseInfo['course_id']);
+			$course->setNombreCurso($courseInfo['course_name']);
 			$vector_idCurse []= $course->getIdCurso();
 			$countFails = 0;
 			$countSucces = 0;
 			
-			$resultContentPage = contentPageId($columna['course_id'], $pageId);
+			$resultContentPage = contentPageId($courseInfo['course_id'], $pageId);
 
 			$page = $resultContentPage->fetch_assoc();
 
@@ -497,10 +518,10 @@ function enlistmentReport($program, $semester)
 				// Req. 1 - Validar si existe la pagina de Información del profesor
 
 				// Req. 2 - Validar el nombre del profesor
-				$course->setNombreProfesor(nameValidate($page['name'],$columna['firstname'],$columna['lastname']));
+				$course->setNombreProfesor(nameValidate($page['name'],$teachersNames));
 
 				// Req. 3 - Validar el correo del profesor
-				$course->setCorreoProfesor(emailValidate($contenido,$email));
+				$course->setCorreoProfesor(emailValidate($contenido,$teachersEmails));
 
 				//Req. 3 - Validar el Horario de atención
 				$course->setHorarioAtencion(validateOpeningHours($contenido));
@@ -516,20 +537,20 @@ function enlistmentReport($program, $semester)
 			}					
 			
 			//Req. 5 validacion foro consulta
-			$course->setForoConsulta(validarForoConsultas($columna['course_id']));
+			$course->setForoConsulta(validarForoConsultas($courseInfo['course_id']));
 
 			
 			//Req. 6 validacion de las fechas de inicio y finalización de las unidades
-			$resultContentUnits = contentUnits($columna['course_id']);
+			$resultContentUnits = contentUnits($courseInfo['course_id']);
 			while($unit = $resultContentUnits->fetch_assoc()){
 
 				$course->unidades[] = ($unit['visible'] == 1) ? validateDateUnits($unit['summary']) : $hidden	;
 
 			}
 
-			$itemsC1 = gradeItems($columna['course_id'], $c1);
-			$itemsC2 = gradeItems($columna['course_id'], $c2);
-			$itemsC3 = gradeItems($columna['course_id'], $c3);
+			$itemsC1 = gradeItems($courseInfo['course_id'], $c1);
+			$itemsC2 = gradeItems($courseInfo['course_id'], $c2);
+			$itemsC3 = gradeItems($courseInfo['course_id'], $c3);
 			
 			
 			//-------------------------------VALIDAR C1----------------
@@ -546,7 +567,7 @@ function enlistmentReport($program, $semester)
 
 			//Req. 9 validar las ponderaciones de las actividades dentro de la categoria AF01
 
-				$course->setAF01Ponderaciones(validarPonderacionCategoria( weighing($columna['course_id'], $c1) , 1 ));
+				$course->setAF01Ponderaciones(validarPonderacionCategoria( weighing($courseInfo['course_id'], $c1) , 1 ));
 				
 			}else{
 				$course->setAF01Actividades($fails);
@@ -567,7 +588,7 @@ function enlistmentReport($program, $semester)
 
 			//Req. 12 validar las ponderaciones de las actividades dentro de la categoria AF02
 				
-				$course->setAF02Ponderaciones(validarPonderacionCategoria(weighing($columna['course_id'], $c2), 2 ));
+				$course->setAF02Ponderaciones(validarPonderacionCategoria(weighing($courseInfo['course_id'], $c2), 2 ));
 
 			}else{
 				$course->setAF02Actividades($fails);
@@ -590,7 +611,7 @@ function enlistmentReport($program, $semester)
 
 			//Req. 15 validar las ponderaciones de las actividades dentro de la categoria AF03
 				
-				$course->setAF03Ponderaciones(validarPonderacionCategoria(weighing($columna['course_id'], $c3), 3 ));
+				$course->setAF03Ponderaciones(validarPonderacionCategoria(weighing($courseInfo['course_id'], $c3), 3 ));
 
 			}else{
 				$course->setAF03Actividades($fails);

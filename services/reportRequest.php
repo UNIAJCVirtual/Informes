@@ -1,6 +1,6 @@
 <?php
 
-//SI SE USA
+//SI SE USA - Modificado
 function Semesters($id_programs)
 {
 	require_once("../services/connection.php");
@@ -10,7 +10,7 @@ function Semesters($id_programs)
 	$con->close();
 	return $result;
 }
-//SI SE USA
+//SI SE USA - Modificado
 function ProgramsName($id_programs)
 {
 	require_once("../services/connection.php");
@@ -21,7 +21,7 @@ function ProgramsName($id_programs)
 	$con->close();
 	return $r["name"];
 }
-//SI SE USA
+//SI SE USA - Modificado
 function CoursesInformation($idCategory)
 {
 	require_once("../services/connection.php");
@@ -38,7 +38,7 @@ function CoursesInformation($idCategory)
 	$con->close();
 	return $result;
 }
-//SI SE USA
+//SI SE USA - Creado
 function Usersquantity($idCourse, $rol)
 {
 	require_once("../services/connection.php");
@@ -46,6 +46,7 @@ function Usersquantity($idCourse, $rol)
 	mysqli_set_charset($con, "utf8");
 	$result = $con->query("SELECT distinct 
 							mdl_user.firstname as firstname,
+							mdl_user.email as email,
 							mdl_user.lastname as lastname,
 							mdl_user.id user_id
 							FROM

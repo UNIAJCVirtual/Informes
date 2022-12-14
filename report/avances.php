@@ -123,40 +123,59 @@ function items($items,$cantItems,$porcentaje)
 @fecha: 26/10/2022
 */
 
-function advanceReport($program, $semestre, $type_report)
+function advanceReport($program, $type_report)
 {
 	global $verde,$amarillo,$rojoClaro,$rojoOscuro;
 	include("../services/reportRequest.php");
-    $vector_curso = [];
+    $vector_course = [];
 	$vector_idCurso = [];
-	$teachesResult = Teachers(implode(",", $program));
-	$cantidadItems = 0;
-	date_default_timezone_set("America/Bogota");
-	$fecha = date("Y-m-d H:i:s");
-	
 
-	if ($teachesResult->num_rows > 0) {
+	$semesters = Semesters(implode(",", $program));
 
-		foreach ($teachesResult as $value) {
-			$cumple = 0;
-			$noCumple = 0;
-            $curso = new avance();
-			$semestre = NameCategory($value['cat']);
-			$program = Program($semestre["parent"]);
-			$coursesResult = Courses($value['courseid'], $value['userid'], $type_report);
+	if ($semesters) {
 
-			//Información del profesor y del curso
-			$curso->setIdUser($value['userid']);
-			$curso->setNombreProfesor(ucwords(mb_strtolower($value['mdl_user_firstname'],"utf8")) . " " . ucwords(mb_strtolower($value['mdl_user_lastname'],"utf8")));
-			$curso->setCorreo($value["mdl_user_email"]);
-			$curso->setPrograma($program);
-			$curso->setSemestre($semestre["name"]);
-			$curso->setNombreCurso($value['course_name']);
-
+		foreach ($semesters as $semester) {
+			$programName = ProgramsName($semester['parent']);
+			$semesterName = $semester['name'];
+			$coursesInformation = CoursesInformation($semester['id']);
+			
+			while ($courseInfo = $coursesInformation->fetch_assoc()) {
+				
+				$cumple = 0;
+				$noCumple = 0;
+				$course = new avance();
+				$teachersNames="";
+				$teachersEmails="";
+				$teachersUsersIds="";
+				
+				//la variable requerida en la función Usersquantity es el rol que vamos a buscar 3 Profesor
+				$teachers = Usersquantity($courseInfo['course_id'], 3);
+				
+				while($teacher = $teachers->fetch_assoc()){
+					if($teachers->num_rows == 1 ){
+						$teachersNames = ucwords(mb_strtolower($teacher['firstname'],'UTF-8')) . " " . ucwords(mb_strtolower($teacher['lastname'],'UTF-8'));
+						$teachersEmails = mb_strtolower($teacher['email'],'UTF-8');
+						$teachersUsersIds = mb_strtolower($teacher['user_id'],'UTF-8');
+					}else{
+						$teachersNames .= ucwords(mb_strtolower($teacher['firstname'],'UTF-8')) . " " . ucwords(mb_strtolower($teacher['lastname'],'UTF-8'))." <br> ";
+						$teachersEmails .= mb_strtolower($teacher['email'],'UTF-8')." <br> ";
+						$teachersUsersIds .= mb_strtolower($teacher['user_id'],'UTF-8')." <br> ";
+					}
+				}
+				
+				//Información del profesor y del curso
+				$course->setIdUser($teachersUsersIds);
+				$course->setNombreProfesor($teachersNames);
+				$course->setCorreo($value[$teachersEmails]);
+				$course->setPrograma($programName);
+				$course->setSemestre($semesterName);
+				$course->setNombreCurso($courseInfo['course_name']);
+				
+				$coursesResult = Courses($value['courseid'], $value['userid'], $type_report);
 			//Validaciones
 			if($coursesResult->num_rows > 0){
 				foreach ($coursesResult as $valueC) {
-					$recordItem = ItemCourse($value['courseid'], strtoupper($type_report));
+					$recordItem = ItemCourse($courseInfo['course_id'], strtoupper($type_report));
 					$cantidad = $recordItem->num_rows;
 					$cantidadItems = ($cantidadItems < $cantidad ) ? $cantidad : $cantidadItems;
 					if ($cantidad > 0) {
@@ -214,8 +233,9 @@ function advanceReport($program, $semestre, $type_report)
 				$curso->setPorcentaje(-2);
 			}
             
-			$vector_curso[] = $curso;
+			$vector_course[] = $course;
 			$vector_idCurso[] = $value['courseid'];
+			}
 		}
 		echo("
 		<div class='title-estadist'>
@@ -237,7 +257,7 @@ function advanceReport($program, $semestre, $type_report)
 			</thead>
 			<tbody>");
 
-			foreach($vector_curso as $curse){
+			foreach($vector_course as $curse){
 				$color = color($curse->getPorcentaje());
 				if($curse->getPorcentaje()== -1){
 					$porcentaje = -1;
@@ -264,18 +284,46 @@ function advanceReport($program, $semestre, $type_report)
 		$cantidadCursos = count(elementosUnicos($vector_idCurso));
 		$cantidadRepetidos = count($vector_idCurso) - $cantidadCursos;
 		echo ("
-		</tbody>
-	</table>
-	<div class='container-items-porcent'>
-        <div class='item-porcent tr1'><span class='txt-black'>100% - 80% |</span>		<h5>" . $verde . "</h5></div>
-        <div class='item-porcent tr2'><span class='txt-black'>79% - 51%  |</span>     <h5>" . $amarillo . "</h5></div>
-        <div class='item-porcent tr3'><span class='txt-black'>50% - 0%   |</span>		<h5>" . $rojoClaro . "</h5></div>
-        <div class='item-porcent tr4'><span class='txt-black'>Sin actividades	|</span><h5>" . $rojoOscuro . "</h5></div>
-        <div class='item-porcent td2'><span>Total de cursos	|</span><h5>" . $sum . "</h5></div>
-        <div class='item-porcent td2'><span>Cursos Repetidos	|</span><h5>" . $cantidadRepetidos . "</h5></div>
-   	</div>
-	");
-	} else {
+				</tbody>
+			</table>
+			<div class='container-items-porcent'>
+				<div class='item-porcent tr1'><span class='txt-black'>100% - 80% |</span>		<h5>" . $verde . "</h5></div>
+				<div class='item-porcent tr2'><span class='txt-black'>79% - 51%  |</span>     <h5>" . $amarillo . "</h5></div>
+				<div class='item-porcent tr3'><span class='txt-black'>50% - 0%   |</span>		<h5>" . $rojoClaro . "</h5></div>
+				<div class='item-porcent tr4'><span class='txt-black'>Sin actividades	|</span><h5>" . $rojoOscuro . "</h5></div>
+				<div class='item-porcent td2'><span>Total de cursos	|</span><h5>" . $sum . "</h5></div>
+				<div class='item-porcent td2'><span>Cursos Repetidos	|</span><h5>" . $cantidadRepetidos . "</h5></div>
+			</div>
+			");
+
+
+	}else{
 		echo ("<b> En estos momentos el programa: " . Program(implode(",", $program)) . "  no cuenta con cursos.</b><br>");
+		echo("
+		<div class='title-estadist'>
+		<p>ESTADISTICA DE LOS CURSOS EN</p>
+		<h2>AULAS VIRTUALES MOODLE</h2>
+		</div>");
+	}
+
+
+
+
+
+	
+	$teachesResult = Teachers(implode(",", $program));
+	$cantidadItems = 0;
+	date_default_timezone_set("America/Bogota");
+	$fecha = date("Y-m-d H:i:s");
+	
+
+	if ($teachesResult->num_rows > 0) {
+
+		foreach ($teachesResult as $value) {
+			
+		}
+		
+	} else {
+		
 	}
 }
