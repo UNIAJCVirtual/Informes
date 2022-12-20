@@ -127,8 +127,11 @@ function advanceReport($program, $type_report)
 {
 	global $verde,$amarillo,$rojoClaro,$rojoOscuro;
 	include("../services/reportRequest.php");
+	date_default_timezone_set("America/Bogota");
+	$dateNow = date("Y-m-d H:i:s");
     $vector_course = [];
-	$vector_idCurso = [];
+	$vector_idcourse = [];
+	$cantidadItems = 0;
 
 	$semesters = Semesters(implode(",", $program));
 
@@ -159,82 +162,88 @@ function advanceReport($program, $type_report)
 					}else{
 						$teachersNames .= ucwords(mb_strtolower($teacher['firstname'],'UTF-8')) . " " . ucwords(mb_strtolower($teacher['lastname'],'UTF-8'))." <br> ";
 						$teachersEmails .= mb_strtolower($teacher['email'],'UTF-8')." <br> ";
-						$teachersUsersIds .= mb_strtolower($teacher['user_id'],'UTF-8')." <br> ";
+						$teachersUsersIds = mb_strtolower($teacher['user_id'],'UTF-8');
 					}
 				}
 				
-				//Información del profesor y del curso
+				//Información del profesor y del course
 				$course->setIdUser($teachersUsersIds);
 				$course->setNombreProfesor($teachersNames);
-				$course->setCorreo($value[$teachersEmails]);
+				$course->setCorreo($teachersEmails);
 				$course->setPrograma($programName);
 				$course->setSemestre($semesterName);
 				$course->setNombreCurso($courseInfo['course_name']);
 				
-				$coursesResult = Courses($value['courseid'], $value['userid'], $type_report);
+				$gradesCategoryResult = GradesCategory($courseInfo['course_id'],$course->getIdUser() , $type_report);
 			//Validaciones
-			if($coursesResult->num_rows > 0){
-				foreach ($coursesResult as $valueC) {
-					$recordItem = ItemCourse($courseInfo['course_id'], strtoupper($type_report));
-					$cantidad = $recordItem->num_rows;
-					$cantidadItems = ($cantidadItems < $cantidad ) ? $cantidad : $cantidadItems;
-					if ($cantidad > 0) {
-						foreach ($recordItem as $recordItems) {
-							if ($recordItems["itemmodule"] == "forum") {
-								$curso->items []= $recordItems["name"];
+			if(is_object($gradesCategoryResult)){
+				if($gradesCategoryResult -> num_rows > 0){
+				foreach ($gradesCategoryResult as $gradesCategory) {
+					$itemResult = GradesCategoryItem($courseInfo['course_id'], strtoupper($type_report));
+					$cantidadItems = ($cantidadItems < $itemResult->num_rows ) ? $itemResult->num_rows : $cantidadItems;
+					if ($itemResult->num_rows > 0) {
+						foreach ($itemResult as $item) {
+
+							if ($item["itemmodule"] == "forum") {
+
+								$course->items []= $item["name"];
+
 								//calificaciones del foro
-								$score = ScoreItem($recordItems["id"]);
+
+								$score = ScoreItem($item["id"]);
 								($score == "CUMPLE") ? $cumple++ : $noCumple++;
-								$curso->items []= $score;
+								$course->items []= $score;
 	
 								//retroalimentación del foro
-								$resultFeedback = FeedbackForum1($valueC['id'], $recordItems["iteminstance"]);
+
+								$resultFeedback = FeedbackForum1($gradesCategory['id'], $item["iteminstance"]);
 	
 								if ($resultFeedback->num_rows > 0) {
 									$feed1 = $resultFeedback->fetch_assoc();
-									$resultFeedback = FeedbackForum2($feed1['id'], $value["userid"]);
+									$resultFeedback = FeedbackForum2($feed1['id'], $course->getIdUser());
 									($resultFeedback == "CUMPLE") ? $cumple++ : $noCumple++;
-									$curso->items []=$resultFeedback;
+									$course->items []=$resultFeedback;
 								} else {
-									$curso->items []="NO CUMPLE";
+									$course->items []="NO CUMPLE";
 									$noCumple++;
 								}
 	
-							}elseif ($recordItems["itemmodule"] == "assign") {
+							}elseif ($item["itemmodule"] == "assign") {
 	
-								$curso->items []= $recordItems["name"];	
+								$course->items []= $item["name"];	
 	
 								//calificaciones de la tarea
-								$score = ScoreItem($recordItems["id"]);
+								$score = ScoreItem($item["id"]);
 								($score == "CUMPLE") ? $cumple++ : $noCumple++;
-								$curso->items []= $score;
+								$course->items []= $score;
 								//retroalimentación de la tarea
-								$resultFeedback = FeedbackActivity($recordItems["iteminstance"]);
+								$resultFeedback = FeedbackActivity($item["iteminstance"]);
 								($resultFeedback == "CUMPLE") ? $cumple++ : $noCumple++;
-								$curso->items []=$resultFeedback;
+								$course->items []=$resultFeedback;
 	
 								
-							}elseif ($recordItems["itemmodule"] == "quiz") {
+							}elseif ($item["itemmodule"] == "quiz") {
 	
-								$curso->items []= $recordItems["name"];
+								$course->items []= $item["name"];
 								//calificaciones del quiz	
-								$curso->items []= "CUMPLE";
+								$course->items []= "CUMPLE";
 								//retroalimentaciones del quiz
-								$curso->items []= "NO APLICA";
+								$course->items []= "NO APLICA";
 								$cumple++;
 							}							
 						}
 					}
 						$total = (($cumple + $noCumple) == 0) ? -1 : ($cumple + $noCumple);
 						$per = ($total == -1) ? -1 : round(((100 / $total) * $cumple));
-						$curso->setPorcentaje($per);
+						$course->setPorcentaje($per);
 				}
 			}else{
-				$curso->setPorcentaje(-2);
+				$course->setPorcentaje(-2);
 			}
             
-			$vector_course[] = $course;
-			$vector_idCurso[] = $value['courseid'];
+			$vector_course[]  = $course;
+			$vector_idcourse[] = $courseInfo['course_id'];}
+			
 			}
 		}
 		echo("
@@ -248,7 +257,7 @@ function advanceReport($program, $type_report)
 					<th class='td1' nowrap>ID user</th>
 					<th class='td1' nowrap>Nombre</th>
 					<th class='td1' nowrap>Correo</th>
-					<th class='td1' nowrap>Curso</th>
+					<th class='td1' nowrap>course</th>
 					<th class='td1' nowrap>Programa</th>
 					<th class='td1' nowrap>Semestre</th>"
 					. headerItems($cantidadItems) . "
@@ -268,7 +277,7 @@ function advanceReport($program, $type_report)
 				}
 				print("
 					<tr class='".$color."'>
-						<td nowrap class='".$color."'>".$fecha."</td>
+						<td nowrap class='".$color."'>".$dateNow."</td>
 						<td nowrap class='".$color."'>".$curse->getIdUser()."</td>
 						<td nowrap class='".$color."'>".$curse->getNombreProfesor()."</td>
 						<td nowrap class='".$color."'>".$curse->getCorreo()."</td>				
@@ -281,8 +290,8 @@ function advanceReport($program, $type_report)
 			}
 
 		$sum = $verde + $amarillo + $rojoClaro + $rojoOscuro;
-		$cantidadCursos = count(elementosUnicos($vector_idCurso));
-		$cantidadRepetidos = count($vector_idCurso) - $cantidadCursos;
+		$cantidadcourses = count(elementosUnicos($vector_idcourse));
+		$cantidadRepetidos = count($vector_idcourse) - $cantidadcourses;
 		echo ("
 				</tbody>
 			</table>
@@ -291,39 +300,18 @@ function advanceReport($program, $type_report)
 				<div class='item-porcent tr2'><span class='txt-black'>79% - 51%  |</span>     <h5>" . $amarillo . "</h5></div>
 				<div class='item-porcent tr3'><span class='txt-black'>50% - 0%   |</span>		<h5>" . $rojoClaro . "</h5></div>
 				<div class='item-porcent tr4'><span class='txt-black'>Sin actividades	|</span><h5>" . $rojoOscuro . "</h5></div>
-				<div class='item-porcent td2'><span>Total de cursos	|</span><h5>" . $sum . "</h5></div>
-				<div class='item-porcent td2'><span>Cursos Repetidos	|</span><h5>" . $cantidadRepetidos . "</h5></div>
+				<div class='item-porcent td2'><span>Total de courses	|</span><h5>" . $sum . "</h5></div>
+				<div class='item-porcent td2'><span>courses Repetidos	|</span><h5>" . $cantidadRepetidos . "</h5></div>
 			</div>
 			");
 
 
 	}else{
-		echo ("<b> En estos momentos el programa: " . Program(implode(",", $program)) . "  no cuenta con cursos.</b><br>");
+		echo ("<b> En estos momentos el programa: " . ProgramsName(implode(",", $program)) . "  no cuenta con courses.</b><br>");
 		echo("
 		<div class='title-estadist'>
-		<p>ESTADISTICA DE LOS CURSOS EN</p>
+		<p>ESTADISTICA DE LOS courseS EN</p>
 		<h2>AULAS VIRTUALES MOODLE</h2>
 		</div>");
-	}
-
-
-
-
-
-	
-	$teachesResult = Teachers(implode(",", $program));
-	$cantidadItems = 0;
-	date_default_timezone_set("America/Bogota");
-	$fecha = date("Y-m-d H:i:s");
-	
-
-	if ($teachesResult->num_rows > 0) {
-
-		foreach ($teachesResult as $value) {
-			
-		}
-		
-	} else {
-		
 	}
 }

@@ -55,12 +55,12 @@
 						/*Caso 2: En esta sesión se tendrá el Avance formativo 1, se enviaran tres variables: categoría, programa y el nombre de la categoría en Moodle */
 					case '2':
 						require_once("avances.php");
-						advanceReport($_POST["program"], "", "Avance formativo 1");
+						advanceReport($_POST["program"],"Avance formativo 1");
 						break;
 						/*Caso 3: En esta sesión se tendrá el Avance formativo 2, se enviaran tres variables: categoría, programa y el nombre de la categoría en Moodle */
 					case '3':
 						require_once("avances.php");
-						advanceReport($_POST["program"], "", "Avance formativo 2");
+						advanceReport($_POST["program"],"Avance formativo 2");
 						break;
 						/*Caso 4: En esta sesión se tendrá las estadisticas, se enviara una sola variable programa */
 					case '4':

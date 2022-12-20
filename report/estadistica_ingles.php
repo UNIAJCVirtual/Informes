@@ -18,63 +18,59 @@ function statistics($program)
 {
 	include("../services/reportRequest.php");
 
-	$vector_curso = [];
-	$vector_semestre = [];
-	$vector_grupo = [];
-	$vector_codigo = [];
-	$vector_estudiantes = [];
-	$vector_programa = [];
-	$vector_profesor = [];
-	$vector_idCurso = [];
-	$cantidadEstudiantes=0;
+	date_default_timezone_set("America/Bogota");
+	$vector_course = [];
+	$vector_semester = [];
+	$vector_grup = [];
+	$vector_course_code = [];
+	$vector_course_id = [];
+	$studentsSum = 0;
+	$vector_teachers = [];
+	$vector_program = [];
 	
-	$categoriesResult = Categories(implode(",", $program));
+	$semesters = Semesters(implode(",", $program));
 
-	if ($categoriesResult) {
+	if ($semesters) {
 
-		foreach ($categoriesResult as $val) {
-			$result = NameCategory($val['id']);
-			$semester = $result["name"];
-			$programa = Program($result['parent']);
-			$result = StatisticsInformation($val['id']);
-			$estudiantes = StatisticsInformation2($val['id']);
+		foreach ($semesters as $semester) {
+			$programName = ProgramsName($semester['parent']);
+			$semesterName = $semester['name'];
+			$coursesInformation = CoursesInformation($semester['id']);
 			
-			while ($totalestudiantes = $estudiantes->fetch_assoc()) {
-				$vector_estudiantes[]=$totalestudiantes['user_id'];
-			}
+			while ($courseInfo = $coursesInformation->fetch_assoc()) {
+				$course = new estadistica();
+				$teachersNames="";
 
-			while ($column = $result->fetch_assoc()) {
-
-				
-				$curso = new estadistica();
 				//la variable requerida en la función Enrolled es el rol que vamos a buscar 3 Profesor y 5 Estudiante
-				$profesorMatricula= Enrolled($column['course_id'], 3);
-				$profesoresMatriculados = $profesorMatricula->fetch_assoc();
-
-				$estudianteMatricula= Enrolled($column['course_id'], 5);
-				$estudiantesMatriculados = $estudianteMatricula->fetch_assoc();
-				//---------
-
-				$curso->setPrograma($programa);
-				$curso->setIdCurso($column['course_id']);
-				$codigo = explode("Conv_", $column['course_fullname']);
-				$curso->setCodigo($codigo[count($codigo) - 1]);
-				$curso->setSemestre($semester);
-				$curso->setGrupo(substr($column['course_fullname'],7,6));
-				$curso->setNombreCurso($codigo[0]);
-				$curso->setNombreProfesor(ucwords(mb_strtolower($column['firstname'],'UTF-8')) . " " . ucwords(mb_strtolower($column['lastname'],'UTF-8')));
-				$curso->setEstudiantes($estudiantesMatriculados['matriculados']-$profesoresMatriculados['matriculados']);
-				$cantidadEstudiantes += $curso->getEstudiantes();
-				$vector_programa []= $curso->getPrograma();
-				$vector_semestre []= $curso->getSemestre();
-				$vector_grupo[] = $curso->getGrupo();
-				$vector_codigo[] = $curso->getCodigo();
-				$vector_idCurso[] = $curso->getIdCurso();
-				$vector_profesor[] = $curso->getNombreProfesor();
-				$vector_curso[] = $curso;
+				$teachers = Usersquantity($courseInfo['course_id'], 3);
+				$students = Usersquantity($courseInfo['course_id'], 5);
+				
+				while($teacher = $teachers->fetch_assoc()){
+					$teachersNames .= ($teachers->num_rows== 1 ) ? 
+					ucwords(mb_strtolower($teacher['firstname'],'UTF-8')) . " " . ucwords(mb_strtolower($teacher['lastname'],'UTF-8')) : 
+					ucwords(mb_strtolower($teacher['firstname'],'UTF-8')) . " " . ucwords(mb_strtolower($teacher['lastname'],'UTF-8'))." <br> ";
+					$vector_teachers [] = $teacher['user_id'];
+				}
+				$students->fetch_assoc();
+				$studentsSum += $students->num_rows - $teachers->num_rows;
+				
+				$code = explode("Conv_", $courseInfo['course_name']);
+				$course->setCodigo($code[count($code) - 1]);
+				$course->setSemestre($semesterName);
+				$course->setPrograma($programName);
+				$course->setGrupo(substr($courseInfo['course_name'],7,6));
+				$course->setNombreCurso($code[0]);
+				$course->setIdCurso($courseInfo['course_id']);
+				$course->setNombreProfesor($teachersNames);
+				$course->setEstudiantes($students->num_rows - $teachers->num_rows);
+				$vector_program []= $course->getPrograma();
+				$vector_semester[] = $course->getSemestre();
+				$vector_grup[] = $course->getGrupo();
+				$vector_course_id[] = $course->getIdCurso();
+				$vector_course_code[] = $course->getCodigo();
+				$vector_course[] = $course;
 			}
 		}
-	}
 	echo "
 	<div class='title-estadist'>
 		<p>ESTADISTICA DE LOS CURSOS DE INGLES</p>
@@ -94,53 +90,57 @@ function statistics($program)
 		</thead>
 		<tbody>		
 		";
-		$cantidadSemestres  = count(elementosUnicos($vector_semestre));
-		$cantidadGrupos = count(elementosUnicos($vector_grupo));
-		$cantidadCodigos = count(elementosUnicos($vector_codigo));
-		$cantidadProfesores = count(elementosUnicos($vector_profesor));
-		$cantidadProgramas = count(elementosUnicos($vector_programa));
-		$cantidadCursos = count(elementosUnicos($vector_idCurso));
-		$cantidadRepetidos = count($vector_idCurso) - $cantidadCursos;
+		$numberSemesters  = count(elementosUnicos($vector_semester));
+		$numberGroups = count(elementosUnicos($vector_grup));
+		$numberCodes = count(elementosUnicos($vector_course_code));
+		$numberTeachers = count(elementosUnicos($vector_teachers));
+		$numberPrograms = count(elementosUnicos($vector_program));
+		$numberCourses = count(elementosUnicos($vector_course_id));
+		$numberRepeats = count($vector_course_id) - $numberCourses;
 
-	date_default_timezone_set("America/Bogota");
-	$fecha = date("Y-m-d H:i:s");
-
-	foreach ($vector_curso as $curse) {
-		echo ("
-		<tr class='tr5'>
-		<td class='tr5'>".$fecha."</td>
-		<td class='tr5'>" . $curse->getPrograma() . "</td>
-		<td class='tr5'>" . $curse->getSemestre() . "</td>
-		<td class='tr5'>" . $curse->getIdCurso() . "</td>
-		<td class='tr5'>" . $curse->getGrupo() . "</td>
-		<td class='tr5'>" . $curse->getCodigo() . "</td>
-		<td class='tr5'>" . $curse->getNombreCurso() . "</td>
-		<td class='tr5'>" . $curse->getEstudiantes() . "</td>
-		<td class='tr5'>" . $curse->getNombreProfesor() . "</td>");
-	}
-	echo("
-			<tr class='td2'>
-			<td class='td2'>Total</td>
-			<td class='td2'>" . $cantidadProgramas . "</td>
-			<td class='td2'>" . $cantidadSemestres . "</td>
-			<td class='td2'>" . $cantidadRepetidos . "</td>
-			<td class='td2'>" . $cantidadGrupos . "</td>
-			<td class='td2'>" . $cantidadCodigos . "</td>
-			<td class='td2'>" . $cantidadCursos . "</td>
-			<td class='td2'>" . $cantidadEstudiantes . "</td>
-			<td class='td2'>" . $cantidadProfesores . "</td>
+		foreach ($vector_course as $curse) {
+			echo ("
+			<tr class='tr5' nowrap>
+			<td class='tr5' nowrap>" . date("Y-m-d H:i:s") . "</td>
+			<td class='tr5' nowrap>" . $curse->getSemestre() . "</td>
+			<td class='tr5' nowrap>" . $curse->getSemestre() . "</td>
+			<td class='tr5' nowrap>" . $curse->getIdCurso() . "</td>
+			<td class='tr5' nowrap>" . $curse->getGrupo() . "</td>
+			<td class='tr5' nowrap>" . $curse->getCodigo() . "</td>
+			<td class='tr5' >" . $curse->getNombreCurso() . "</td>
+			<td class='tr5' nowrap>" . $curse->getEstudiantes() . "</td>
+			<td class='tr5' nowrap>" . $curse->getNombreProfesor() . "</td>");
+		}
+		echo "
+			<tr class='td2' nowrap>
+			<td class='td2' nowrap>Total</td>
+			<td class='td2' nowrap>" . $numberSemesters . "</td>
+			<td class='td2' nowrap>" . $numberSemesters . "</td>
+			<td class='td2' nowrap>" . $numberCourses . "</td>
+			<td class='td2' nowrap>" . $numberGroups . "</td>
+			<td class='td2' nowrap>" . $numberCodes . "</td>
+			<td class='td2' nowrap>" . $numberCourses . "</td>
+			<td class='td2' nowrap>" . $studentsSum . "</td>
+			<td class='td2' nowrap>" . $numberTeachers . "</td>
 			</tr>
 		</tbody>
 		</table>
-		");
+		";
 		echo ("
 		<div class='container-items-porcent'>
-			<div class='item-porcent td2'><span>Programas	|</span><h5>" . $cantidadProgramas . "</h5></div>
-			<div class='item-porcent td2'><span>Grupos |</span>		<h5>" . $cantidadGrupos . "</h5></div>
-			<div class='item-porcent td2'><span>Cursos  |</span>     <h5>" . $cantidadCursos . "</h5></div>
-			<div class='item-porcent td2'><span>Cursos repetidos |</span>     <h5>" . $cantidadRepetidos . "</h5></div>
-			<div class='item-porcent td2'><span>Estudiantes   |</span>		<h5>" . $cantidadEstudiantes . "</h5></div>
-			<div class='item-porcent td2'><span>Profesores	|</span><h5>" . $cantidadProfesores . "</h5></div>
-		   </div>
+			<div class='item-porcent td2'><span>Programas	|</span><h5>" . $numberPrograms . "</h5></div>
+			<div class='item-porcent td2'><span>Grupos |</span>		<h5>" . $numberGroups . "</h5></div>
+			<div class='item-porcent td2'><span>Cursos  |</span>     <h5>" . $numberCourses . "</h5></div>
+			<div class='item-porcent td2'><span>Cursos repetidos |</span>     <h5>" . $numberRepeats . "</h5></div>
+			<div class='item-porcent td2'><span>Estudiantes   |</span>		<h5>" . $studentsSum . "</h5></div>
+			<div class='item-porcent td2'><span>Profesores	|</span><h5>" . $numberTeachers . "</h5></div>
+		</div>
 		");
+	}else{
+		echo("
+		<div class='title-estadist'>
+		<p>ESTADISTICA DE LOS CURSOS EN</p>
+		<h2>AULAS VIRTUALES MOODLE</h2>
+		</div>");
+	}
 }

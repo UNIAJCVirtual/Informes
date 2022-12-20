@@ -200,7 +200,6 @@ function confirmarEmail($cont, $e)
 				
 				return true;
 			} else {
-				echo($email);
 				return false;
 			}
 		} else {

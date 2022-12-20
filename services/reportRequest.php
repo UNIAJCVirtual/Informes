@@ -68,8 +68,8 @@ function Usersquantity($idCourse, $rol)
 	$con->close();
 	return $result;
 }
-//SI SE USA
-function Teachers($filter)
+//NO se usa
+/*function Teachers($filter)
 {
 	require_once("../services/connection.php");
 	$connection3 = connection();
@@ -91,9 +91,9 @@ function Teachers($filter)
 	$result = $connection3->query($query);
 	$connection3->close();
 	return $result;
-}
-//SI SE USA
-function Courses($course, $userid, $filter)
+}*/
+//SI SE USA Modificado
+function GradesCategory($course, $userid, $filter)
 {
 	require_once("../services/connection.php");
 	$connection3 = connection();
@@ -122,7 +122,7 @@ function Courses($course, $userid, $filter)
 	return $result;
 }
 //SI SE USA
-function ItemCourse($courseid, $tipoReport)
+function GradesCategoryItem($courseid, $tipoReport)
 {
 	require_once("../services/connection.php");
 	$connection3 = connection();
