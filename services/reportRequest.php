@@ -34,7 +34,7 @@ function CoursesInformation($idCategory)
 							FROM 
 							mdl_course 
 							WHERE 
-							mdl_course.category =".$idCategory);
+							mdl_course.category =" . $idCategory);
 	$con->close();
 	return $result;
 }
@@ -63,8 +63,8 @@ function Usersquantity($idCourse, $rol)
 							mdl_course.id = mdl_enrol.courseid AND
 							mdl_enrol.id= mdl_user_enrolments.enrolid AND
 							mdl_course.visible=TRUE AND
-							mdl_role.id = ".$rol." AND
-							mdl_course.id = ".$idCourse."");
+							mdl_role.id = " . $rol . " AND
+							mdl_course.id = " . $idCourse . "");
 	$con->close();
 	return $result;
 }
@@ -207,7 +207,7 @@ function dataForum($id)
 	return $result;
 }
 //SI SE USA
-function gradeItems($courseid, $category)
+function gradeItems($courseid, $category, $category_old)
 {
 
 	require_once("../services/connection.php");
@@ -227,7 +227,7 @@ function gradeItems($courseid, $category)
 			mdl_grade_categories gc
 		WHERE 
 			gc.id = gi.categoryid AND
-			gc.fullname LIKE '$category%' AND
+			(gc.fullname LIKE '$category%' OR gc.fullname LIKE '$category_old%') AND
 			gi.courseid =  $courseid";
 
 
@@ -236,7 +236,7 @@ function gradeItems($courseid, $category)
 	return $result;
 }
 //SI SE USA
-function weighing($courseid, $category)
+function weighing($courseid, $category, $category_old)
 {
 	require_once("../services/connection.php");
 	$connection3 = connection();
@@ -249,10 +249,10 @@ function weighing($courseid, $category)
 			mdl_grade_categories gc 
 		where
 			gc.id = gi.categoryid AND
-			gc.fullname LIKE '$category%' AND
+			(gc.fullname LIKE '$category%' OR gc.fullname LIKE '$category_old%') AND
 			gi.courseid =  $courseid
 			");
-	$row = mysqli_fetch_array($result);	
+	$row = mysqli_fetch_array($result);
 	$gradesum = $row['gradeSum'];
 	$connection3->close();
 	return $gradesum;
@@ -363,7 +363,7 @@ function contentPage($course)
 	return $result;
 }
 //SI SE USA
-function contentPageId($course,$idNumberPage)
+function contentPageId($course, $idNumberPage)
 {
 	require_once("../services/connection.php");
 	$conn = connection();

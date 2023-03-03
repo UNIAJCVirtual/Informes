@@ -11,10 +11,10 @@ header('Content-Type: text/html; charset=UTF-8');
 @version	1.0
 @fecha: 26/10/2022
 */
-	$fechaInicio;
-	$fechaFinal;
-	$countFails = 0;
-	$countSucces = 0;
+$fechaInicio;
+$fechaFinal;
+$countFails = 0;
+$countSucces = 0;
 //----------------------------------------------
 
 /*
@@ -49,8 +49,8 @@ function uniqueElements($array)
 
 function removeTildes(String $textInput)
 {
-	$notAllowed = array("á", "é", "í", "ó", "ú","ñ");
-	$allowed = array("a", "e", "i", "o", "u","n");
+	$notAllowed = array("á", "é", "í", "ó", "ú", "ñ");
+	$allowed = array("a", "e", "i", "o", "u", "n");
 	return str_replace($notAllowed, $allowed, $textInput);
 }
 
@@ -70,7 +70,7 @@ function periodDate()
 
 	global $fechaFinal, $fechaInicio;
 
-	if( $mes || $dia ){
+	if ($mes || $dia) {
 		if ($mes == 7) {
 			if ($dia < 16) {
 				$fechaInicio = strtotime(date("Y") . "-01-01 00:00:00", time());
@@ -86,7 +86,7 @@ function periodDate()
 			$fechaInicio = strtotime(date("Y") . "-07-16 00:00:00", time());
 			$fechaFinal = strtotime(date("Y") . "-12-31 00:00:00", time());
 		}
-	}else{
+	} else {
 		print('Error en la fecha');
 		exit;
 	}
@@ -102,35 +102,52 @@ etiqueta de profesor.Para esto recibe el nombre del recourse page del inicio del
 @version	2.1
 @fecha: 05/12/2022
 */
-function nameValidate(String $contentName , String $fullName){
+function nameValidate(String $contentName, String $fullName)
+{
 
-	global $countFails, $countSucces , $fails, $succes, $descriptionName;
+	global $countFails, $countSucces, $fails, $succes, $descriptionName;
 
 	$contentName = strtolower(removeTildes($contentName));
+	$fullName = strtolower(removeTildes($fullName));
 
-	if(strpos($contentName , $descriptionName)){
+	$parts = explode(" ", $contentName);
+	$separateName = reset($parts);
+
+	if (stripos($fullName, $separateName) !== false) {
+		$countSucces++;
+		return $succes;
+	} else {
+		$countFails++;
+		return $fails;
+	}
+
+	/*
+	if (strpos($contentName, $descriptionName)) {
 
 		$countFails++;
 		return $fails;
+	} else {
 
-	}else{
-
+		
 		$countName = 0;
-		$separateName = explode(" ", removeTildes(mb_strtolower($fullName,'UTF-8') . " "));
+		$separateName = explode(" ", removeTildes(mb_strtolower($fullName, 'UTF-8') . " "));
 
 		foreach ($separateName as $value) {
-			if(!empty($value)) {
-				strpos($contentName, $value) ? $countName++ : $countName ;
+			if (!empty($value)) {
+				strpos($contentName, $value) ? $countName++ : $countName;
 			}
 		}
-		if($countName > 1){
+
+
+
+		if ($countName > 1) {
 			$countSucces++;
 			return $succes;
-		}else{
+		} else {
 			$countFails++;
 			return $fails;
 		}
-	}
+	}*/
 }
 
 /*
@@ -144,31 +161,30 @@ si no son iguales envia a un metodo que valida si el correo es valido.
 @fecha: 26/10/2022
 */
 
-function emailValidate($content,$email){
+function emailValidate($content, $email)
+{
 
-	global $countFails, $countSucces , $fails, $succes;
+	global $countFails, $countSucces, $fails, $succes;
 
 
 	if (strpos($content, $email)) {
 		$countSucces++;
 		return $succes;
-
 	} else {
 
-	if (confirmarEmail($content, $email)){
-		$countSucces++;
-		return $succes;
-
+		if (confirmarEmail($content, $email)) {
+			$countSucces++;
+			return $succes;
 		} else {
 			$countFails++;
 			return $fails;
-
 		}
 	}
 }
 /*
 @function name: emailValidate
 @description: El metodo se encarga de validar si en el contenido de la información del tutor tiene un correo valido.
+Nota: El uso de el email del profesor en plataforma se estaba usando para verifcar si el del recurso era identico al registrado.
 @parameters: String
 @return: Boolean : indicando true si es valido y false si no es valido.
 @author:	José David Lamilla A.
@@ -178,7 +194,7 @@ function emailValidate($content,$email){
 
 function confirmarEmail($cont, $e)
 {
-	
+
 	$flag = false;
 	$email = '';
 	$buscar = array(chr(13) . chr(10), "\r\n", "\n", "\r");
@@ -187,12 +203,13 @@ function confirmarEmail($cont, $e)
 	$arrayContenido = explode(":", $sin);
 	if (count($arrayContenido) > 0) {
 		for ($i = 0; $i < count($arrayContenido); $i++) {
-			if (substr_count($arrayContenido[$i], "@") == 1) {
+			if (substr_count($arrayContenido[$i], "@") >= 1) {
 				$email = $arrayContenido[$i];
 				$flag = true;
 				break;
 			}
 		}
+		/*  Validación del correo en el item (presentación) y en la plataforma (Moodle)
 		if ($flag) {
 			if ((strpos($email, $e)) !== false) {
 				return true;
@@ -204,9 +221,12 @@ function confirmarEmail($cont, $e)
 			}
 		} else {
 			return false;
+		}*/
+		if ($flag) {
+			return true;
+		} else {
+			return false;
 		}
-	} else {
-		return false;
 	}
 }
 
@@ -220,9 +240,10 @@ function confirmarEmail($cont, $e)
 @fecha: 26/10/2022
 */
 
-function validateOpeningHours($content){
+function validateOpeningHours($content)
+{
 
-	global $countFails, $countSucces , $fails, $succes;
+	global $countFails, $countSucces, $fails, $succes;
 
 	if ((strpos($content, 'indicar las horas de atencion que tendra para sus estudiantes') !== false)) {
 		$countFails++;
@@ -248,9 +269,10 @@ function validateOpeningHours($content){
 
 //---------------------------------------
 
-function validarFotografia ($content){
+function validarFotografia($content)
+{
 
-	global $countFails, $countSucces , $fails, $succes;
+	global $countFails, $countSucces, $fails, $succes;
 
 	if ((strpos($content, 'insertar foto de tamaño 200')) !== false) {
 		$countFails++;
@@ -263,22 +285,23 @@ function validarFotografia ($content){
 
 //---------------------------------------
 
-function validarForoConsultas($idcourse){
+function validarForoConsultas($idcourse)
+{
 
-	global $countFails, $countSucces , $fails, $succes;
+	global $countFails, $countSucces, $fails, $succes;
 
 	$resultFC = forum($idcourse);
 
 	if ($resultFC->num_rows > 0) {
 
-	$resultFC = mysqli_fetch_array($resultFC);
-	$discussions = forumDiscussions($resultFC["id"]);
-	$discussions = mysqli_fetch_array($discussions);
+		$resultFC = mysqli_fetch_array($resultFC);
+		$discussions = forumDiscussions($resultFC["id"]);
+		$discussions = mysqli_fetch_array($discussions);
 
 		if ($discussions["dis"] > 0) {
 			$countSucces++;
 			return $succes;
-		}else{
+		} else {
 			$countFails++;
 			return $fails;
 		}
@@ -290,14 +313,15 @@ function validarForoConsultas($idcourse){
 
 //---------------------------------------
 
-function validateDateUnits($sumarycon){
+function validateDateUnits($sumarycon)
+{
 
-	global $countFails, $countSucces , $fails, $succes;
+	global $countFails, $countSucces, $fails, $succes;
 
 	if ((strpos($sumarycon, 'DD/MM/AAAA')) !== false) {
 		$countFails++;
 		return $fails;
-	}else {
+	} else {
 		$countSucces++;
 		return $succes;
 	}
@@ -305,24 +329,23 @@ function validateDateUnits($sumarycon){
 
 //---------------------------------------
 
-function validarActividadesCategoria($itemsCategoria){
+function validarActividadesCategoria($itemsCategoria)
+{
 
-	global $countSucces,$countFails;
+	global $countSucces, $countFails;
 
-	if($itemsCategoria -> num_rows > 0 ){
+	if ($itemsCategoria->num_rows > 0) {
 
 		$countSucces++;
 		return true;
+	} else {
 
-	}else{
-
-		$countFails+=3;
+		$countFails += 3;
 		return false;
-
 	}
 }
 //---------------------------------------
-
+/*
 function validarDisponibilidadCategoria($itemsCategoria){
 	
 	global $countFails, $countSucces, $fechaInicio, $fechaFinal, $fails, $succes;
@@ -396,50 +419,43 @@ function validarDisponibilidadCategoria($itemsCategoria){
 		$countSucces++;
 		return $succes;
 	}
-}
+}*/
 //---------------------------------------
 
-function validarPonderacionCategoria($weighingGrade,$tipoCategoria){
+function validarPonderacionCategoria($weighingGrade, $tipoCategoria)
+{
+	global $countFails, $countSucces, $fails, $succes;
 
-	global $countFails, $countSucces , $fails, $succes;
-	
-		if ($weighingGrade > 100 || $weighingGrade == 0) {
+	if ($weighingGrade > 100 || $weighingGrade == 0) {
 
-			$countFails++;
-			return $fails;
+		$countFails++;
+		return $fails;
+	} elseif ($weighingGrade == 100 || $weighingGrade == 1 || $weighingGrade == 99.99 || $weighingGrade == 99.9) {
 
-		}elseif($weighingGrade == 100 || $weighingGrade == 1 || $weighingGrade == 99.99){
+		$countSucces++;
+		return $succes;
+	} elseif ($tipoCategoria == 1 || $tipoCategoria == 2) {
+		if ($weighingGrade == 30 || $weighingGrade == 0.30 || $weighingGrade == 30.0) {
 
 			$countSucces++;
 			return $succes;
+		} else {
 
-		}elseif($tipoCategoria == 1 || $tipoCategoria == 2 ){
-
-			if ($weighingGrade == 30 || $weighingGrade == 0.30) {
-
-				$countSucces++;
-				return $succes;
-
-			} else {
-
-				$countFails++;
-				return $fails;
-
-			}
-		}elseif($tipoCategoria == 3){
-
-			if ( $weighingGrade == 40 || $weighingGrade == 0.40) {
-
-				$countSucces++;
-				return $succes;
-
-			} else {
-
-				$countFails++;
-				return $fails;
-
-			}
+			$countFails++;
+			return $fails;
 		}
+	} elseif ($tipoCategoria == 3) {
+
+		if ($weighingGrade == 40 || $weighingGrade == 0.40 || $weighingGrade == 40.0) {
+
+			$countSucces++;
+			return $succes;
+		} else {
+
+			$countFails++;
+			return $fails;
+		}
+	}
 }
 
 //---------------------------------------
@@ -458,7 +474,7 @@ function enlistmentReport($program, $semester)
 	periodDate();
 	date_default_timezone_set("America/Bogota");
 	$fecha = date("Y-m-d H:i:s");
-	global $countFails,$countSucces,$c1,$c2,$c3,$ac1,$ac2,$ac3,$fails,$succes,$notApply,$pageId,$hidden,$notExist;
+	global $countFails, $countSucces, $c1, $c1_old, $c2, $c2_old, $c3, $c3_old, $ac1, $ac2, $ac3, $fails, $succes, $notApply, $pageId, $hidden, $notExist;
 	$green = 0;
 	$yellow = 0;
 	$lightRed = 0;
@@ -466,7 +482,7 @@ function enlistmentReport($program, $semester)
 	$vector_curse = [];
 	$vector_idCurse = [];
 	$semestersResult = Semesters(implode(",", $program));
-	
+
 
 	foreach ($semestersResult as $semester) {
 
@@ -476,25 +492,25 @@ function enlistmentReport($program, $semester)
 
 		while ($courseInfo = $coursesInformation->fetch_assoc()) {
 
-			$course = new alistamiento(); 
-			$teachersNames="";
-			$teachersEmails="";
-			$teachersUsersIds="";
+			$course = new alistamiento();
+			$teachersNames = "";
+			$teachersEmails = "";
+			$teachersUsersIds = "";
 
-				//la variable requerida en la función Usersquantity es el rol que vamos a buscar 3 Profesor
-				$teachers = Usersquantity($courseInfo['course_id'], 3);
-				
-				while($teacher = $teachers->fetch_assoc()){
-					if($teachers->num_rows == 1 ){
-						$teachersNames = ucwords(mb_strtolower($teacher['firstname'],'UTF-8')) . " " . ucwords(mb_strtolower($teacher['lastname'],'UTF-8'));
-						$teachersEmails = mb_strtolower($teacher['email'],'UTF-8');
-						$teachersUsersIds = mb_strtolower($teacher['user_id'],'UTF-8');
-					}else{
-						$teachersNames .= ucwords(mb_strtolower($teacher['firstname'],'UTF-8')) . " " . ucwords(mb_strtolower($teacher['lastname'],'UTF-8'))." <br> ";
-						$teachersEmails .= mb_strtolower($teacher['email'],'UTF-8')." <br> ";
-						$teachersUsersIds .= mb_strtolower($teacher['user_id'],'UTF-8')." <br> ";
-					}
+			//la variable requerida en la función Usersquantity es el rol que vamos a buscar 3 Profesor
+			$teachers = Usersquantity($courseInfo['course_id'], 3);
+
+			while ($teacher = $teachers->fetch_assoc()) {
+				if ($teachers->num_rows == 1) {
+					$teachersNames = ucwords(mb_strtolower($teacher['firstname'], 'UTF-8')) . " " . ucwords(mb_strtolower($teacher['lastname'], 'UTF-8'));
+					$teachersEmails = mb_strtolower($teacher['email'], 'UTF-8');
+					$teachersUsersIds = mb_strtolower($teacher['user_id'], 'UTF-8');
+				} else {
+					$teachersNames .= ucwords(mb_strtolower($teacher['firstname'], 'UTF-8')) . " " . ucwords(mb_strtolower($teacher['lastname'], 'UTF-8')) . " <br> ";
+					$teachersEmails .= mb_strtolower($teacher['email'], 'UTF-8') . " <br> ";
+					$teachersUsersIds .= mb_strtolower($teacher['user_id'], 'UTF-8') . " <br> ";
 				}
+			}
 
 			$course->setIdUser($teachersUsersIds);
 			$course->setNombre($teachersNames);
@@ -503,74 +519,73 @@ function enlistmentReport($program, $semester)
 			$course->setSemestre($semesterName);
 			$course->setIdcurso($courseInfo['course_id']);
 			$course->setNombreCurso($courseInfo['course_name']);
-			$vector_idCurse []= $course->getIdCurso();
+			$vector_idCurse[] = $course->getIdCurso();
 			$countFails = 0;
 			$countSucces = 0;
-			
+
 			$resultContentPage = contentPageId($courseInfo['course_id'], $pageId);
 
 			$page = $resultContentPage->fetch_assoc();
 
-			if(is_array($page)){
+			if (is_array($page)) {
 				$contenido = strtolower(removeTildes($page['content']));
 
 				// Req. 1 - Validar si existe la pagina de Información del profesor
 
 				// Req. 2 - Validar el nombre del profesor
-				$course->setNombreProfesor(nameValidate($page['name'],$teachersNames));
+				$course->setNombreProfesor(nameValidate($page['name'], $teachersNames));
 
 				// Req. 3 - Validar el correo del profesor
-				$course->setCorreoProfesor(emailValidate($contenido,$teachersEmails));
+				$course->setCorreoProfesor(emailValidate($contenido, $teachersEmails));
 
 				//Req. 3 - Validar el Horario de atención
 				$course->setHorarioAtencion(validateOpeningHours($contenido));
 
 				//Req. 4 - Validar la fotografia del profesor
 				$course->setFotografia(validarFotografia($contenido));
-			}else{
+			} else {
 				$course->setNombreProfesor($notExist);
 				$course->setCorreoProfesor($notExist);
 				$course->setHorarioAtencion($notExist);
 				$course->setFotografia($notExist);
-				$countFails += 4; 
-			}					
-			
+				$countFails += 4;
+			}
+
 			//Req. 5 validacion foro consulta
 			$course->setForoConsulta(validarForoConsultas($courseInfo['course_id']));
 
-			
+
 			//Req. 6 validacion de las fechas de inicio y finalización de las unidades
 			$resultContentUnits = contentUnits($courseInfo['course_id']);
-			while($unit = $resultContentUnits->fetch_assoc()){
+			while ($unit = $resultContentUnits->fetch_assoc()) {
 
-				$course->unidades[] = ($unit['visible'] == 1) ? validateDateUnits($unit['summary']) : $hidden	;
-
+				$course->unidades[] = ($unit['visible'] == 1) ? validateDateUnits($unit['summary']) : $notApply;
 			}
 
-			$itemsC1 = gradeItems($courseInfo['course_id'], $c1);
-			$itemsC2 = gradeItems($courseInfo['course_id'], $c2);
-			$itemsC3 = gradeItems($courseInfo['course_id'], $c3);
-			
-			
+			$itemsC1 = gradeItems($courseInfo['course_id'], $c1, $c1_old);
+			$itemsC2 = gradeItems($courseInfo['course_id'], $c2, $c2_old);
+			$itemsC3 = gradeItems($courseInfo['course_id'], $c3, $c3_old);
+
+
 			//-------------------------------VALIDAR C1----------------
 
 			//Req. 7 validar si existen actividades dentro de la categoria C1
 
 
-			if(validarActividadesCategoria($itemsC1)){
+			if (validarActividadesCategoria($itemsC1)) {
+				// echo "AV01";
 				$course->setAF01Actividades($succes);
 
-			//Req. 8 validar la disponibilidad de las actividades dentro de la categoria AF01
+				//Req. 8 validar la disponibilidad de las actividades dentro de la categoria AF01
 
-				$course->setAF01Disponibilidad(validarDisponibilidadCategoria($itemsC1));
+				// $course->setAF01Disponibilidad(validarDisponibilidadCategoria($itemsC1));
 
-			//Req. 9 validar las ponderaciones de las actividades dentro de la categoria AF01
+				//Req. 9 validar las ponderaciones de las actividades dentro de la categoria AF01
 
-				$course->setAF01Ponderaciones(validarPonderacionCategoria( weighing($courseInfo['course_id'], $c1) , 1 ));
-				
-			}else{
+				$course->setAF01Ponderaciones(validarPonderacionCategoria(weighing($courseInfo['course_id'], $c1, $c1_old), 1));
+			} else {
 				$course->setAF01Actividades($fails);
-				$course->setAF01Disponibilidad($fails);
+				// $course->setAF01Disponibilidad($fails);
 				$course->setAF01Ponderaciones($fails);
 			}
 
@@ -578,20 +593,20 @@ function enlistmentReport($program, $semester)
 
 			//Req. 10 validar si existen actividades dentro de la categoria AF02
 
-			if(validarActividadesCategoria($itemsC2)){
+			if (validarActividadesCategoria($itemsC2)) {
+				// echo "AV02";
 				$course->setAF02Actividades($succes);
 
-			//Req. 11 validar la disponibilidad de las actividades dentro de la categoria AF02
+				//Req. 11 validar la disponibilidad de las actividades dentro de la categoria AF02
 
-				$course->setAF02Disponibilidad(validarDisponibilidadCategoria($itemsC2));
+				// $course->setAF02Disponibilidad(validarDisponibilidadCategoria($itemsC2));
 
-			//Req. 12 validar las ponderaciones de las actividades dentro de la categoria AF02
-				
-				$course->setAF02Ponderaciones(validarPonderacionCategoria(weighing($courseInfo['course_id'], $c2), 2 ));
+				//Req. 12 validar las ponderaciones de las actividades dentro de la categoria AF02
 
-			}else{
+				$course->setAF02Ponderaciones(validarPonderacionCategoria(weighing($courseInfo['course_id'], $c2, $c2_old), 2));
+			} else {
 				$course->setAF02Actividades($fails);
-				$course->setAF02Disponibilidad($fails);
+				// $course->setAF02Disponibilidad($fails);
 				$course->setAF02Ponderaciones($fails);
 			}
 
@@ -600,21 +615,23 @@ function enlistmentReport($program, $semester)
 			//Req. 13 validar si existen actividades dentro de la categoria AF03
 
 
-			if(validarActividadesCategoria($itemsC3)){
-				
+			if (validarActividadesCategoria($itemsC3)) {
+
 				$course->setAF03Actividades($succes);
 
-			//Req. 14 validar la disponibilidad de las actividades dentro de la categoria AF03
+				//Req. 14 validar la disponibilidad de las actividades dentro de la categoria AF03
 
-				$course->setAF03Disponibilidad(validarDisponibilidadCategoria($itemsC3));
+				// $course->setAF03Disponibilidad(validarDisponibilidadCategoria($itemsC3));
 
-			//Req. 15 validar las ponderaciones de las actividades dentro de la categoria AF03
-				
-				$course->setAF03Ponderaciones(validarPonderacionCategoria(weighing($courseInfo['course_id'], $c3), 3 ));
+				//Req. 15 validar las ponderaciones de las actividades dentro de la categoria AF03
 
-			}else{
+				$course->setAF03Ponderaciones(validarPonderacionCategoria(weighing($courseInfo['course_id'], $c3, $c3_old), 3));
+
+
+
+			} else {
 				$course->setAF03Actividades($fails);
-				$course->setAF03Disponibilidad($fails);
+				// $course->setAF03Disponibilidad($fails);
 				$course->setAF03Ponderaciones($fails);
 			}
 			$total = $countFails + $countSucces;
@@ -650,15 +667,12 @@ function enlistmentReport($program, $semester)
 		<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 6</td>
 		<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 7</td>
 		<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 8</td>
-		<td class='td1' nowrap >".$ac1." Actividades</td>
-		<td class='td1' nowrap >".$ac1." Disponibilidad</td>
-		<td class='td1' nowrap >".$ac1." Ponderaciones</td>
-		<td class='td1' nowrap >".$ac2." Actividades</td>
-		<td class='td1' nowrap >".$ac2." Disponibilidad</td>
-		<td class='td1' nowrap >".$ac2." Ponderaciones</td>
-		<td class='td1' nowrap >".$ac3." Actividades</td>
-		<td class='td1' nowrap >".$ac3." Disponibilidad</td>
-		<td class='td1' nowrap >".$ac3." Ponderaciones</td>
+		<td class='td1' nowrap >" . $ac1 . " Actividades</td>
+		<td class='td1' nowrap >" . $ac1 . " Ponderaciones</td>
+		<td class='td1' nowrap >" . $ac2 . " Actividades</td>
+		<td class='td1' nowrap >" . $ac2 . " Ponderaciones</td>
+		<td class='td1' nowrap >" . $ac3 . " Actividades</td>
+		<td class='td1' nowrap >" . $ac3 . " Ponderaciones</td>
 		<td class='td1' nowrap >Porcentaje</td>
 	</thead>");
 	foreach ($vector_curse as $curse) {
@@ -706,16 +720,14 @@ function enlistmentReport($program, $semester)
 			$count--;
 		}
 		$count = 0;
+		// i deleted this one <td nowrap class='" . $color . "'>" . $curse->getAF01Disponibilidad() . "</td>
 
 		echo ("
 		<td nowrap class='" . $color . "'>" . $curse->getAF01Actividades() . "</td>
-		<td nowrap class='" . $color . "'>" . $curse->getAF01Disponibilidad() . "</td>
 		<td nowrap class='" . $color . "'>" . $curse->getAF01Ponderaciones() . "</td>
 		<td nowrap class='" . $color . "'>" . $curse->getAF02Actividades() . "</td>
-		<td nowrap class='" . $color . "'>" . $curse->getAF02Disponibilidad() . "</td>
 		<td nowrap class='" . $color . "'>" . $curse->getAF02Ponderaciones() . "</td>
 		<td nowrap class='" . $color . "'>" . $curse->getAF03Actividades() . "</td>			
-		<td nowrap class='" . $color . "'>" . $curse->getAF03Disponibilidad() . "</td>
 		<td nowrap class='" . $color . "'>" . $curse->getAF03Ponderaciones() . "</td>
 		<td nowrap class='" . $color . "'>" . $curse->getPorcentaje() . "%" . "</td>
 		</tr>");

@@ -1,12 +1,15 @@
 <?php
 //Nombre de las categorías
-$c1 = "AVANCE FORMATIVO 1";
-$c2 = "AVANCE FORMATIVO 2";
-$c3 = "AVANCE FORMATIVO 3";
+$c1 = "Evaluación formativa y continua 1";
+$c1_old = "Avance formativo 1";
+$c2 = "Evaluación formativa y continua 2";
+$c2_old = "Avance formativo 2";
+$c3 = "Evaluación formativa y continua 3";
+$c3_old = "Avance formativo 3";
 //Nombre de las categorías abreviado
-$ac1 = 'AF01';
-$ac2 = 'AF02';
-$ac3 = 'AF03';
+$ac1 = 'EFC01';
+$ac2 = 'EFC02';
+$ac3 = 'EFC03';
 //Criterios de evalución
 $fails = 'NO CUMPLE';
 $succes = 'CUMPLE';

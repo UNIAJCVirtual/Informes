@@ -30,15 +30,15 @@ class alistamiento{
     
     private $af01Actividades;
     private $af01Ponderaciones;
-    private $af01Disponibilidad;
+    // private $af01Disponibilidad;
 
     private $af02Actividades;
     private $af02Ponderaciones;
-    private $af02Disponibilidad;
+    // private $af02Disponibilidad;
 
     private $af03Actividades;
     private $af03Ponderaciones;
-    private $af03Disponibilidad;
+    // private $af03Disponibilidad;
 
     // Variable donde se guardan los resultados del informe de cada curso va del 0% al 100%
 
@@ -187,7 +187,7 @@ class alistamiento{
     }
 
     // Funciones get y set de la variable af01Disponibilidad
-
+/*
     public function getAF01Disponibilidad(){
         return $this->af01Disponibilidad;
     }
@@ -195,6 +195,7 @@ class alistamiento{
     public function setAF01Disponibilidad($AF01D){
         $this->af01Disponibilidad = $AF01D;
     }
+    */
      // Funciones get y set de la variable af02Actividades
 
      public function getAF02Actividades(){
@@ -216,7 +217,7 @@ class alistamiento{
     }
 
     // Funciones get y set de la variable af02Disponibilidad
-
+/*
     public function getAF02Disponibilidad(){
         return $this->af02Disponibilidad;
     }
@@ -224,7 +225,7 @@ class alistamiento{
     public function setAF02Disponibilidad($AF02D){
         $this->af02Disponibilidad = $AF02D;
     }
-
+*/
      // Funciones get y set de la variable af03Actividades
 
      public function getAF03Actividades(){
@@ -246,7 +247,7 @@ class alistamiento{
     }
 
     // Funciones get y set de la variable af03Disponibilidad
-
+/*
     public function getAF03Disponibilidad(){
         return $this->af03Disponibilidad;
     }
@@ -254,7 +255,7 @@ class alistamiento{
     public function setAF03Disponibilidad($AF03D){
         $this->af03Disponibilidad = $AF03D;
     }
-
+*/
     // Funciones get y set de la variable porcentaje
 
     public function getPorcentaje(){
@@ -266,5 +267,3 @@ class alistamiento{
     }
 
 }
-
-?>
