@@ -41,6 +41,7 @@
                                 <option value="5" class="collapse-item">Estadistica Institucionales</option>
                                 <option value="6" class="collapse-item">Estadistica Ingles</option>
                             </select>
+                            <a href="./report/tipo_reporte.php" class="collapse-item">Usuarios</a>
                         </div>
                     </div>
                 </li>
@@ -62,12 +63,20 @@
                         <div id="category">
                             <div class="d-sm-flex justify-content-between mb-4">
                                 <h1 id="title-prg" class="h3 mb-0 d-none mr-5">Programas</h1>
-                                <div id="select" class="select d-none">
+                                <div id="div-select" class="select">
                                     <select name="category" id="select-category" onchange='loadProgram();'
-                                        class="custom-select p-l-1" required>
+                                        class="custom-select p-l-1 d-none">x
                                         <option hidden selected value="">Categorias</option>
                                         <?php require_once('selectors/category.php');
                                         selectCategory(); ?>
+                                    </select>
+
+                                    <select name="user-querrys" id="user-querrys"
+                                        class="custom-select p-l-1 d-none" >x
+                                        <option hidden selected value="">Consultas</option>
+                                        <option value="">Usuarios sin ingreso en la plataforma</option>
+                                        <option value="">Usuarios sin ingreso en cursos</option>
+                                        <option value="">Usuarios sin realizar actividades</option>
                                     </select>
                                 </div>
                                 <div id="selectInstitucional"  class="select d-none">

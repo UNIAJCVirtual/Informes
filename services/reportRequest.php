@@ -93,7 +93,7 @@ function Usersquantity($idCourse, $rol)
 	return $result;
 }*/
 //SI SE USA Modificado
-function GradesCategory($course, $userid, $filter)
+function GradesCategory($course, $userid, $filter, $filter2)
 {
 	require_once("../services/connection.php");
 	$connection3 = connection();
@@ -114,7 +114,8 @@ function GradesCategory($course, $userid, $filter)
 				mdl_course.id = $course AND
 				mdl_user_enrolments.userid = $userid AND
 				mdl_course.id = mdl_grade_categories.courseid AND
-				LOWER(mdl_grade_categories.fullname) LIKE '%" . $filter . "'
+				(LOWER(mdl_grade_categories.fullname) LIKE '%" . $filter . "' OR
+				 LOWER(mdl_grade_categories.fullname) LIKE '%" . $filter2 . "')
 				ORDER by 1,2 
 		");
 	$connection3->close();
@@ -122,7 +123,7 @@ function GradesCategory($course, $userid, $filter)
 	return $result;
 }
 //SI SE USA
-function GradesCategoryItem($courseid, $tipoReport)
+function GradesCategoryItem($courseid, $tipoReport, $tipoReport_new )
 {
 	require_once("../services/connection.php");
 	$connection3 = connection();
@@ -139,8 +140,9 @@ function GradesCategoryItem($courseid, $tipoReport)
 			mdl_grade_items gi,
 			mdl_grade_categories gc
 		WHERE 
-			gc.id = gi.categoryid AND
-			UPPER(gc.fullname) =  '$tipoReport'AND
+			gc.id = gi.categoryid AND (
+			UPPER(gc.fullname) =  '$tipoReport' OR
+			UPPER(gc.fullname) =  '$tipoReport_new')AND
 			gi.courseid =  $courseid";
 	$result = $connection3->query($quer);
 	$connection3->close();

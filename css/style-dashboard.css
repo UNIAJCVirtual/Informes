@@ -404,6 +404,8 @@ pre code {
   cursor: pointer;
 }
 
+
+
 .select select {
   position: relative;
   height: 50px;
@@ -419,7 +421,7 @@ pre code {
 }
 
 select:not(:focus) option:checked,
-select:focus option:checked {
+select:focus option:checked, .collapse-inner a {
   font-weight: 700;
   background-image: var(--gradient-blue);
   border-radius: 4px;
@@ -430,6 +432,14 @@ select:focus option:checked {
   padding: 7px;
 }
 
+.user-querrys{
+  width: 60%;
+}
+
+.div-other{
+  display: flex;
+  justify-content: space-between;
+}
 
 @media (min-width: 576px) {
   .container, .container-sm {
@@ -8577,6 +8587,11 @@ a:focus {
 .sidebar .nav-item .collapse .collapse-inner {
   border-radius: 0.35rem;
   box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.collapse-inner a{
+  text-align: center;
+  justify-content: center;
 }
 
 .sidebar .nav-item .collapsing {

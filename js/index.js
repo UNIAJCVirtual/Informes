@@ -1,28 +1,41 @@
 const informesArr = document.querySelectorAll('.collapse-item');
-const divCategory = document.querySelector('#select');
-const selectCategory = document.querySelector('#category');
+const divCategory = document.querySelector('#div-select');
+const selectCategory = document.querySelector('#select-category');
 const divSelectInstitucionales = document.querySelector('#selectInstitucional');
 const selectInstitucionales = document.querySelector('#selectInsti');
 const titlePrograms = document.querySelector('#title-prg');
 const divCard = document.querySelector('#program-card');
 const checkProgram = document.querySelectorAll('.checkbox-program');
 const divBtnGenerate = document.querySelector('#generate');
-
-
+const selectQuerrysUser = document.querySelector('#user-querrys');
 
 // Visualizar select categoria y select institucionales
 informesArr.forEach(element => {
     element.addEventListener('click', () => {
         const visibleSelectInsti = document.getElementById("report").value;
-        divCategory.classList.remove('d-none');
-        
-        if(visibleSelectInsti == 5 ){
+
+        if (visibleSelectInsti == 5) {
             divSelectInstitucionales.classList.remove('d-none');
             selectInstitucionales.required = true;
-        }else{
+        } else {
+            document.querySelector("#select-category").classList.remove('d-none');
             divSelectInstitucionales.classList.add('d-none');
             selectInstitucionales.required = false;
         }
+
+        if (visibleSelectInsti == 7) {
+            titlePrograms.innerText = 'Consultas de Usuarios';
+            titlePrograms.classList.remove('d-none');
+            selectCategory.classList.add('d-none');
+            selectQuerrysUser.classList.remove('d-none');
+        } else {
+            selectCategory.classList.remove('d-none');
+            selectQuerrysUser.classList.add('d-none');
+            titlePrograms.innerText = 'Programas';
+            titlePrograms.classList.add('d-none');
+        }
+
+
     });
 });
 
@@ -32,10 +45,12 @@ selectCategory.addEventListener('change', () => {
     divBtnGenerate.classList.remove('d-none');
 });
 
-checkProgram.forEach(element => {
-    element.addEventListener('click', () => {btn.classList.remove('d-none');});
+selectQuerrysUser.addEventListener('change', () => {
+    divBtnGenerate.classList.remove('d-none');
 });
 
-
-
-
+checkProgram.forEach(element => {
+    element.addEventListener('click', () => {
+        btn.classList.remove('d-none');
+    });
+});
