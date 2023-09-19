@@ -8,8 +8,8 @@
 		$database = "uniajc";
 		$connection = new mysqli($server, $user, $pass, $database);
 		return $connection;
-		*/
 		
+		*/
 		$server = "localhost";
 		$user = "root";
 		$pass = "";
@@ -17,6 +17,12 @@
 		$connection = new mysqli($server, $user, $pass, $database);
 		$connection->set_charset("utf8");
 		return $connection;
+
+		if ($connection->connect_errno) {
+			printf("Conexión fallida: %s\n", $connection->connect_error);
+			exit();
+		}
+
 		
 		//en base de datos hay crear un usuariopara localhost y otro para %
 	}

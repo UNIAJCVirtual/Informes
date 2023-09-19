@@ -39,19 +39,27 @@ function uniqueElements($array)
 
 /*
 @function name: removeTildes.
-@description: Quita las tildes y las ñ a cualquier variable de tipo String.
+@description: Convierte texto en minuscula y quita las tildes y las ñ a cualquier variable de tipo String.
 @parameters: String $textInput.
 @return: retorna un String sin tildes ni ñ. 
-@author:	José David Lamilla A.
-@version	2.0
-@fecha: dd/mm/aaaa
+@author:	Julian Alberto Ortz V.
+@version	3.0
+@fecha: 19/09/2023
 */
 
 function removeTildes(String $textInput)
 {
-	$notAllowed = array("á", "é", "í", "ó", "ú", "ñ");
-	$allowed = array("a", "e", "i", "o", "u", "n");
-	return str_replace($notAllowed, $allowed, $textInput);
+	$notAllowed = array(
+		"á", "Á", "é", "É", "í", "Í", "ó", "Ó", "ú", "Ú", "ñ", "Ñ",
+	);
+	$allowed = array(
+		"a", "a", "e", "e", "i", "i", "o", "o", "u", "u", "n", "n",
+	);
+
+	// Reemplaza cada carácter acentuado con su contraparte sin acento
+	$textOutput = str_replace($notAllowed, $allowed, strtolower($textInput));
+
+	return $textOutput;
 }
 
 /*
@@ -107,8 +115,8 @@ function nameValidate(String $contentName, String $fullName)
 
 	global $countFails, $countSucces, $fails, $succes, $descriptionName;
 
-	$contentName = strtolower(removeTildes($contentName));
-	$fullName = strtolower(removeTildes($fullName));
+	$contentName = removeTildes($contentName);
+	$fullName = removeTildes($fullName);
 
 	$parts = explode(" ", $contentName);
 	$separateName = reset($parts);
@@ -522,6 +530,8 @@ function enlistmentReport($program, $semester)
 			$vector_idCurse[] = $course->getIdCurso();
 			$countFails = 0;
 			$countSucces = 0;
+			$n1 = "";
+			$n2 = "";
 
 			$resultContentPage = contentPageId($courseInfo['course_id'], $pageId);
 
@@ -534,7 +544,8 @@ function enlistmentReport($program, $semester)
 
 				// Req. 2 - Validar el nombre del profesor
 				$course->setNombreProfesor(nameValidate($page['name'], $teachersNames));
-
+				$n1 = $page['name'];
+				$n2 = $teachersNames;
 				// Req. 3 - Validar el correo del profesor
 				$course->setCorreoProfesor(emailValidate($contenido, $teachersEmails));
 
@@ -550,6 +561,9 @@ function enlistmentReport($program, $semester)
 				$course->setFotografia($notExist);
 				$countFails += 4;
 			}
+			echo $n1;
+			echo "__________________________";
+			echo $n2;
 
 			//Req. 5 validacion foro consulta
 			$course->setForoConsulta(validarForoConsultas($courseInfo['course_id']));
@@ -626,9 +640,6 @@ function enlistmentReport($program, $semester)
 				//Req. 15 validar las ponderaciones de las actividades dentro de la categoria AF03
 
 				$course->setAF03Ponderaciones(validarPonderacionCategoria(weighing($courseInfo['course_id'], $c3, $c3_old), 3));
-
-
-
 			} else {
 				$course->setAF03Actividades($fails);
 				// $course->setAF03Disponibilidad($fails);
