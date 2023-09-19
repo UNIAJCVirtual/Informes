@@ -57,7 +57,7 @@ function removeTildes(String $textInput)
 	);
 
 	// Reemplaza cada carácter acentuado con su contraparte sin acento
-	$textOutput = str_replace($notAllowed, $allowed, strtolower($textInput));
+	$textOutput = str_replace($notAllowed, $allowed, $textInput);
 
 	return $textOutput;
 }
@@ -115,8 +115,8 @@ function nameValidate(String $contentName, String $fullName)
 
 	global $countFails, $countSucces, $fails, $succes, $descriptionName;
 
-	$contentName = removeTildes($contentName);
-	$fullName = removeTildes($fullName);
+	$contentName = strtolower(removeTildes($contentName));
+	$fullName = strtolower(removeTildes($fullName));
 
 	$parts = explode(" ", $contentName);
 	$separateName = reset($parts);
@@ -243,9 +243,9 @@ function confirmarEmail($cont, $e)
 @description: El metodo se encarga de validar si en la variable content existe cualquiera de los días de la semana.
 @parameters: String
 @return: String :  Si CUMPLE o no NO CUMPLE.
-@author:	José David Lamilla A.
-@version	2.0
-@fecha: 26/10/2022
+@author:	Julian Alberto Ortiz V.
+@version	3.0
+@fecha: 19/09/2023
 */
 
 function validateOpeningHours($content)
@@ -253,25 +253,17 @@ function validateOpeningHours($content)
 
 	global $countFails, $countSucces, $fails, $succes;
 
+	$regex = "/(lunes|martes|miercoles|jueves|viernes|sabado|sabados|domingo|domingos)/i";
+
 	if ((strpos($content, 'indicar las horas de atencion que tendra para sus estudiantes') !== false)) {
 		$countFails++;
 		return $fails;
-	} else  if (
-		(strpos($content, 'lunes') !== false) ||
-		(strpos($content, 'martes') !== false) ||
-		(strpos($content, 'miercoles') !== false) ||
-		(strpos($content, 'jueves') !== false) ||
-		(strpos($content, 'viernes') !== false) ||
-		(strpos($content, 'sabado') !== false) ||
-		(strpos($content, 'sabados') !== false) ||
-		(strpos($content, 'domingo') !== false) ||
-		(strpos($content, 'domingos') !== false)
-	) {
-		$countSucces++;
-		return $succes;
-	} else {
+	} else  if (!preg_match($regex, $content)) {
 		$countFails++;
 		return $fails;
+	} else {
+		$countSucces++;
+		return $succes;
 	}
 }
 
@@ -530,9 +522,9 @@ function enlistmentReport($program, $semester)
 			$vector_idCurse[] = $course->getIdCurso();
 			$countFails = 0;
 			$countSucces = 0;
-			$n1 = "";
-			$n2 = "";
 
+
+			// Resive el id de la pagina: DP01
 			$resultContentPage = contentPageId($courseInfo['course_id'], $pageId);
 
 			$page = $resultContentPage->fetch_assoc();
@@ -544,14 +536,11 @@ function enlistmentReport($program, $semester)
 
 				// Req. 2 - Validar el nombre del profesor
 				$course->setNombreProfesor(nameValidate($page['name'], $teachersNames));
-				$n1 = $page['name'];
-				$n2 = $teachersNames;
 				// Req. 3 - Validar el correo del profesor
 				$course->setCorreoProfesor(emailValidate($contenido, $teachersEmails));
 
 				//Req. 3 - Validar el Horario de atención
 				$course->setHorarioAtencion(validateOpeningHours($contenido));
-
 				//Req. 4 - Validar la fotografia del profesor
 				$course->setFotografia(validarFotografia($contenido));
 			} else {
@@ -561,10 +550,6 @@ function enlistmentReport($program, $semester)
 				$course->setFotografia($notExist);
 				$countFails += 4;
 			}
-			echo $n1;
-			echo "__________________________";
-			echo $n2;
-
 			//Req. 5 validacion foro consulta
 			$course->setForoConsulta(validarForoConsultas($courseInfo['course_id']));
 
