@@ -48,7 +48,8 @@ function Usersquantity($idCourse, $rol)
 							mdl_user.firstname as firstname,
 							mdl_user.email as email,
 							mdl_user.lastname as lastname,
-							mdl_user.id user_id
+							mdl_user.id user_id,
+							mdl_user.idnumber user_doc
 							FROM
 							mdl_user, 
 							mdl_role,
@@ -123,7 +124,7 @@ function GradesCategory($course, $userid, $filter, $filter2)
 	return $result;
 }
 //SI SE USA
-function GradesCategoryItem($courseid, $tipoReport, $tipoReport_new )
+function GradesCategoryItem($courseid, $tipoReport, $tipoReport_new)
 {
 	require_once("../services/connection.php");
 	$connection3 = connection();
@@ -318,25 +319,56 @@ function FeedbackForum2($id, $user)
 	return (count(explode(" ", $result["message"])) > 2) ? "CUMPLE" : "NO CUMPLE";
 }
 // modificar
-//SI SE USA
+// //SI SE USA
+// function FeedbackActivity($iteminstance)
+// {
+// 	require_once("../services/connection.php");
+// 	$connection3 = connection();
+// 	mysqli_set_charset($connection3, "utf8");
+// 	$result = $connection3->query("
+// 			SELECT 
+
+// 				COUNT(id) feedback
+// 			FROM 
+// 				mdl_assignfeedback_comments
+// 			WHERE
+// 				assignment = $iteminstance 
+// 		");
+// 	$connection3->close();
+// 	$result = $result->fetch_assoc();
+// 	return ($result["feedback"] > 0) ? "CUMPLE" : "NO CUMPLE";
+// }
+
 function FeedbackActivity($iteminstance)
 {
 	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$result = $connection3->query("
-			SELECT 
-			
-				COUNT(id) feedback
-			FROM 
-				mdl_assignfeedback_comments
-			WHERE
-				assignment = $iteminstance 
-		");
+        SELECT 
+            COUNT(afc.id) AS feedback_count,
+            COUNT(afi.id) AS file_count
+        FROM 
+            mdl_assignfeedback_comments afc
+        LEFT JOIN 
+            mdl_assignfeedback_file afi ON afi.assignment = afc.assignment
+        WHERE
+            afc.assignment = $iteminstance
+    ");
 	$connection3->close();
 	$result = $result->fetch_assoc();
-	return ($result["feedback"] > 0) ? "CUMPLE" : "NO CUMPLE";
+
+	$has_feedback = $result["feedback_count"] > 0;
+	$has_file = $result["file_count"] > 0;
+
+	if ($has_feedback || $has_file) {
+		return "CUMPLE";
+	} else {
+		return "NO CUMPLE";
+	}
 }
+
+
 //SI SE USA
 function contentPage($course)
 {

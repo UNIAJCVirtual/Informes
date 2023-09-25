@@ -5,10 +5,13 @@ class alistamiento{
     // Variables que no son evaluadas en el informe y son unicamente a forma de consulta.
 
     private $idUser;
+    private $docUser;
     private $nombre;
     private $correo;
     private $programa;
     private $semestre;
+    private $grupo;
+    private $codigo;
     private $idCurso;
     private $nombreCurso;
 
@@ -55,6 +58,15 @@ class alistamiento{
     public function setIdUser($id){
         $this->idUser = $id;
     }
+    // Funciones get y set de la variable docUser
+
+    public function getDocUser(){
+        return $this->docUser;
+    }
+
+    public function setDocUser($docUser){
+        $this->docUser = $docUser;
+    }
 
     // Funciones get y set de la variable nombre
 
@@ -94,6 +106,26 @@ class alistamiento{
     
     public function setSemestre($semet){
         $this->semestre = $semet;
+    }
+   
+    // Funciones get y set de la variable grupo
+
+    public function getGrupo(){
+        return $this->grupo;
+    }
+    
+    public function setGrupo($grupo){
+        $this->grupo = $grupo;
+    }
+   
+    // Funciones get y set de la variable codigo
+
+    public function getCodigo(){
+        return $this->codigo;
+    }
+    
+    public function setcodigo($codigo){
+        $this->codigo = $codigo;
     }
 
     // Funciones get y set de la variable idCurso

@@ -118,44 +118,22 @@ function nameValidate(String $contentName, String $fullName)
 	$contentName = strtolower(removeTildes($contentName));
 	$fullName = strtolower(removeTildes($fullName));
 
+	// Validar caracteres no válidos
+	//$contentName = preg_replace('/[0-9\@\.\:;\,""]+/', '', $contentName);
+
 	$parts = explode(" ", $contentName);
-	$separateName = reset($parts);
+	$partsFullname = explode(" ", $fullName);
 
-	if (stripos($fullName, $separateName) !== false) {
-		$countSucces++;
-		return $succes;
-	} else {
-		$countFails++;
-		return $fails;
-	}
-
-	/*
-	if (strpos($contentName, $descriptionName)) {
-
-		$countFails++;
-		return $fails;
-	} else {
-
-		
-		$countName = 0;
-		$separateName = explode(" ", removeTildes(mb_strtolower($fullName, 'UTF-8') . " "));
-
-		foreach ($separateName as $value) {
-			if (!empty($value)) {
-				strpos($contentName, $value) ? $countName++ : $countName;
-			}
-		}
-
-
-
-		if ($countName > 1) {
+	for ($i = 0; $i < count($parts); $i++) {
+		$separateName = $parts[$i];
+		if (in_array($separateName, $partsFullname)) {
 			$countSucces++;
 			return $succes;
-		} else {
-			$countFails++;
-			return $fails;
 		}
-	}*/
+	}
+
+	$countFails++;
+	return $fails;
 }
 
 /*
@@ -278,10 +256,32 @@ function validarFotografia($content)
 		$countFails++;
 		return $fails;
 	} else {
+		// return hasImage($content);
 		$countSucces++;
 		return $succes;
 	}
 }
+
+function hasImage($content)
+{
+	global $countFails, $countSucces, $fails, $succes;
+
+	// Busca el atributo `src` de un elemento `img`.
+	$matches = [];
+	preg_match_all('/<img\s+src="(.*?)"/i', $content, $matches);
+
+	// Verifica si la URL de la imagen es válida.
+	foreach ($matches[1] as $url) {
+		if (!filter_var($url, FILTER_VALIDATE_URL)) {
+			$countFails++;
+			return $fails;
+		}
+	}
+	// Hay una imagen en la cadena de texto.
+	$countSucces++;
+	return $succes;
+}
+
 
 //---------------------------------------
 
@@ -505,20 +505,29 @@ function enlistmentReport($program, $semester)
 					$teachersNames = ucwords(mb_strtolower($teacher['firstname'], 'UTF-8')) . " " . ucwords(mb_strtolower($teacher['lastname'], 'UTF-8'));
 					$teachersEmails = mb_strtolower($teacher['email'], 'UTF-8');
 					$teachersUsersIds = mb_strtolower($teacher['user_id'], 'UTF-8');
+					$teachersUserDoc = $teacher['user_doc'];
 				} else {
 					$teachersNames .= ucwords(mb_strtolower($teacher['firstname'], 'UTF-8')) . " " . ucwords(mb_strtolower($teacher['lastname'], 'UTF-8')) . " <br> ";
 					$teachersEmails .= mb_strtolower($teacher['email'], 'UTF-8') . " <br> ";
 					$teachersUsersIds .= mb_strtolower($teacher['user_id'], 'UTF-8') . " <br> ";
+					$teachersUserDoc = $teacher['user_doc'];
 				}
 			}
 
 			$course->setIdUser($teachersUsersIds);
+			$course->setDocUser($teachersUserDoc);
 			$course->setNombre($teachersNames);
 			$course->setCorreo($teachersEmails);
 			$course->setPrograma($programName);
 			$course->setSemestre($semesterName);
 			$course->setIdcurso($courseInfo['course_id']);
 			$course->setNombreCurso($courseInfo['course_name']);
+
+			$group = explode("*", $courseInfo["course_name"]);
+			$course->setGrupo($group[count($group) - 1]);
+			$code = explode($course->getGrupo(), $courseInfo['course_code']);
+			$course->setcodigo($code[count($group) - 1]);
+
 			$vector_idCurse[] = $course->getIdCurso();
 			$countFails = 0;
 			$countSucces = 0;
@@ -543,6 +552,7 @@ function enlistmentReport($program, $semester)
 				$course->setHorarioAtencion(validateOpeningHours($contenido));
 				//Req. 4 - Validar la fotografia del profesor
 				$course->setFotografia(validarFotografia($contenido));
+				$prueba = $contenido;
 			} else {
 				$course->setNombreProfesor($notExist);
 				$course->setCorreoProfesor($notExist);
@@ -550,6 +560,12 @@ function enlistmentReport($program, $semester)
 				$course->setFotografia($notExist);
 				$countFails += 4;
 			}
+			// echo $prueba;
+
+
+			// hasImage($prueba);
+			// echo "___";
+
 			//Req. 5 validacion foro consulta
 			$course->setForoConsulta(validarForoConsultas($courseInfo['course_id']));
 
@@ -644,11 +660,14 @@ function enlistmentReport($program, $semester)
 	<thead class='td1 thead-table' nowrap>
 		<td class='td1' nowrap >Fecha</td>
 		<td class='td1' nowrap >ID Usuario</td>
+		<td class='td1' nowrap >Documento</td>
 		<td class='td1' nowrap >Nombre completo</td>
 		<td class='td1' nowrap >Correo electrónico</td>
 		<td class='td1' nowrap >Programa</td>
-		<td class='td1' nowrap >Semestre</td>
 		<td class='td1' nowrap >ID Curso</td>
+		<td class='td1' nowrap >Codigo</td>
+		<td class='td1' nowrap >Semestre</td>
+		<td class='td1' nowrap >Grupo</td>
 		<td class='td1' nowrap >Nombre del curso</td>
 		<td class='td1' nowrap >Nombre del profesor</td>
 		<td class='td1' nowrap >Correo</td>
@@ -694,11 +713,14 @@ function enlistmentReport($program, $semester)
 		<tr nowrap class='" . $color . "'>
 			<td nowrap class='" . $color . "'>" . $fecha . "</td>
 			<td nowrap class='" . $color . "'>" . $curse->getIdUser() . "</td>
+			<td nowrap class='" . $color . "'>" . $curse->getDocUser() . "</td>
 			<td nowrap class='" . $color . "'>" . $curse->getNombre() . "</td>
 			<td nowrap class='" . $color . "'>" . $curse->getCorreo() . "</td>
 			<td nowrap class='" . $color . "'>" . $curse->getPrograma() . "</td>
-			<td nowrap class='" . $color . "'>" . $curse->getSemestre() . "</td>
 			<td nowrap class='" . $color . "'>" . $curse->getIdCurso() . "</td>
+			<td nowrap class='" . $color . "'>" . $curse->getCodigo() . "</td>
+			<td nowrap class='" . $color . "'>" . $curse->getSemestre() . "</td>
+			<td nowrap class='" . $color . "'>" . $curse->getGrupo() . "</td>
 			<td nowrap class='" . $color . "'>" . $curse->getNombreCurso() . "</td>
 			<td nowrap class='" . $color . "'>" . $curse->getNombreProfesor() . "</td>
 			<td nowrap class='" . $color . "'>" . $curse->getCorreoProfesor() . "</td>
