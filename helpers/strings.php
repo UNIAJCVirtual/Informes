@@ -2,8 +2,12 @@
 //Nombre de las categorías
 $c1 = "Evaluación formativa y continua 1";
 $c1_old = "Avance formativo 1";
+$c1_practicas = "Preparación";
 $c2 = "Evaluación formativa y continua 2";
+// $c2 = "Caracterización";
 $c2_old = "Avance formativo 2";
+// $c2_old = "Seminario 2";
+$c2_practicas = "Planeación";
 $c3 = "Evaluación formativa y continua 3";
 $c3_old = "Avance formativo 3";
 //Nombre de las categorías abreviado

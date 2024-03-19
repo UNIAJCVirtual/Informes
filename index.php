@@ -37,9 +37,10 @@
                                 <option value="1" class="collapse-item">Alistamiento</option>
                                 <option value="2" class="collapse-item">Avance formativo 1</option>
                                 <option value="3" class="collapse-item">Avance formativo 2</option>
-                                <option value="4" class="collapse-item">Estadisticas</option>
-                                <option value="5" class="collapse-item">Estadistica Institucionales</option>
-                                <option value="6" class="collapse-item">Estadistica Ingles</option>
+                                <option value="4" class="collapse-item">Avance formativo 3</option>
+                                <option value="5" class="collapse-item">Estadisticas</option>
+                                <option value="6" class="collapse-item">Estadistica Institucionales</option>
+                                <option value="7" class="collapse-item">Estadistica Ingles</option>
                             </select>
                             <a href="./report/tipo_reporte.php" class="collapse-item">Usuarios</a>
                         </div>
@@ -77,6 +78,8 @@
                                         <option value="">Usuarios sin ingreso en la plataforma</option>
                                         <option value="">Usuarios sin ingreso en cursos</option>
                                         <option value="">Usuarios sin realizar actividades</option>
+                                        <option value="">Matriculas de estudiantes</option>
+                                        <option value="">Matriculaciones manuales</option>
                                     </select>
                                 </div>
                                 <div id="selectInstitucional"  class="select d-none">

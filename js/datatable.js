@@ -10,6 +10,7 @@ $(document).ready(function () {
 		dom: '<"items-datatable"Bf><"clear">lirtp',
 		paging: true,
 		autoWidth: true,
+		responsive: true,
 		buttons: [
 			{
 				extend: 'colvis',

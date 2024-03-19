@@ -176,4 +176,100 @@ function userNotSingup($consult)
 
         echo ("</tbody></table>");
     }
+
+    if ($consult == 4) {
+        require_once("../services/connection.php");
+        $connection3 = connection();
+        mysqli_set_charset($connection3, "utf8");
+        $result = $connection3->query("SELECT u.idnumber, u.firstname, u.lastname, c.fullname AS coursename
+        FROM mdl_user u
+        INNER JOIN mdl_user_enrolments ue ON u.id = ue.userid
+        INNER JOIN mdl_enrol e ON ue.enrolid = e.id
+        INNER JOIN mdl_course c ON e.courseid = c.id
+        INNER JOIN mdl_context ct ON ct.instanceid = c.id
+        WHERE ct.contextlevel = 50
+        AND ue.status = 0
+        AND u.id IN (SELECT userid FROM mdl_role_assignments WHERE roleid = 5)
+        ORDER BY u.lastname, u.firstname, c.fullname;");
+        $connection3->close();
+
+        echo ("
+            <div class='title-estadist'>
+                <h2>Usuarios (Estudiantes) matriculados en Moodle</h2>
+            </div>
+            <table id='example' class='table table-striped table-bordered' cellspacing='0' width='100%'>
+                <thead>
+                    <tr class='td1 thead-table' nowrap>
+                        <th class='td1' nowrap>Cedula</th>
+                        <th class='td1' nowrap>Nombre</th>
+                        <th class='td1' nowrap>Apellido</th>
+                        <th class='td1' nowrap>Curso</th>
+                    </tr>
+                </thead>
+                <tbody>");
+
+        while ($row = mysqli_fetch_array($result)) {
+            echo ("
+                <tr>
+                    <td>" . $row['idnumber'] . "</td>
+                    <td>" . $row['firstname'] . "</td>
+                    <td>" . $row['lastname'] . "</td>
+                    <td>" . $row['coursename'] . "</td>
+                </tr>
+            ");
+        }
+
+        echo ("</tbody></table>");
+    }
+
+    if ($consult == 5) {
+        require_once("../services/connection.php");
+        $connection3 = connection();
+        mysqli_set_charset($connection3, "utf8");
+        $result = $connection3->query("SELECT u.idnumber, u.firstname, u.lastname, c.fullname AS coursename, CONCAT_WS(' / ', cc3.name, cc2.name, cc1.name) AS categoryname
+        FROM mdl_user u
+        INNER JOIN mdl_user_enrolments ue ON u.id = ue.userid
+        INNER JOIN mdl_enrol e ON ue.enrolid = e.id
+        INNER JOIN mdl_course c ON e.courseid = c.id
+        INNER JOIN mdl_context ct ON ct.instanceid = c.id
+        INNER JOIN mdl_course_categories cc1 ON c.category = cc1.id
+        LEFT JOIN mdl_course_categories cc2 ON cc1.parent = cc2.id
+        LEFT JOIN mdl_course_categories cc3 ON cc2.parent = cc3.id
+        WHERE ct.contextlevel = 50
+        AND ue.status = 0
+        AND e.enrol = 'manual'
+        AND u.id IN (SELECT userid FROM mdl_role_assignments WHERE roleid = 5)
+        ORDER BY cc3.name, cc2.name, cc1.name, c.fullname, u.lastname, u.firstname;");
+        $connection3->close();
+
+        echo ("
+            <div class='title-estadist'>
+                <h2>Usuarios con matricula manual en Moodle</h2>
+            </div>
+            <table id='example' class='table table-striped table-bordered' cellspacing='0' width='100%'>
+                <thead>
+                    <tr class='td1 thead-table' nowrap>
+                        <th class='td1' nowrap>Cedula</th>
+                        <th class='td1' nowrap>Nombre</th>
+                        <th class='td1' nowrap>Apellido</th>
+                        <th class='td1' nowrap>Curso</th>
+                        <th class='td1' nowrap>Categoria</th>
+                    </tr>
+                </thead>
+                <tbody>");
+
+        while ($row = mysqli_fetch_array($result)) {
+            echo ("
+                <tr>
+                    <td>" . $row['idnumber'] . "</td>
+                    <td>" . $row['firstname'] . "</td>
+                    <td>" . $row['lastname'] . "</td>
+                    <td>" . $row['coursename'] . "</td>
+                    <td>" . $row['categoryname'] . "</td>
+                </tr>
+            ");
+        }
+
+        echo ("</tbody></table>");
+    }
 }

@@ -57,25 +57,30 @@
 							/*Caso 2: En esta sesión se tendrá el Avance formativo 1, se enviaran tres variables: categoría, programa y el nombre de la categoría en Moodle */
 						case '2':
 							require_once("avances.php");
-							advanceReport($_POST["program"], $c1_old, $c1);
+							advanceReport($_POST["program"], $ac1);
 							break;
 							/*Caso 3: En esta sesión se tendrá el Avance formativo 2, se enviaran tres variables: categoría, programa y el nombre de la categoría en Moodle */
 						case '3':
 							require_once("avances.php");
-							advanceReport($_POST["program"], $c2_old, $c2);
+							advanceReport($_POST["program"], $ac2);
+							break;
+							/*Caso 3: En esta sesión se tendrá el Avance formativo 3, se enviaran tres variables: categoría, programa y el nombre de la categoría en Moodle */
+						case '4':
+							require_once("avances.php");
+							advanceReport($_POST["program"], $ac3);
 							break;
 							/*Caso 4: En esta sesión se tendrá las estadisticas, se enviara una sola variable programa */
-						case '4':
+						case '5':
 							require_once("estadistica.php");
 							statistics($_POST["program"]);
 							break;
 							/*Caso 4: En esta sesión se tendrá las estadisticas, se enviara una sola variable programa */
-						case '5':
+						case '6':
 							require_once("estadistica_institucionales.php");
 							estadisticasInstitucionales($_POST["program"], $_POST["selectInsti"]);
 							break;
 							/*Caso 4: En esta sesión se tendrá las estadisticas, se enviara una sola variable programa */
-						case '6':
+						case '7':
 							require_once("estadistica_ingles.php");
 							statistics($_POST["program"]);
 							break;
@@ -90,6 +95,8 @@
 						<option value='1'>Usuarios sin ingreso en la plataforma</option>
 						<option value='2'>Usuarios sin ingreso en cursos</option>
 						<option value='3'>Usuarios sin realizar actividades</option>
+						<option value='4'>Matriculas de estudiantes</option>
+						<option value='5'>Matriculaciones manuales</option>
 					</select>
                         <input id=generate' class='btn btn1 d-flex p-3 ' name='enviar' type='submit' value='Generar'>
 				</form>
@@ -106,6 +113,12 @@
 							break;
 						case '3':
 							userNotSingup(3);
+							break;
+						case '4':
+							userNotSingup(4);
+							break;
+						case '5':
+							userNotSingup(5);
 							break;
 					}
 				}

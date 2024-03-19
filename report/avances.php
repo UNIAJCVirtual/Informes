@@ -122,7 +122,7 @@ function items($items, $cantItems, $porcentaje)
 @fecha: 26/10/2022
 */
 
-function advanceReport($program, $type_report, $type_report_new)
+function advanceReport($program, $idnumber)
 {
 	global $verde, $amarillo, $rojoClaro, $rojoOscuro;
 	include("../services/reportRequest.php");
@@ -171,16 +171,23 @@ function advanceReport($program, $type_report, $type_report_new)
 				$course->setCorreo($teachersEmails);
 				$course->setPrograma($programName);
 				$course->setSemestre($semesterName);
+				$course->setIdcurso($courseInfo['course_id']);
 				$course->setNombreCurso($courseInfo['course_name']);
 
+				$group = explode("*", $courseInfo["course_name"]);
+				$course->setGrupo($group[count($group) - 1]);
+				$code = explode($course->getGrupo(), $courseInfo['course_code']);
+				$course->setcodigo($code[count($group) - 1]);
+
 				// Se envian los dos tipos de reporte, el viejo (Avance formativo) y el nuevo (Evaluación formativa y continua)
-				$gradesCategoryResult = GradesCategory($courseInfo['course_id'], $course->getIdUser(), $type_report, $type_report_new);
+				$gradesCategoryResult = GradesCategory($courseInfo['course_id'], $course->getIdUser(), $idnumber);
 				//Validaciones
 				if (is_object($gradesCategoryResult)) {
 					if ($gradesCategoryResult->num_rows > 0) {
 						foreach ($gradesCategoryResult as $gradesCategory) {
-							$itemResult = GradesCategoryItem($courseInfo['course_id'], strtoupper($type_report), strtoupper($type_report_new));
+							$itemResult = GradesCategoryItem($courseInfo['course_id'], $idnumber);
 							$cantidadItems = ($cantidadItems < $itemResult->num_rows) ? $itemResult->num_rows : $cantidadItems;
+							print $itemResult->num_rows;
 							if ($itemResult->num_rows > 0) {
 								foreach ($itemResult as $item) {
 
@@ -245,7 +252,7 @@ function advanceReport($program, $type_report, $type_report_new)
 		}
 		echo ("
 		<div class='title-estadist'>
-			<h2>" . $type_report . " / " . $type_report_new . "</h2>
+			<h2>" . $idnumber . " </h2>
 		</div>
 		<table id='example' class='table table-striped table-bordered' cellspacing='0' width='100%'>
 			<thead>
@@ -254,9 +261,12 @@ function advanceReport($program, $type_report, $type_report_new)
 					<th class='td1' nowrap>ID user</th>
 					<th class='td1' nowrap>Nombre</th>
 					<th class='td1' nowrap>Correo</th>
-					<th class='td1' nowrap>course</th>
 					<th class='td1' nowrap>Programa</th>
-					<th class='td1' nowrap>Semestre</th>"
+					<td class='td1' nowrap >ID Curso</td>
+					<td class='td1' nowrap >Codigo</td>
+					<th class='td1' nowrap>Semestre</th>
+					<th class='td1' nowrap>Grupo</th>
+					<th class='td1' nowrap>course</th>"
 			. headerItems($cantidadItems) . "
 					<th class='td1' nowrap>Porcentaje</th>
 		  		</tr>
@@ -278,9 +288,12 @@ function advanceReport($program, $type_report, $type_report_new)
 						<td nowrap class='" . $color . "'>" . $curse->getIdUser() . "</td>
 						<td nowrap class='" . $color . "'>" . $curse->getNombreProfesor() . "</td>
 						<td nowrap class='" . $color . "'>" . $curse->getCorreo() . "</td>				
-						<td nowrap class='" . $color . "'>" . $curse->getNombreCurso() . "</td>
 						<td nowrap class='" . $color . "'>" . $curse->getPrograma() . "</td>
-						<td nowrap class='" . $color . "'>" . $curse->getSemestre() . "</td>"
+						<td nowrap class='" . $color . "'>" . $curse->getIdCurso() . "</td>
+						<td nowrap class='" . $color . "'>" . $curse->getCodigo() . "</td>
+						<td nowrap class='" . $color . "'>" . $curse->getSemestre() . "</td>
+						<td nowrap class='" . $color . "'>" . $curse->getGrupo() . "</td>
+						<td nowrap class='" . $color . "'>" . $curse->getNombreCurso() . "</td>"
 				. items($curse->items, $cantidadItems, $porcentaje) . "
 						<td nowrap class='" . $color . "'>" . $porcentaje . "</td>
 					</tr>");

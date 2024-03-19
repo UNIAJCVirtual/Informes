@@ -345,81 +345,81 @@ function validarActividadesCategoria($itemsCategoria)
 	}
 }
 //---------------------------------------
-/*
-function validarDisponibilidadCategoria($itemsCategoria){
-	
-	global $countFails, $countSucces, $fechaInicio, $fechaFinal, $fails, $succes;
 
-	$countFailsDispo=0;
-	$countSuccesDispo=0;
-
-	foreach ($itemsCategoria as $record) {
-	if ($record["itemmodule"] == "assign") {
-		$dataAssign = dataAssign($record["iteminstance"]);
-		foreach ($dataAssign as $data) {
-			if ($data["duedate"] == 0 || $data["allowsubmissionsfromdate"] == 0 || $data["cutoffdate"] == 0) {
-				$countFailsDispo++;
-			} else {
-				//Variable de Permitir entregas desde
-				$duedate = $data["duedate"];
-				//Variable de Fecha de entrega
-				$dateSubmissions = $data["allowsubmissionsfromdate"];
-				//Variable de Fecha límite
-				$cutoffdate = intval($data["cutoffdate"]);
-				if ($dateSubmissions > $fechaInicio && $duedate > $fechaInicio && $cutoffdate < $fechaFinal) {
-					$countSuccesDispo++;
-				} else {
-					$countFailsDispo++;
-				}
-			}
-		}
-	} elseif ($record["itemmodule"] == "quiz") {
-		$dataQuiz = dataQuiz($record["iteminstance"]);
+// function validarDisponibilidadCategoria($itemsCategoria){
 	
-		foreach ($dataQuiz as $data) {
-			if ($data["timeopen"] == 0 || $data["timeclose"] == 0) {
-				$countFailsDispo++;
-			} else {
-				//la variable timeOpen significa la fecha Abrir cuestionario
-				$timeOpen = $data["timeopen"];
-				//la variable timeClose significa la fecha cerrar cuestionario
-				$timeClose = $data["timeclose"];
-				if ($timeOpen > $fechaInicio && $timeClose < $fechaFinal) {
-					$countSuccesDispo++;
-				} else {
-					$countFailsDispo++;
-				}
-			}
-		}
-	} elseif ($record["itemmodule"] == "forum") {
+// 	global $countFails, $countSucces, $fechaInicio, $fechaFinal, $fails, $succes;
 
-		$dataForum = dataForum($record["iteminstance"]);
+// 	$countFailsDispo=0;
+// 	$countSuccesDispo=0;
+
+// 	foreach ($itemsCategoria as $record) {
+// 	if ($record["itemmodule"] == "assign") {
+// 		$dataAssign = dataAssign($record["iteminstance"]);
+// 		foreach ($dataAssign as $data) {
+// 			if ($data["duedate"] == 0 || $data["allowsubmissionsfromdate"] == 0 || $data["cutoffdate"] == 0) {
+// 				$countFailsDispo++;
+// 			} else {
+// 				//Variable de Permitir entregas desde
+// 				$duedate = $data["duedate"];
+// 				//Variable de Fecha de entrega
+// 				$dateSubmissions = $data["allowsubmissionsfromdate"];
+// 				//Variable de Fecha límite
+// 				$cutoffdate = intval($data["cutoffdate"]);
+// 				if ($dateSubmissions > $fechaInicio && $duedate > $fechaInicio && $cutoffdate < $fechaFinal) {
+// 					$countSuccesDispo++;
+// 				} else {
+// 					$countFailsDispo++;
+// 				}
+// 			}
+// 		}
+// 	} elseif ($record["itemmodule"] == "quiz") {
+// 		$dataQuiz = dataQuiz($record["iteminstance"]);
 	
-		foreach ($dataForum as $data) {
-			if ($data["duedate"] == 0 || $data["cutoffdate"] == 0) {
-				$countFailsDispo++;
-			} else {
-				//la variable duedate significa Fecha de entrega
-				$duedate = $data["duedate"];
-				//la variable cutoffdate significa Fecha límite
-				$cutoffdate = $data["cutoffdate"];
-				if ($duedate > $fechaInicio && $cutoffdate < $fechaFinal) {
-					$countSuccesDispo++;
-				} else {
-					$countFailsDispo++;
-				}
-			}
-		}
-	}
-	}
-	if($countFailsDispo>0){
-		$countFails++;
-		return $fails;
-	}else{
-		$countSucces++;
-		return $succes;
-	}
-}*/
+// 		foreach ($dataQuiz as $data) {
+// 			if ($data["timeopen"] == 0 || $data["timeclose"] == 0) {
+// 				$countFailsDispo++;
+// 			} else {
+// 				//la variable timeOpen significa la fecha Abrir cuestionario
+// 				$timeOpen = $data["timeopen"];
+// 				//la variable timeClose significa la fecha cerrar cuestionario
+// 				$timeClose = $data["timeclose"];
+// 				if ($timeOpen > $fechaInicio && $timeClose < $fechaFinal) {
+// 					$countSuccesDispo++;
+// 				} else {
+// 					$countFailsDispo++;
+// 				}
+// 			}
+// 		}
+// 	} elseif ($record["itemmodule"] == "forum") {
+
+// 		$dataForum = dataForum($record["iteminstance"]);
+	
+// 		foreach ($dataForum as $data) {
+// 			if ($data["duedate"] == 0 || $data["cutoffdate"] == 0) {
+// 				$countFailsDispo++;
+// 			} else {
+// 				//la variable duedate significa Fecha de entrega
+// 				$duedate = $data["duedate"];
+// 				//la variable cutoffdate significa Fecha límite
+// 				$cutoffdate = $data["cutoffdate"];
+// 				if ($duedate > $fechaInicio && $cutoffdate < $fechaFinal) {
+// 					$countSuccesDispo++;
+// 				} else {
+// 					$countFailsDispo++;
+// 				}
+// 			}
+// 		}
+// 	}
+// 	}
+// 	if($countFailsDispo>0){
+// 		$countFails++;
+// 		return $fails;
+// 	}else{
+// 		$countSucces++;
+// 		return $succes;
+// 	}
+// }
 //---------------------------------------
 
 function validarPonderacionCategoria($weighingGrade, $tipoCategoria)
@@ -435,7 +435,7 @@ function validarPonderacionCategoria($weighingGrade, $tipoCategoria)
 		$countSucces++;
 		return $succes;
 	} elseif ($tipoCategoria == 1 || $tipoCategoria == 2) {
-		if ($weighingGrade == 30 || $weighingGrade == 0.30 || $weighingGrade == 30.0) {
+		if ($weighingGrade == 30 || $weighingGrade == 0.30 || $weighingGrade == 30.0 || $weighingGrade == 100 ) {
 
 			$countSucces++;
 			return $succes;
@@ -474,7 +474,7 @@ function enlistmentReport($program, $semester)
 	periodDate();
 	date_default_timezone_set("America/Bogota");
 	$fecha = date("Y-m-d H:i:s");
-	global $countFails, $countSucces, $c1, $c1_old, $c2, $c2_old, $c3, $c3_old, $ac1, $ac2, $ac3, $fails, $succes, $notApply, $pageId, $hidden, $notExist;
+	global $countFails, $countSucces, $ac1, $ac2, $ac3, $fails, $succes, $notApply, $pageId, $hidden, $notExist;
 	$green = 0;
 	$yellow = 0;
 	$lightRed = 0;
@@ -496,6 +496,7 @@ function enlistmentReport($program, $semester)
 			$teachersNames = "";
 			$teachersEmails = "";
 			$teachersUsersIds = "";
+			$teachersUserDoc = "";
 
 			//la variable requerida en la función Usersquantity es el rol que vamos a buscar 3 Profesor
 			$teachers = Usersquantity($courseInfo['course_id'], 3);
@@ -577,9 +578,9 @@ function enlistmentReport($program, $semester)
 				$course->unidades[] = ($unit['visible'] == 1) ? validateDateUnits($unit['summary']) : $notApply;
 			}
 
-			$itemsC1 = gradeItems($courseInfo['course_id'], $c1, $c1_old);
-			$itemsC2 = gradeItems($courseInfo['course_id'], $c2, $c2_old);
-			$itemsC3 = gradeItems($courseInfo['course_id'], $c3, $c3_old);
+			$itemsC1 = gradeItems($courseInfo['course_id'], $ac1, 'AF01', 'af1');
+			$itemsC2 = gradeItems($courseInfo['course_id'], $ac2, 'AF02', 'af2');
+			$itemsC3 = gradeItems($courseInfo['course_id'], $ac3, 'AF03', 'af3');
 
 
 			//-------------------------------VALIDAR C1----------------
@@ -597,7 +598,7 @@ function enlistmentReport($program, $semester)
 
 				//Req. 9 validar las ponderaciones de las actividades dentro de la categoria AF01
 
-				$course->setAF01Ponderaciones(validarPonderacionCategoria(weighing($courseInfo['course_id'], $c1, $c1_old), 1));
+				$course->setAF01Ponderaciones(validarPonderacionCategoria(weighing($courseInfo['course_id'], $ac1, 'AF01', 'af1'), 1));
 			} else {
 				$course->setAF01Actividades($fails);
 				// $course->setAF01Disponibilidad($fails);
@@ -618,7 +619,7 @@ function enlistmentReport($program, $semester)
 
 				//Req. 12 validar las ponderaciones de las actividades dentro de la categoria AF02
 
-				$course->setAF02Ponderaciones(validarPonderacionCategoria(weighing($courseInfo['course_id'], $c2, $c2_old), 2));
+				$course->setAF02Ponderaciones(validarPonderacionCategoria(weighing($courseInfo['course_id'], $ac2, 'AF02', 'af2'), 2));
 			} else {
 				$course->setAF02Actividades($fails);
 				// $course->setAF02Disponibilidad($fails);
@@ -640,7 +641,7 @@ function enlistmentReport($program, $semester)
 
 				//Req. 15 validar las ponderaciones de las actividades dentro de la categoria AF03
 
-				$course->setAF03Ponderaciones(validarPonderacionCategoria(weighing($courseInfo['course_id'], $c3, $c3_old), 3));
+				$course->setAF03Ponderaciones(validarPonderacionCategoria(weighing($courseInfo['course_id'], $ac3, 'AF03', 'af3'), 3));
 			} else {
 				$course->setAF03Actividades($fails);
 				// $course->setAF03Disponibilidad($fails);

@@ -94,61 +94,85 @@ function Usersquantity($idCourse, $rol)
 	return $result;
 }*/
 //SI SE USA Modificado
-function GradesCategory($course, $userid, $filter, $filter2)
+function GradesCategory($course, $userid, $idnumber)
 {
 	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
-	$result = $connection3->query("
-			SELECT distinct
-				mdl_course.id id,
-				mdl_course.category,
-				mdl_course.fullname AS mdl_course_fullname,
-				mdl_course.visible,
-				mdl_grade_categories.id mdl_grade_categories_id
-			FROM 
-				mdl_user_enrolments,
-				mdl_course, 
-				mdl_enrol,
-				mdl_grade_categories
-			WHERE
-				mdl_course.id = $course AND
-				mdl_user_enrolments.userid = $userid AND
-				mdl_course.id = mdl_grade_categories.courseid AND
-				(LOWER(mdl_grade_categories.fullname) LIKE '%" . $filter . "' OR
-				 LOWER(mdl_grade_categories.fullname) LIKE '%" . $filter2 . "')
-				ORDER by 1,2 
-		");
+	$result = $connection3->query("SELECT distinct
+        mdl_course.id id,
+        mdl_course.category,
+        mdl_course.fullname AS mdl_course_fullname,
+        mdl_course.visible,
+        mdl_grade_categories.id AS mdl_grade_categories_id
+    FROM 
+        mdl_user_enrolments,
+        mdl_course, 
+        mdl_enrol,
+        mdl_grade_categories,
+        mdl_grade_items 
+    WHERE
+        mdl_course.id = '$course' AND
+        mdl_user_enrolments.userid = '$userid' AND
+        mdl_course.id = mdl_grade_categories.courseid AND
+        mdl_grade_items.idnumber = '$idnumber' AND
+        mdl_grade_items.itemtype = 'category' AND
+        mdl_grade_items.iteminstance = mdl_grade_categories.id
+    ORDER by 1,2 
+");
 	$connection3->close();
 
 	return $result;
 }
 //SI SE USA
-function GradesCategoryItem($courseid, $tipoReport, $tipoReport_new)
+// function GradesCategoryItem($courseid, $tipoReport)
+// {
+// 	require_once("../services/connection.php");
+// 	$connection3 = connection();
+// 	mysqli_set_charset($connection3, "utf8");
+// 	$quer = "SELECT 
+// 				gi.id,
+// 				gi.courseid,
+// 				gi.iteminstance iteminstance,
+// 				gi.itemname name,				
+// 				gi.itemmodule,
+// 				gc.fullname
+// 			FROM 
+// 				mdl_grade_items gi,
+// 				mdl_grade_categories gc
+// 			WHERE 
+// 				gc.id = gi.categoryid AND 
+// 				UPPER(gc.fullname) =  '$tipoReport' AND
+// 				gi.courseid =  $courseid";
+// 	$result = $connection3->query($quer);
+// 	$connection3->close();
+// 	return $result;
+// }
+
+function GradesCategoryItem($courseid, $idnumber)
 {
 	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
-	$quer = "
-		SELECT 
-			gi.id,
-			gi.courseid,
-			gi.iteminstance iteminstance,
-			gi.itemname name,				
-			gi.itemmodule,
-			gc.fullname
-		FROM 
-			mdl_grade_items gi,
-			mdl_grade_categories gc
-		WHERE 
-			gc.id = gi.categoryid AND (
-			UPPER(gc.fullname) =  '$tipoReport' OR
-			UPPER(gc.fullname) =  '$tipoReport_new')AND
-			gi.courseid =  $courseid";
+	$quer = "SELECT 
+				gi.id,
+				gi.courseid,
+				gi.iteminstance iteminstance,
+				gi.itemname name,				
+				gi.itemmodule,
+				gi.idnumber
+			FROM 
+				mdl_grade_items gi
+			WHERE 
+				gi.courseid =  '$courseid'
+				AND gi.itemmodule = 'assign' 
+    			AND gi.categoryid = (SELECT mdl_grade_items.iteminstance FROM mdl_grade_items WHERE mdl_grade_items.courseid = '$courseid' AND mdl_grade_items.itemtype = 'category' AND mdl_grade_items.idnumber = '$idnumber')";
 	$result = $connection3->query($quer);
 	$connection3->close();
 	return $result;
 }
+
+
 //SI SE USA
 function dataAssign($id)
 {
@@ -210,51 +234,55 @@ function dataForum($id)
 	return $result;
 }
 //SI SE USA
-function gradeItems($courseid, $category, $category_old)
+function gradeItems($courseid, $category, $categoryOLD, $categoryAlt)
 {
 
 	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
-	$quer = "
-		SELECT 
-			gi.id,
-			gi.courseid,
-			gi.iteminstance iteminstance,
-			gi.itemname name,				
-			gi.itemmodule,
-			gc.fullname,
-			gc.id as idc
-		FROM 
-			mdl_grade_items gi,
-			mdl_grade_categories gc
-		WHERE 
-			gc.id = gi.categoryid AND
-			(gc.fullname LIKE '$category%' OR gc.fullname LIKE '$category_old%') AND
-			gi.courseid =  $courseid";
-
-
+	$quer = "SELECT 
+    	gi.id,
+    	gi.courseid,
+    	gi.iteminstance as iteminstance,
+    	gi.itemname as name,
+    	gi.itemmodule,
+    	gi.idnumber
+	FROM 
+    	mdl_grade_items gi
+	WHERE 
+    	gi.courseid = $courseid
+    	AND gi.categoryid = (
+			SELECT mdl_grade_items.iteminstance 
+			FROM mdl_grade_items 
+			WHERE mdl_grade_items.courseid = $courseid 
+			AND mdl_grade_items.itemtype = 'category' 
+			AND (mdl_grade_items.idnumber = '$category' 
+				OR mdl_grade_items.idnumber = '$categoryOLD'
+				OR mdl_grade_items.idnumber = '$categoryAlt'))";
 	$result = $connection3->query($quer);
 	$connection3->close();
 	return $result;
 }
 //SI SE USA
-function weighing($courseid, $category, $category_old)
+function weighing($courseid, $idnumber, $idnumberOld, $idnumberAlt)
 {
 	require_once("../services/connection.php");
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
-	$result = $connection3->query("
-		SELECT 
-			SUM(gi.aggregationcoef)  as gradeSum 
-		FROM 
-			mdl_grade_items gi,
-			mdl_grade_categories gc 
-		where
-			gc.id = gi.categoryid AND
-			(gc.fullname LIKE '$category%' OR gc.fullname LIKE '$category_old%') AND
-			gi.courseid =  $courseid
-			");
+	$result = $connection3->query("SELECT 
+		SUM(gi.aggregationcoef)  as gradeSum
+ 	FROM 
+	 	mdl_grade_items gi
+ 	WHERE 
+		gi.courseid = '$courseid' 
+		AND gi.categoryid = (
+			SELECT mdl_grade_items.iteminstance 
+			FROM mdl_grade_items 
+			WHERE mdl_grade_items.courseid = '$courseid' 
+			AND mdl_grade_items.itemtype = 'category' 
+			AND (mdl_grade_items.idnumber = '$idnumber' 
+				OR mdl_grade_items.idnumber = '$idnumberOld' 
+				OR mdl_grade_items.idnumber = '$idnumberAlt' ))");
 	$row = mysqli_fetch_array($result);
 	$gradesum = $row['gradeSum'];
 	$connection3->close();

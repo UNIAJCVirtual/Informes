@@ -10,6 +10,10 @@ class avance{
     public $nombreCurso;
     private $nombreProfesor;
     private $correo;
+    private $idCurso;
+    private $codigo;
+    private $grupo;
+
     public $items=[];
     public $evaluacion=[];
     public $porcentaje;
@@ -34,6 +38,35 @@ class avance{
         $this->programa = $program;
     }
 
+     // Funciones get y set de la variable idCurso
+
+     public function getIdCurso(){
+        return $this->idCurso;
+    }
+    
+    public function setIdCurso($idCourse){
+        $this->idCurso = $idCourse;
+    }
+
+     // Funciones get y set de la variable codigo
+
+     public function getCodigo(){
+        return $this->codigo;
+    }
+    
+    public function setcodigo($codigo){
+        $this->codigo = $codigo;
+    }
+    
+     // Funciones get y set de la variable grupo
+
+     public function getGrupo(){
+        return $this->grupo;
+    }
+    
+    public function setGrupo($grupo){
+        $this->grupo = $grupo;
+    }
     // Funciones get y set de la variable semestre
 
     public function getSemestre(){
@@ -83,6 +116,3 @@ class avance{
         $this->porcentaje = $percentage;
     }
 }
-
-
-?>
