@@ -9229,3 +9229,11 @@ footer.sticky-footer .copyright {
 body.sidebar-toggled footer.sticky-footer {
   width: 100%;
 }
+
+.english-querrys {
+  position: absolute;
+  top: 141px;
+  left: 15%;
+  width: 500px;
+  justify-content: space-between;
+}

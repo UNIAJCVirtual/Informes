@@ -14,6 +14,10 @@ $c3_old = "Avance formativo 3";
 $ac1 = 'EFC01';
 $ac2 = 'EFC02';
 $ac3 = 'EFC03';
+// Opciones de id (Estos porque no se han realizado bien los ajustes):
+$optionId1 = 'AF0';
+$optionId2 = 'af';
+// 
 //Criterios de evalución
 $fails = 'NO CUMPLE';
 $succes = 'CUMPLE';
@@ -27,6 +31,3 @@ $pageId = 'DP01';
 
 //nameValidate
 $descriptionName = 'digitar el nombre del profesor';
-
-
-?>

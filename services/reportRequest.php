@@ -28,16 +28,57 @@ function CoursesInformation($idCategory)
 	$con = connection();
 	mysqli_set_charset($con, "utf8");
 	$result = $con->query("SELECT 
-							mdl_course.id as course_id,
-							mdl_course.fullname as course_name,
-							mdl_course.shortname as course_code
-							FROM 
-							mdl_course 
-							WHERE 
-							mdl_course.category =" . $idCategory);
+		mdl_course.id as course_id,
+		mdl_course.fullname as course_name,
+		mdl_course.shortname as course_code
+	FROM 
+		mdl_course 
+	WHERE 
+		mdl_course.category =" . $idCategory);
 	$con->close();
 	return $result;
 }
+//SI SE USA - Modificado
+function CoursesInformationID($idcourse)
+{
+	require_once("../services/connection.php");
+	$con = connection();
+	mysqli_set_charset($con, "utf8");
+
+	// Convertir el array de IDs a una cadena separada por comas
+	$idcourse_str = implode(',', $idcourse);
+
+	// Construir la consulta SQL con la cláusula IN
+	$query = "SELECT 
+                mdl_course.id as course_id,
+                mdl_course.fullname as course_name,
+                mdl_course.shortname as course_code
+            FROM 
+                mdl_course 
+            WHERE 
+                mdl_course.id IN ($idcourse_str)";
+
+	$result = $con->query($query);
+	$con->close();
+	return $result;
+}
+function AllCoursesInformation()
+{
+	require_once("../services/connection.php");
+	$con = connection();
+	mysqli_set_charset($con, "utf8");
+	$query = "SELECT 
+                mdl_course.id as course_id,
+                mdl_course.fullname as course_name,
+                mdl_course.shortname as course_code
+            FROM 
+                mdl_course";
+
+	$result = $con->query($query);
+	$con->close();
+	return $result;
+}
+
 //SI SE USA - Creado
 function Usersquantity($idCourse, $rol)
 {
@@ -97,6 +138,7 @@ function Usersquantity($idCourse, $rol)
 function GradesCategory($course, $userid, $idnumber)
 {
 	require_once("../services/connection.php");
+
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$result = $connection3->query("SELECT distinct
@@ -114,14 +156,47 @@ function GradesCategory($course, $userid, $idnumber)
     WHERE
         mdl_course.id = '$course' AND
         mdl_user_enrolments.userid = '$userid' AND
-        mdl_course.id = mdl_grade_categories.courseid AND
+		mdl_course.id = mdl_grade_categories.courseid AND
         mdl_grade_items.idnumber = '$idnumber' AND
         mdl_grade_items.itemtype = 'category' AND
         mdl_grade_items.iteminstance = mdl_grade_categories.id
     ORDER by 1,2 
 ");
 	$connection3->close();
+	return $result;
+}
+function GradesCategoryNoInID($course, $userid, $idnumber)
+{
+	require_once("../services/connection.php");
 
+	$connection3 = connection();
+	mysqli_set_charset($connection3, "utf8");
+
+	// Convertir el array de IDs a una cadena separada por comas
+	$idnumber_str = implode(',', $idnumber);
+
+	$result = $connection3->query("SELECT distinct
+        mdl_course.id id,
+        mdl_course.category,
+        mdl_course.fullname AS mdl_course_fullname,
+        mdl_course.visible,
+        mdl_grade_categories.id AS mdl_grade_categories_id
+    FROM 
+        mdl_user_enrolments,
+        mdl_course, 
+        mdl_enrol,
+        mdl_grade_categories,
+        mdl_grade_items 
+    WHERE
+        mdl_course.id = '$course' AND
+        mdl_user_enrolments.userid = '$userid' AND
+		mdl_course.id = mdl_grade_categories.courseid AND
+        mdl_grade_items.idnumber NOT IN ('$idnumber_str') AND
+        mdl_grade_items.itemtype = 'category' AND
+        mdl_grade_items.iteminstance = mdl_grade_categories.id
+    ORDER by 1,2 
+");
+	$connection3->close();
 	return $result;
 }
 //SI SE USA
@@ -152,6 +227,7 @@ function GradesCategory($course, $userid, $idnumber)
 function GradesCategoryItem($courseid, $idnumber)
 {
 	require_once("../services/connection.php");
+
 	$connection3 = connection();
 	mysqli_set_charset($connection3, "utf8");
 	$quer = "SELECT 
@@ -165,12 +241,44 @@ function GradesCategoryItem($courseid, $idnumber)
 				mdl_grade_items gi
 			WHERE 
 				gi.courseid =  '$courseid'
-				AND gi.itemmodule = 'assign' 
-    			AND gi.categoryid = (SELECT mdl_grade_items.iteminstance FROM mdl_grade_items WHERE mdl_grade_items.courseid = '$courseid' AND mdl_grade_items.itemtype = 'category' AND mdl_grade_items.idnumber = '$idnumber')";
+    			AND gi.categoryid = (SELECT mdl_grade_items.iteminstance FROM mdl_grade_items 
+				WHERE mdl_grade_items.courseid = '$courseid'
+				AND mdl_grade_items.itemtype = 'category' AND
+				mdl_grade_items.idnumber = '$idnumber')";
 	$result = $connection3->query($quer);
 	$connection3->close();
 	return $result;
 }
+function GradesCategoryItemNoInId($courseid, $idnumber)
+{
+	require_once("../services/connection.php");
+
+	$connection3 = connection();
+	mysqli_set_charset($connection3, "utf8");
+
+	// Convertir el array de IDs a una cadena separada por comas
+	$idnumber_str = implode(',', $idnumber);
+
+	$quer = "SELECT 
+				gi.id,
+				gi.courseid,
+				gi.iteminstance iteminstance,
+				gi.itemname name,				
+				gi.itemmodule,
+				gi.idnumber
+			FROM 
+				mdl_grade_items gi
+			WHERE 
+				gi.courseid =  '$courseid'
+    			AND gi.categoryid = (SELECT mdl_grade_items.iteminstance FROM mdl_grade_items 
+				WHERE mdl_grade_items.courseid = '$courseid'
+				AND mdl_grade_items.itemtype = 'category' AND
+				mdl_grade_items.idnumber NOT IN ('$idnumber_str'))";
+	$result = $connection3->query($quer);
+	$connection3->close();
+	return $result;
+}
+
 
 
 //SI SE USA
@@ -529,3 +637,16 @@ function summary($idsection, $course)
 	$connection3->close();
 	return $result;
 }*/
+function categorysEnglish($idCategory)
+{
+	include_once("../services/connection.php");
+	mysqli_set_charset($connection, "utf8");
+	$result = $connection->query("SELECT id, name FROM mdl_course_categories WHERE id = $idCategory");
+	$inputs = "";
+	if (is_array($result) || is_object($result)) {
+		foreach ($result as $data) {
+			$inputs .= "<input class='checkbox-category' type='checkbox' name='category[]' id='" . $data["id"] . "' value='" . $data["id"] . "'><label class='for-checkbox-program' for='" . $data["id"] . "'><span>" . $data["name"] . "</span></label>";
+		}
+	}
+	echo $inputs;
+}

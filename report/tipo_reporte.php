@@ -82,7 +82,9 @@
 							/*Caso 4: En esta sesión se tendrá las estadisticas, se enviara una sola variable programa */
 						case '7':
 							require_once("estadistica_ingles.php");
-							statistics($_POST["program"]);
+							echo "INGRESO";
+							
+							// statistics($_POST["program"]);
 							break;
 					}
 				} else {
@@ -97,6 +99,8 @@
 						<option value='3'>Usuarios sin realizar actividades</option>
 						<option value='4'>Matriculas de estudiantes</option>
 						<option value='5'>Matriculaciones manuales</option>
+						<option value='6'>EFC Por ID de curso</option>
+						<option value='7'>EFC Por ID que no este</option>
 					</select>
                         <input id=generate' class='btn btn1 d-flex p-3 ' name='enviar' type='submit' value='Generar'>
 				</form>
@@ -120,12 +124,48 @@
 						case '5':
 							userNotSingup(5);
 							break;
+						case '6':
+							echo "
+							<form name='efc_form' action='#' method='POST' >
+								<div id='selectInstitucional'  class='select'>
+									<input type='text' placeholder='Ingresa el ID de la categoria' name='idnumber' id='selectInsti' class='custom-select p-l-1' style='height: 40px;width: 250px;margin-top:20px'>
+									<input type='text' placeholder='Ingresa los codigos con comas' name='idCourses' id='selectInsti' class='custom-select p-l-1' style='height: 40px;width: 270px;margin-top:20px'>
+									<input id=generate' class='btn btn1 d-flex p-3 ' name='efcConsult' type='submit' value='Generar'>
+								</div>
+							</form>";
+							break;
+						case '7':
+							echo "
+							<p>Busca que cursos no tienen el ID de categoria correspondiente</p>
+							<form name='not_efc_form' action='#' method='POST' >
+								<div id='selectInstitucional'  class='select'>
+									<input type='text' placeholder='Ingresa el ID de la categoria' name='idnumber' id='selectInsti' class='custom-select p-l-1' style='height: 40px;width: 250px;margin-top:20px'>
+									<input id=generate' class='btn btn1 d-flex p-3 ' name='efcConsult2' type='submit' value='Generar'>
+								</div>
+							</form>";
+							break;
 					}
 				}
+				if (isset($_POST['efcConsult'])) {
+					require_once("user_consult.php");
 
+					// Obtener los IDs de los cursos ingresados y convertirlos en un array
+					$idcourse = explode(',', $_POST['idCourses']);
+					// Eliminar espacios en blanco de cada elemento del array
+					$idcourse = array_map('trim', $idcourse);
+
+					idCourseEFC($_POST['idnumber'], $idcourse);
+				}
+				if (isset($_POST['efcConsult2'])) {
+					require_once("user_consult.php");
+					// Obtener los IDs de categoria ingresados y convertirlos en un array
+					$idnumbers = explode(',', $_POST['idnumber']);
+					// Eliminar espacios en blanco de cada elemento del array
+					$idnumbers = array_map('trim', $idnumbers);
+
+					idIsNotInCourse($idnumbers);
+				}
 				?>
-
-
 
 			</div>
 		</div>

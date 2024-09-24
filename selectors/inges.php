@@ -5,14 +5,14 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Informes</title>
+    <title>Informes - Ingles</title>
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'>
     <link rel="icon" href="resources/img/logoCamacho.png" sizes="32x32">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link href="css/style-dashboard.css" rel="stylesheet">
 </head>
 
-<body id="page-top" class="sidebar-toggled" onload="loadProgram()">
+<body id="page-top" class="sidebar-toggled">
     <form name="data_form" action="report/tipo_reporte.php" method="POST" target="_blank" onsubmit="return validacion()">
         <div id="wrapper">
             <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion show" id="accordionSidebar">
@@ -26,7 +26,7 @@
                 <li class="nav-item active">
                     <a class="nav-link " href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
                         <i><img src="resources\img\settings.png" width="25" height="25"></i>
-                        <span>INFORMES</span>
+                        <span>INFORMES - Ingles</span>
                     </a>
                     <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                         <div class="py-2 collapse-inner rounded">

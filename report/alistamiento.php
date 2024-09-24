@@ -322,6 +322,7 @@ function validateDateUnits($sumarycon)
 		$countFails++;
 		return $fails;
 	} else {
+		// TODO: Validar si la fecha es correcta : Año, mes.
 		$countSucces++;
 		return $succes;
 	}

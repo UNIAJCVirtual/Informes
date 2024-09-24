@@ -8,6 +8,7 @@ const divCard = document.querySelector('#program-card');
 const checkProgram = document.querySelectorAll('.checkbox-program');
 const divBtnGenerate = document.querySelector('#generate');
 const selectQuerrysUser = document.querySelector('#user-querrys');
+const selectQuerrysEnglish = document.querySelector('#english-querrys');
 
 // Visualizar select categoria y select institucionales
 informesArr.forEach(element => {
@@ -24,13 +25,13 @@ informesArr.forEach(element => {
         }
 
         if (visibleSelectInsti == 7) {
-            titlePrograms.innerText = 'Consultas de Usuarios';
+            titlePrograms.innerText = 'ID Categoria de ingles';
             titlePrograms.classList.remove('d-none');
             selectCategory.classList.add('d-none');
-            selectQuerrysUser.classList.remove('d-none');
+            selectQuerrysEnglish.classList.remove('d-none');
         } else {
             selectCategory.classList.remove('d-none');
-            selectQuerrysUser.classList.add('d-none');
+            selectQuerrysEnglish.classList.add('d-none');
             titlePrograms.innerText = 'Programas';
             titlePrograms.classList.add('d-none');
         }

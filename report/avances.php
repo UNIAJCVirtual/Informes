@@ -187,7 +187,6 @@ function advanceReport($program, $idnumber)
 						foreach ($gradesCategoryResult as $gradesCategory) {
 							$itemResult = GradesCategoryItem($courseInfo['course_id'], $idnumber);
 							$cantidadItems = ($cantidadItems < $itemResult->num_rows) ? $itemResult->num_rows : $cantidadItems;
-							print $itemResult->num_rows;
 							if ($itemResult->num_rows > 0) {
 								foreach ($itemResult as $item) {
 
