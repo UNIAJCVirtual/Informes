@@ -2,11 +2,11 @@
 function connection()
 {
 
-	// Conexion a base de datos de BANBUCO.CO
-	$server = "uniajctmp.chf279hfbxqe.us-east-1.rds.amazonaws.com";
-	$user = "aulasvirtuales";
-	$pass = "XN4pH7ddI3Ffl1vC";
-	$database = "uniajc";
+	// Conexion a base de datos externa -> Remplace with your credentials
+	$server = "xxxxx.ccccc.us-east-1.ss.xxxxxx.com";
+	$user = "xxxxxxxxx";
+	$pass = "xxxxxxxxx";
+	$database = "xxxxxxx";
 	$connection = new mysqli($server, $user, $pass, $database);
 
 	// Conexion a base de datos de localhost
@@ -16,7 +16,7 @@ function connection()
 		$pass = "";
 		$database = "moodle";
 		$connection = new mysqli($server, $user, $pass, $database);
-		*/
+	*/
 
 	$connection->set_charset("utf8");
 

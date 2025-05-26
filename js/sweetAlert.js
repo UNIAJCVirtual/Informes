@@ -54,7 +54,7 @@ Swal.fire({
 	// closeButtonAriaLabel:
 
 
-	 imageUrl: 'resources/img/uniajc.png',
+	 imageUrl: 'resources/img/uvi-blue-transparent.png',
 	 imageWidth: '300px',
 	 imageHeight: '300px',
 	 imageAlt: 'Banner del inicio'

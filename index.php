@@ -18,7 +18,7 @@
             <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion show" id="accordionSidebar">
                 <a class="sidebar-brand d-flex align-items-center justify-content-center" href="https://aulasvirtuales.uniajc.edu.co/">
                     <div class="sidebar-brand-icon">
-                        <img class="img-profile" src="resources\img\uniajcEstadeModaNegro.png" width=150" height="50">
+                        <img class="img-profile" src="resources\img\sasa.png" width=150" height="50">
                     </div>
                 </a>
                 <hr class="sidebar-divider my-0">
@@ -52,7 +52,7 @@
                             <div class="topbar-divider d-none d-sm-block"></div>
                             <li class="nav-item dropdown no-arrow">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <img src="resources\img\uniajcEstadeModaBlanco.png" width="95" height="30">
+                                    <img src="resources\img\uvi-white-transparent.png" width="110" height="60">
                                 </a>
                             </li>
                         </ul>
