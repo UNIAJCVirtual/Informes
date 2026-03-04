@@ -7,7 +7,6 @@ function Semesters($id_programs)
 	$con = connection();
 	mysqli_set_charset($con, "utf8");
 	$result = $con->query("SELECT DISTINCT id,name,parent FROM mdl_course_categories WHERE parent IN(" . $id_programs . ")");
-	$con->close();
 	return $result;
 }
 //SI SE USA - Modificado
@@ -18,7 +17,6 @@ function ProgramsName($id_programs)
 	mysqli_set_charset($con, "utf8");
 	$result = $con->query("SELECT name FROM mdl_course_categories WHERE id =" . $id_programs);
 	$r = $result->fetch_assoc();
-	$con->close();
 	return $r["name"];
 }
 //SI SE USA - Modificado
@@ -35,7 +33,6 @@ function CoursesInformation($idCategory)
 		mdl_course 
 	WHERE 
 		mdl_course.category =" . $idCategory);
-	$con->close();
 	return $result;
 }
 //SI SE USA - Modificado
@@ -59,7 +56,6 @@ function CoursesInformationID($idcourse)
                 mdl_course.id IN ($idcourse_str)";
 
 	$result = $con->query($query);
-	$con->close();
 	return $result;
 }
 function AllCoursesInformation()
@@ -75,7 +71,6 @@ function AllCoursesInformation()
                 mdl_course";
 
 	$result = $con->query($query);
-	$con->close();
 	return $result;
 }
 
@@ -107,7 +102,6 @@ function Usersquantity($idCourse, $rol)
 							mdl_course.visible=TRUE AND
 							mdl_role.id = " . $rol . " AND
 							mdl_course.id = " . $idCourse . "");
-	$con->close();
 	return $result;
 }
 //NO se usa
@@ -131,7 +125,6 @@ function Usersquantity($idCourse, $rol)
 			u.id = ra.userid AND
 			ra.roleid= 3";
 	$result = $connection3->query($query);
-	$connection3->close();
 	return $result;
 }*/
 //SI SE USA Modificado
@@ -162,7 +155,6 @@ function GradesCategory($course, $userid, $idnumber)
         mdl_grade_items.iteminstance = mdl_grade_categories.id
     ORDER by 1,2 
 ");
-	$connection3->close();
 	return $result;
 }
 function GradesCategoryNoInID($course, $userid, $idnumber)
@@ -196,7 +188,6 @@ function GradesCategoryNoInID($course, $userid, $idnumber)
         mdl_grade_items.iteminstance = mdl_grade_categories.id
     ORDER by 1,2 
 ");
-	$connection3->close();
 	return $result;
 }
 //SI SE USA
@@ -220,8 +211,7 @@ function GradesCategoryNoInID($course, $userid, $idnumber)
 // 				UPPER(gc.fullname) =  '$tipoReport' AND
 // 				gi.courseid =  $courseid";
 // 	$result = $connection3->query($quer);
-// 	$connection3->close();
-// 	return $result;
+// // 	return $result;
 // }
 
 function GradesCategoryItem($courseid, $idnumber)
@@ -246,7 +236,6 @@ function GradesCategoryItem($courseid, $idnumber)
 				AND mdl_grade_items.itemtype = 'category' AND
 				mdl_grade_items.idnumber = '$idnumber')";
 	$result = $connection3->query($quer);
-	$connection3->close();
 	return $result;
 }
 function GradesCategoryItemNoInId($courseid, $idnumber)
@@ -275,7 +264,6 @@ function GradesCategoryItemNoInId($courseid, $idnumber)
 				AND mdl_grade_items.itemtype = 'category' AND
 				mdl_grade_items.idnumber NOT IN ('$idnumber_str'))";
 	$result = $connection3->query($quer);
-	$connection3->close();
 	return $result;
 }
 
@@ -298,7 +286,6 @@ function dataAssign($id)
 
 
 	$result = $connection3->query($quer);
-	$connection3->close();
 	return $result;
 }
 //SI SE USA
@@ -318,7 +305,6 @@ function dataQuiz($id)
 
 
 	$result = $connection3->query($quer);
-	$connection3->close();
 	return $result;
 }
 //SI SE USA
@@ -338,7 +324,6 @@ function dataForum($id)
 
 
 	$result = $connection3->query($quer);
-	$connection3->close();
 	return $result;
 }
 //SI SE USA
@@ -368,7 +353,6 @@ function gradeItems($courseid, $category, $categoryOLD, $categoryAlt)
 				OR mdl_grade_items.idnumber = '$categoryOLD'
 				OR mdl_grade_items.idnumber = '$categoryAlt'))";
 	$result = $connection3->query($quer);
-	$connection3->close();
 	return $result;
 }
 //SI SE USA
@@ -393,7 +377,6 @@ function weighing($courseid, $idnumber, $idnumberOld, $idnumberAlt)
 				OR mdl_grade_items.idnumber = '$idnumberAlt' ))");
 	$row = mysqli_fetch_array($result);
 	$gradesum = $row['gradeSum'];
-	$connection3->close();
 	return $gradesum;
 }
 //SI SE USA
@@ -411,7 +394,6 @@ function ScoreItem($itemid)
 		gg.itemid = $itemid
 	";
 	$result = $connection3->query($query);
-	$connection3->close();
 	$score = $result->fetch_assoc();
 	return ($score["score"] > 0) ? "CUMPLE" : "NO CUMPLE";
 }
@@ -430,7 +412,6 @@ function FeedbackForum1($courseid, $instance)
 				course = $courseid AND 
 				forum = $instance
 		");
-	$connection3->close();
 	return $result;
 }
 //SI SE USA
@@ -449,7 +430,6 @@ function FeedbackForum2($id, $user)
 				userid = $user AND 
 				LOWER(subject) LIKE 're:%'
 		");
-	$connection3->close();
 	$result = $result->fetch_assoc();
 
 	return (count(explode(" ", $result["message"])) > 2) ? "CUMPLE" : "NO CUMPLE";
@@ -470,8 +450,7 @@ function FeedbackForum2($id, $user)
 // 			WHERE
 // 				assignment = $iteminstance 
 // 		");
-// 	$connection3->close();
-// 	$result = $result->fetch_assoc();
+// // 	$result = $result->fetch_assoc();
 // 	return ($result["feedback"] > 0) ? "CUMPLE" : "NO CUMPLE";
 // }
 
@@ -491,7 +470,6 @@ function FeedbackActivity($iteminstance)
         WHERE
             afc.assignment = $iteminstance
     ");
-	$connection3->close();
 	$result = $result->fetch_assoc();
 
 	$has_feedback = $result["feedback_count"] > 0;
@@ -529,7 +507,6 @@ function contentPage($course)
 				mdl_course.id= mdl_page.course AND
 				mdl_course.id ='" . $course . "'
 				ORDER BY section_id");
-	$connection3->close();
 	return $result;
 }
 //SI SE USA
@@ -549,7 +526,6 @@ function contentPageId($course, $idNumberPage)
 				mdl_course_modules.course = '" . $course . "' AND 
 				mdl_course_modules.idnumber = '" . $idNumberPage . "' AND
 				mdl_course_modules.instance = mdl_page.id");
-	$conn->close();
 	return $result;
 }
 //SI SE USA
@@ -571,7 +547,6 @@ function contentUnits($course)
 				mdl_course.id = '" . $course . "' AND
 				mdl_course_sections.section != 0
 				ORDER BY section_id");
-	$connection3->close();
 	return $result;
 }
 //SI SE USA
@@ -588,7 +563,6 @@ function forum($course)
 			WHERE 	
 				mdl_forum.course= $course AND 
 				UPPER(mdl_forum.NAME) LIKE UPPER('%consulta%')");
-	$connection3->close();
 	return $result;
 }
 //SI SE USA
@@ -604,7 +578,6 @@ function forumDiscussions($id)
 				`mdl_forum_discussions` 
 			where 
 				`forum`= $id");
-	$connection3->close();
 	return $result;
 }
 //NO SE USA
@@ -634,7 +607,6 @@ function summary($idsection, $course)
 				modulo.course= $course
 			GROUP BY unidad.name 
 			ORDER BY unidad.section");
-	$connection3->close();
 	return $result;
 }*/
 function categorysEnglish($idCategory)

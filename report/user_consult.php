@@ -11,7 +11,6 @@ function userNotSingup($consult)
         FROM mdl_user u
         LEFT JOIN mdl_user_lastaccess ul ON u.id = ul.userid
         WHERE ul.timeaccess IS NULL;");
-        $connection3->close();
 
         echo ("
             <div class='title-estadist'>
@@ -138,7 +137,6 @@ function userNotSingup($consult)
         AND gi.iteminstance NOT IN (SELECT instance FROM mdl_quiz)
         ORDER BY c.fullname, gi.itemmodule, gi.itemname;
         ");
-        $connection3->close();
 
         echo ("
             <div class='title-estadist'>
@@ -191,7 +189,6 @@ function userNotSingup($consult)
         AND ue.status = 0
         AND u.id IN (SELECT userid FROM mdl_role_assignments WHERE roleid = 5)
         ORDER BY u.lastname, u.firstname, c.fullname;");
-        $connection3->close();
 
         echo ("
             <div class='title-estadist'>
@@ -240,7 +237,6 @@ function userNotSingup($consult)
         AND e.enrol = 'manual'
         AND u.id IN (SELECT userid FROM mdl_role_assignments WHERE roleid = 5)
         ORDER BY cc3.name, cc2.name, cc1.name, c.fullname, u.lastname, u.firstname;");
-        $connection3->close();
 
         echo ("
             <div class='title-estadist'>
