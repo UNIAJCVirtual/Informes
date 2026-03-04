@@ -41,6 +41,7 @@
                                 <option value="7" class="collapse-item">Estadistica Ingles</option>
                             </select>
                             <a href="./report/tipo_reporte.php" class="collapse-item">Otras consultas</a>
+                            <a href="./report/sql_console.php" class="collapse-item" target="_blank">Consola SQL</a>
                         </div>
                     </div>
                 </li>
@@ -157,6 +158,7 @@
             }
         }
     </script>
+    <?php include('helpers/footer.php'); ?>
 </body>
 
 </html>
