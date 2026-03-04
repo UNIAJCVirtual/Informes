@@ -4,7 +4,7 @@
  * Incluir con: <?php include('helpers/footer.php'); ?>
  */
 
-$appVersion = '1.0.0';
+$appVersion = '1.0.1';
 $appYear = date('Y');
 ?>
 <footer class="app-footer">
