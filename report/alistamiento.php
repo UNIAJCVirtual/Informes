@@ -2,7 +2,6 @@
 include_once("../models/alistamiento_model.php");
 include_once("../helpers/strings.php");
 include_once("../services/reportRequest.php");
-header('Content-Type: text/html; charset=UTF-8');
 
 /*
 @Variables publicas
@@ -658,40 +657,41 @@ function enlistmentReport($program, $semester)
 	<div class='title-estadist'>
 			<h2>ALISTAMIENTO</h2>
 	</div>
-	<table id='example' class='table table-striped table-bordered' cellspacing='0' width='100%'>
-	<thead class='td1 thead-table' nowrap>
-		<td class='td1' nowrap >Fecha</td>
-		<td class='td1' nowrap >ID Usuario</td>
-		<td class='td1' nowrap >Documento</td>
-		<td class='td1' nowrap >Nombre completo</td>
-		<td class='td1' nowrap >Correo electrónico</td>
-		<td class='td1' nowrap >Programa</td>
-		<td class='td1' nowrap >ID Curso</td>
-		<td class='td1' nowrap >Codigo</td>
-		<td class='td1' nowrap >Semestre</td>
-		<td class='td1' nowrap >Grupo</td>
-		<td class='td1' nowrap >Nombre del curso</td>
-		<td class='td1' nowrap >Nombre del profesor</td>
-		<td class='td1' nowrap >Correo</td>
-		<td class='td1' nowrap >Horario de atención</td>
-		<td class='td1' nowrap >Fotografía</td>
-		<td class='td1' nowrap >Foro de consulta</td>
-		<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 1</td>
-		<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 2</td>
-		<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 3</td>
-		<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 4</td>
-		<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 5</td>
-		<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 6</td>
-		<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 7</td>
-		<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 8</td>
-		<td class='td1' nowrap >" . $ac1 . " Actividades</td>
-		<td class='td1' nowrap >" . $ac1 . " Ponderaciones</td>
-		<td class='td1' nowrap >" . $ac2 . " Actividades</td>
-		<td class='td1' nowrap >" . $ac2 . " Ponderaciones</td>
-		<td class='td1' nowrap >" . $ac3 . " Actividades</td>
-		<td class='td1' nowrap >" . $ac3 . " Ponderaciones</td>
-		<td class='td1' nowrap >Porcentaje</td>
-	</thead>");
+	<div class='container-table'>
+		<table id='example' class='table table-striped table-bordered' cellspacing='0' width='100%'>
+		<thead class='td1 thead-table' nowrap>
+			<td class='td1' nowrap >Fecha</td>
+			<td class='td1' nowrap >ID Usuario</td>
+			<td class='td1' nowrap >Documento</td>
+			<td class='td1' nowrap >Nombre completo</td>
+			<td class='td1' nowrap >Correo electrónico</td>
+			<td class='td1' nowrap >Programa</td>
+			<td class='td1' nowrap >ID Curso</td>
+			<td class='td1' nowrap >Codigo</td>
+			<td class='td1' nowrap >Semestre</td>
+			<td class='td1' nowrap >Grupo</td>
+			<td class='td1' nowrap >Nombre del curso</td>
+			<td class='td1' nowrap >Nombre del profesor</td>
+			<td class='td1' nowrap >Correo</td>
+			<td class='td1' nowrap >Horario de atención</td>
+			<td class='td1' nowrap >Fotografía</td>
+			<td class='td1' nowrap >Foro de consulta</td>
+			<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 1</td>
+			<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 2</td>
+			<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 3</td>
+			<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 4</td>
+			<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 5</td>
+			<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 6</td>
+			<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 7</td>
+			<td class='td1' nowrap >Fecha de inicio y Finalización Unidad 8</td>
+			<td class='td1' nowrap >" . $ac1 . " Actividades</td>
+			<td class='td1' nowrap >" . $ac1 . " Ponderaciones</td>
+			<td class='td1' nowrap >" . $ac2 . " Actividades</td>
+			<td class='td1' nowrap >" . $ac2 . " Ponderaciones</td>
+			<td class='td1' nowrap >" . $ac3 . " Actividades</td>
+			<td class='td1' nowrap >" . $ac3 . " Ponderaciones</td>
+			<td class='td1' nowrap >Porcentaje</td>
+		</thead>");
 	foreach ($vector_curse as $curse) {
 
 		if ($curse->getPorcentaje() >= 80 && $curse->getPorcentaje() <= 100) {
@@ -756,14 +756,15 @@ function enlistmentReport($program, $semester)
 	$cantidadcourses = count(uniqueElements($vector_idCurse));
 	$cantidadRepetidos = count($vector_idCurse) - $cantidadcourses;
 	echo ("
-	</table>
+		</table>
+	</div>
 	<div class='container-items-porcent'>
         <div class='item-porcent tr1'><span class='txt-black'>100% - 80% |</span>		<h5>" . $green . "</h5></div>
         <div class='item-porcent tr2'><span class='txt-black'>79% - 51%  |</span>     <h5>" . $yellow . "</h5></div>
         <div class='item-porcent tr3'><span class='txt-black'>50% - 0%   |</span>		<h5>" . $lightRed . "</h5></div>
         <div class='item-porcent tr4'><span class='txt-black'>Sin actividades	|</span><h5>" . $darkRed . "</h5></div>
-        <div class='item-porcent td2'><span>Total de courses	|</span><h5>" . $sum . "</h5></div>
-		<div class='item-porcent td2'><span>courses Repetidos	|</span><h5>" . $cantidadRepetidos . "</h5></div>
+        <div class='item-porcent td2'><span>Total de cursos	|</span><h5>" . $sum . "</h5></div>
+		<div class='item-porcent td2'><span>cursos Repetidos	|</span><h5>" . $cantidadRepetidos . "</h5></div>
    	</div>
 	");
 }
