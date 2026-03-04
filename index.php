@@ -158,6 +158,7 @@
             }
         }
     </script>
+    <?php include('helpers/footer.php'); ?>
 </body>
 
 </html>

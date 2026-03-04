@@ -285,5 +285,6 @@
         // Auto-focus en el editor
         document.getElementById('sql_query').focus();
     </script>
+    <?php include('../helpers/footer.php'); ?>
 </body>
 </html>
