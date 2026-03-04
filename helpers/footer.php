@@ -5,7 +5,7 @@
  * Compatible con el sistema de temas (theme.css)
  */
 
-$appVersion = '1.0.1';
+$appVersion = '1.1.0';
 $appYear = date('Y');
 ?>
 <footer class="app-footer">
